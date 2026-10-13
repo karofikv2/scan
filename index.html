@@ -45,7 +45,8 @@ svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .icon-btn{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;border:0;background:rgba(255,255,255,.14);color:#fff;flex:none}
 @keyframes pulse{50%{opacity:.35}}
 
-main{max-width:560px;margin:0 auto;padding:12px 12px 0;display:grid;gap:12px}
+main{max-width:560px;margin:0 auto;padding:12px 12px 0;display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+main>*{min-width:0}
 .card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow)}
 
 /* Đợt quét – thông tin gắn kèm */
@@ -104,7 +105,8 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--brand);out
 
 /* Danh sách */
 .list-head{display:flex;align-items:center;gap:8px;padding:12px 14px 6px}
-.list-head h2{margin:0;font-size:16px;flex:1}
+.list-head h2{margin:0;font-size:16px;flex:1;white-space:nowrap}
+@media (max-width:380px){#btnHistory .t{display:none}#btnHistory{padding:0 8px}}
 .list-head h2 .n{display:inline-grid;place-items:center;min-width:28px;height:24px;padding:0 8px;margin-left:6px;border-radius:999px;background:var(--brand);color:#fff;font-size:13px}
 .chips{display:flex;flex-wrap:wrap;gap:6px;padding:4px 14px 8px}
 .chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;background:#f1f5f9;color:var(--ink2);font-size:12.5px;font-weight:500}
@@ -149,6 +151,17 @@ ol.recs{list-style:none;margin:0;padding:0 0 4px}
 .sh-body{overflow:auto;padding:12px 14px;-webkit-overflow-scrolling:touch}
 .sh-foot{display:flex;gap:8px;padding:10px 14px 14px;border-top:1px solid var(--line)}
 .sh-foot .btn{flex:1}
+.pick-sn{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;margin:0 0 12px;padding:10px 12px;border-radius:12px;background:#f1f5f9}
+.pick-sn span{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.pick-sn b{font-family:var(--mono);font-size:19px;letter-spacing:.4px;word-break:break-all}
+.pick-last{width:100%;justify-content:flex-start;margin-bottom:10px;box-shadow:none}
+.pick-last .nm{overflow:hidden;text-overflow:ellipsis}
+.pick-last small{margin-left:auto;padding-left:8px;font-weight:500;opacity:.85;font-size:12.5px}
+.pick-recent{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.chip-btn{height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);background:#fff;font-weight:600;font-size:14px}
+.chip-btn:active{background:var(--brandSoft)}
+.pick-search{position:sticky;top:-12px;z-index:1;background:#fff;padding:6px 0 4px;margin-top:-6px}
+.last.pick .badge{background:var(--brandSoft);color:var(--brand)}.last.pick .msg{color:var(--brand);font-weight:600}
 .pick-hint{margin:0 0 10px;font-size:13.5px;color:var(--ink2);background:var(--brandSoft);padding:9px 12px;border-radius:10px}
 .opt-list{list-style:none;margin:8px 0 0;padding:0}
 .opt-list li button{display:flex;align-items:center;gap:10px;width:100%;padding:12px 10px;border:0;border-bottom:1px solid var(--line);background:none;text-align:left;font-size:15.5px}
@@ -240,11 +253,6 @@ a{color:var(--brand)}
       <span class="txt"><span class="lbl">Kho / NPP / Đại lý</span><span class="val" id="v-location"></span></span>
       <svg class="i chev"><use href="#i-chev"/></svg>
     </button>
-    <button class="field" type="button" data-field="model">
-      <span class="ic"><svg class="i"><use href="#i-box"/></svg></span>
-      <span class="txt"><span class="lbl">Model (áp cho serial quét tiếp theo)</span><span class="val" id="v-model"></span></span>
-      <svg class="i chev"><use href="#i-chev"/></svg>
-    </button>
   </section>
 
   <section class="card scanner" aria-label="Quét mã vạch">
@@ -261,7 +269,7 @@ a{color:var(--brand)}
       <div class="resume" id="resume" hidden><button class="btn primary big" id="btnResume" type="button"><svg class="i"><use href="#i-scan"/></svg>Quét tiếp</button></div>
       <div class="idle" id="idle">
         <button class="btn primary big" id="btnStart" type="button"><svg class="i"><use href="#i-scan"/></svg>Bắt đầu quét</button>
-        <p id="idleMsg">Hướng camera vào mã vạch serial trên thùng. Serial tự nhảy vào danh sách và Google Sheet.</p>
+        <p id="idleMsg">Quét mã vạch serial trên thùng → chọn sản phẩm → serial tự lưu vào danh sách và Google Sheet.</p>
       </div>
     </div>
     <div class="last" id="last">
@@ -277,7 +285,7 @@ a{color:var(--brand)}
   <section class="card" aria-label="Danh sách serial">
     <div class="list-head">
       <h2>Đợt này<span class="n" id="count">0</span></h2>
-      <button class="btn sm ghost" id="btnHistory" type="button"><svg class="i"><use href="#i-hist"/></svg>Lịch sử</button>
+      <button class="btn sm ghost" id="btnHistory" type="button" aria-label="Lịch sử"><svg class="i"><use href="#i-hist"/></svg><span class="t">Lịch sử</span></button>
       <button class="btn sm" id="btnNewBatch" type="button"><svg class="i"><use href="#i-new"/></svg>Đợt mới</button>
     </div>
     <div class="chips" id="chips"></div>
@@ -305,7 +313,7 @@ a{color:var(--brand)}
        dạng  .../scan/#api=<URL>  mà app tạo ra).
    ===================================================================== */
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwaumb04tZoVcZE6V--lb37675aqM1EGSszBm2f_tH_Ulq_bErLdtuDfzr77S0x3MimPA/exec';
-const APP_VERSION = '1.0.0';
+const APP_VERSION = '1.1.0';
 (() => {
 'use strict';
 
@@ -322,7 +330,7 @@ const fold = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').rep
 const icon = (id, cls = '') => `<svg class="i ${cls}"><use href="#i-${id}"/></svg>`;
 const uid = () => (crypto.randomUUID ? crypto.randomUUID().replace(/-/g, '').slice(0, 20) : Date.now().toString(36) + Math.random().toString(36).slice(2, 10));
 
-const KEY = { settings: 'qs.settings', session: 'qs.session', batches: 'qs.batches', dels: 'qs.dels', config: 'qs.config', recent: 'qs.recent', device: 'qs.device' };
+const KEY = { settings: 'qs.settings', session: 'qs.session', batches: 'qs.batches', dels: 'qs.dels', config: 'qs.config', recent: 'qs.recent', device: 'qs.device', custom: 'qs.custom' };
 const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } };
 let storageWarned = false;
 const store = (k, v) => {
@@ -345,6 +353,7 @@ const S = {
   device: load(KEY.device, ''),
 };
 if (!Array.isArray(S.batches) || !S.batches.length) S.batches = [newBatch()];
+S.custom = Object.assign({ models: [] }, load(KEY.custom, {}));
 if (!S.device) {
   const ua = navigator.userAgent;
   const kind = /iPhone|iPad|iPod/i.test(ua) ? 'iPhone' : /Android/i.test(ua) ? 'Android' : 'PC';
@@ -462,18 +471,17 @@ function confirmBox(title, html, okText = 'Đồng ý', danger = false) {
 }
 
 /* ------------------------------------------------------------------
-   Người quét / Kho-NPP-Đại lý / Model
+   Người quét / Kho-NPP-Đại lý
 ------------------------------------------------------------------ */
 const FIELDS = {
-  user: { title: 'Người quét', list: 'users', ph: 'Gõ tên người quét…', optional: false, empty: 'Chưa chọn – bấm để chọn' },
-  location: { title: 'Kho / NPP / Đại lý', list: 'locations', ph: 'Tìm hoặc gõ tên kho / NPP / đại lý…', optional: false, empty: 'Chưa chọn – bấm để chọn' },
-  model: { title: 'Model sản phẩm', list: 'models', ph: 'Tìm hoặc gõ model…', optional: true, empty: 'Không ghi model' },
+  user: { title: 'Người quét', list: 'users', ph: 'Gõ tên người quét…', empty: 'Chưa chọn – bấm để chọn' },
+  location: { title: 'Kho / NPP / Đại lý', list: 'locations', ph: 'Tìm hoặc gõ tên kho / NPP / đại lý…', empty: 'Chưa chọn – bấm để chọn' },
 };
 function renderSession() {
   for (const k of Object.keys(FIELDS)) {
     const v = S.session[k], el = $('#v-' + k);
     el.textContent = v || FIELDS[k].empty;
-    el.className = 'val' + (v ? '' : FIELDS[k].optional ? ' opt' : ' missing');
+    el.className = 'val' + (v ? '' : ' missing');
   }
 }
 function pushRecent(listName, v) {
@@ -484,7 +492,7 @@ function pushRecent(listName, v) {
 function openPicker(field, then, hintText) {
   const f = FIELDS[field];
   const wrap = document.createElement('div');
-  wrap.innerHTML = `${hintText ? `<p class="pick-hint">${esc(hintText)}</p>` : ''}<input class="inp" type="search" placeholder="${esc(f.ph)}" autocomplete="off" autocapitalize="${field === 'model' ? 'characters' : 'words'}">
+  wrap.innerHTML = `${hintText ? `<p class="pick-hint">${esc(hintText)}</p>` : ''}<input class="inp" type="search" placeholder="${esc(f.ph)}" autocomplete="off" autocapitalize="words">
     <ul class="opt-list"></ul><p class="muted" data-hint></p>`;
   const inp = $('input', wrap), ul = $('ul', wrap), hint = $('[data-hint]', wrap);
   const m = openModal({ title: f.title, body: wrap });
@@ -502,7 +510,6 @@ function openPicker(field, then, hintText) {
     const hits = fq ? items.filter((x) => fold(x.v).includes(fq)) : items;
     const exact = q && items.some((x) => x.v.toUpperCase() === q.toUpperCase());
     let html = '';
-    if (f.optional && !q) html += `<li><button type="button" data-v="" class="${S.session[field] ? '' : 'sel'}">${icon('x')}Không ghi model</button></li>`;
     hits.slice(0, 80).forEach((x) => {
       html += `<li><button type="button" data-v="${esc(x.v)}" class="${x.v === S.session[field] ? 'sel' : ''}">${esc(x.v)}${x.tag ? `<span class="tag">${x.tag}</span>` : ''}</button></li>`;
     });
@@ -531,13 +538,93 @@ function ensureSession(then) {
   const next = () => { if (ensureSession(then) && then) then(); };
   if (!S.session.user) { openPicker('user', next, 'Chọn tên người quét (chỉ hỏi lần đầu).'); return false; }
   if (!S.session.location) { openPicker('location', next, 'Đang quét ở kho / NPP / đại lý nào?'); return false; }
-  // Đầu mỗi đợt: hỏi model 1 lần (có lựa chọn "Không ghi model")
-  const b = cur();
-  if (then === startScan && !S.session.model && !b.modelAsked && !b.records.length) {
-    b.modelAsked = true; saveBatches();
-    openPicker('model', next, 'Chọn model cho lô đang quét – đổi được bất cứ lúc nào. Không cần thì chọn “Không ghi model”.'); return false;
-  }
   return true;
+}
+
+/* ------------------------------------------------------------------
+   Danh sách sản phẩm – quét xong Sale chọn sản phẩm cho từng serial.
+   Thêm mã cho cả team: điền vào cột A tab "Danh mục" trên Google Sheet.
+   Sale gõ mã chưa có → "Thêm mã mới" (nhớ trên máy đó).
+------------------------------------------------------------------ */
+const PRODUCTS = [
+  "KAE-S88 Promax", "KAE-S86 Pro", "KAE-S86", "KAE-S68 Pro", "KAE-S68", "KAE-S18",
+  "KAE-S16", "KAD-N91", "KAD-N89", "KAD-N69", "KAD-D69", "KAD-D66S Pro",
+  "KAD-D66S", "KAD-L85", "KAD-L82", "KAD-M68", "KAD-E58", "KAH-D10",
+  "KAH-D15", "KAH-D18", "KAQ-L22", "KAQ-E16", "KAQ-D36S", "KAQ-L06",
+  "KAQ-D20", "KAQ-D36", "KHY-TN88", "KAQ-U99", "KAQ-U98", "KAQ-U65",
+  "KAQ-U96 Pro", "KAQ-U05 Pro", "KAQ-U03 Pro", "KAQ-U50K", "KAO-T90", "HCV208RO",
+  "HCV208B", "HCV208G", "HCV208", "HCV209", "HC18", "HC19",
+  "HC16", "HC15", "KT-KB30 +BA", "KT-KB50 +BA", "KT-KB80", "Quạt Livotec S-100",
+  "Quạt Livotec S-200", "Lõi Hydrogen Ion Kiềm", "Bộ lõi Smax Pro V", "WPK-938", "WPK-928", "WPK-903",
+  "WPK-968", "WPK-966", "Livotec 630S", "Livotec 628S", "Livotec 629S", "Livotec 615S",
+  "Livotec 609", "Livotec 606S", "Livotec 808", "Livotec 218", "LD200", "LD206NS",
+  "Bộ lõi Livotec 1,2,3", "Livotec 689 (Nóng lạnh)", "Livotec 625 (Nóng nguội)", "Livotec 618 (RO)", "Livotec 238 (Để gầm)", "KAD-L55",
+  "Livotec 612S", "Livotec 838",
+];
+const normKey = (x) => fold(x).replace(/[^a-z0-9]/g, '');
+function productList() {
+  const seen = new Set(), out = [];
+  const add = (v, tag) => { v = String(v || '').trim(); const k = v.toUpperCase(); if (!v || seen.has(k)) return; seen.add(k); out.push({ v, tag }); };
+  PRODUCTS.forEach((v) => add(v, ''));
+  (S.config.models || []).forEach((v) => add(v, ''));
+  (S.custom.models || []).forEach((v) => add(v, 'mã mới'));
+  return out;
+}
+/** Mở bảng chọn sản phẩm cho 1 serial. Trả về tên sản phẩm, hoặc null nếu bỏ qua. */
+function pickProduct(serial) {
+  return new Promise((resolve) => {
+    let done = false;
+    const last = S.recent.models[0] || '';
+    const recents = S.recent.models.slice(1, 7);
+    const wrap = document.createElement('div');
+    wrap.innerHTML = `<div class="pick-sn"><span>Serial</span><b>${esc(serial)}</b></div>
+      ${last ? `<button type="button" class="btn primary big pick-last" data-v="${esc(last)}">${icon('check')}<span class="nm">${esc(last)}</span><small>như lần trước</small></button>` : ''}
+      ${recents.length ? `<div class="pick-recent">${recents.map((v) => `<button type="button" class="chip-btn" data-v="${esc(v)}">${esc(v)}</button>`).join('')}</div>` : ''}
+      <div class="pick-search"><input class="inp" type="search" placeholder="Tìm: gõ vài ký tự, VD u95, 630, quạt…" autocomplete="off" autocapitalize="characters" spellcheck="false"></div>
+      <ul class="opt-list"></ul><p class="muted" data-hint></p>`;
+    const foot = document.createElement('div');
+    foot.style.display = 'contents';
+    foot.innerHTML = `<button class="btn" type="button" data-a="skip">${icon('x')}Bỏ qua serial này</button>`;
+    const m = openModal({ title: 'Chọn sản phẩm', body: wrap, foot, onClose: () => { if (!done) { done = true; resolve(null); } } });
+    const finish = (v) => { if (done) return; done = true; m.close(); resolve(v); };
+    const inp = $('input', wrap), ul = $('ul', wrap), hint = $('[data-hint]', wrap);
+    const choose = (v) => {
+      v = String(v || '').replace(/\s+/g, ' ').trim();
+      if (!v) return;
+      if (!productList().some((x) => x.v.toUpperCase() === v.toUpperCase())) {
+        S.custom.models = [v].concat(S.custom.models.filter((x) => x.toUpperCase() !== v.toUpperCase())).slice(0, 200);
+        store(KEY.custom, S.custom);
+      }
+      pushRecent('models', v);
+      finish(v);
+    };
+    const draw = () => {
+      const q = inp.value.trim();
+      const toks = q.split(/\s+/).map(normKey).filter(Boolean);
+      const all = productList();
+      const hits = toks.length ? all.filter((x) => { const k = normKey(x.v); return toks.every((t) => k.includes(t)); }) : all;
+      const exact = q && all.some((x) => x.v.toUpperCase() === q.toUpperCase());
+      let html = hits.slice(0, 150).map((x) => `<li><button type="button" data-v="${esc(x.v)}">${esc(x.v)}${x.tag ? `<span class="tag">${x.tag}</span>` : ''}</button></li>`).join('');
+      if (q && !exact) html += `<li><button type="button" class="add" data-v="${esc(q)}">${icon('plus')}Thêm mã mới “${esc(q)}”</button></li>`;
+      ul.innerHTML = html;
+      hint.textContent = q && !hits.length ? 'Không có trong danh sách – bấm “Thêm mã mới” để dùng mã này.' : '';
+    };
+    wrap.addEventListener('click', (e) => { const b = e.target.closest('button[data-v]'); if (b) choose(b.dataset.v); });
+    foot.querySelector('[data-a=skip]').onclick = () => finish(null);
+    inp.addEventListener('input', draw);
+    inp.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter') return;
+      e.preventDefault();
+      const q = inp.value.trim();
+      if (!q) { if (last) choose(last); return; }
+      const opts = [...ul.querySelectorAll('button[data-v]:not(.add)')];
+      const exact = opts.find((b) => b.dataset.v.toUpperCase() === q.toUpperCase());
+      choose(exact ? exact.dataset.v : opts.length === 1 ? opts[0].dataset.v : q);
+    });
+    draw();
+    if (!matchMedia('(pointer:coarse)').matches) setTimeout(() => inp.focus(), 60);
+    if (apiUrl() && Date.now() - (S.config.at || 0) > 30 * 60 * 1000) loadConfig(true).then(() => { if (!done) draw(); });
+  });
 }
 
 /* ------------------------------------------------------------------
@@ -548,36 +635,47 @@ function showLast(kind, serial, msg) {
   lastEvt = { kind, serial, msg };
   const box = $('#last');
   box.className = 'last ' + kind;
-  const ic = kind === 'ok' ? 'check' : kind === 'skip' ? 'scan' : 'alert';
+  const ic = kind === 'ok' ? 'check' : kind === 'skip' ? 'scan' : kind === 'pick' ? 'box' : 'alert';
   box.innerHTML = `<span class="badge">${icon(ic)}</span><div class="t">${serial ? `<div class="sn">${esc(serial)}</div>` : ''}<div class="msg">${esc(msg)}</div></div>`;
 }
 function cleanCode(s) { return String(s || '').replace(/[\u0000-\u001F\u007F]/g, '').trim(); }
 
-/** src: 'cam' | 'hid' | 'manual' */
-function addSerial(raw, fmt, src) {
+/** src: 'cam' | 'hid' | 'manual'. Đọc được mã → chọn sản phẩm → lưu. Trả về true nếu đã lưu. */
+let picking = false;
+async function addSerial(raw, fmt, src) {
   let serial = cleanCode(raw);
   if (src === 'manual') serial = serial.replace(/\s+/g, '').toUpperCase();
-  if (!serial) return false;
+  if (!serial || picking) return false;
   if (src !== 'manual') {
     if (serial.length < (+S.settings.minLen || 0)) { showLast('skip', serial, `Bỏ qua: mã quá ngắn (< ${S.settings.minLen} ký tự)`); return false; }
     const pf = (S.settings.prefix || '').trim().toUpperCase();
     if (pf && !serial.toUpperCase().startsWith(pf)) { showLast('skip', serial, `Bỏ qua: không bắt đầu bằng “${pf}”`); return false; }
   }
   if (!S.session.user || !S.session.location) { ensureSession(); return false; }
-  const b = cur(), key = serial.toUpperCase();
-  const idx = b.records.findIndex((r) => r.serial.toUpperCase() === key);
-  if (idx >= 0) {
-    const r = b.records[idx];
+  const findDup = () => cur().records.findIndex((r) => r.serial.toUpperCase() === serial.toUpperCase());
+  const dupMsg = (idx) => {
+    const r = cur().records[idx];
     feedback('dup');
-    showLast('dup', serial, `TRÙNG – đã quét lúc ${fmtTime(r.at)} (dòng #${idx + 1})`);
+    showLast('dup', serial, `TRÙNG – đã quét lúc ${fmtTime(r.at)} (dòng #${idx + 1} · ${r.model || 'chưa có SP'})`);
     flashRow(r.id);
-    return false;
-  }
-  const rec = { id: uid(), serial, model: S.session.model, location: S.session.location, user: S.session.user, at: Date.now(), fmt: fmt || '', src, st: 'pending', tries: 0, note: '' };
+  };
+  let idx = findDup();
+  if (idx >= 0) { dupMsg(idx); return false; }
+  const at = Date.now();
+  feedback('ok');
+  showLast('pick', serial, 'Đã đọc mã – chọn sản phẩm để lưu');
+  picking = true;
+  let model = null;
+  try { model = await pickProduct(serial); } finally { picking = false; }
+  cam.lastSeen = Date.now(); cam.cooldownUntil = Date.now() + 700; // thùng vừa quét còn trong khung → không báo trùng
+  if (!model) { showLast('skip', serial, 'Chưa lưu – đã bỏ qua serial này'); return false; }
+  idx = findDup();
+  if (idx >= 0) { dupMsg(idx); return false; }
+  const b = cur();
+  const rec = { id: uid(), serial, model, location: S.session.location, user: S.session.user, at, fmt: fmt || '', src, st: 'pending', tries: 0, note: '' };
   b.records.push(rec);
   saveBatches();
-  feedback('ok');
-  showLast('ok', serial, `Đã thêm #${b.records.length}${rec.model ? ' · ' + rec.model : ''}`);
+  showLast('ok', serial, `Đã lưu #${b.records.length} · ${model}`);
   renderList(rec.id);
   renderStatus();
   sync();
@@ -617,7 +715,7 @@ function renderList(freshId) {
   $('#searchBox').hidden = recs.length < 8;
   // chip tổng hợp theo model
   const byModel = new Map();
-  recs.forEach((r) => byModel.set(r.model || '(không model)', (byModel.get(r.model || '(không model)') || 0) + 1));
+  recs.forEach((r) => byModel.set(r.model || '(chưa chọn SP)', (byModel.get(r.model || '(chưa chọn SP)') || 0) + 1));
   const repeats = recs.filter((r) => r.note).length;
   const waiting = apiUrl() ? recs.filter((r) => r.st !== 'ok').length : 0;
   let chips = '';
@@ -817,7 +915,7 @@ function setView(state, msg) {
   if (state === 'idle' || state === 'starting') {
     const p = $('#idleMsg');
     if (msg) { p.className = 'err'; p.textContent = msg; }
-    else if (state === 'idle') { p.className = ''; p.textContent = 'Hướng camera vào mã vạch serial trên thùng. Serial tự nhảy vào danh sách và Google Sheet.'; }
+    else if (state === 'idle') { p.className = ''; p.textContent = 'Quét mã vạch serial trên thùng → chọn sản phẩm → serial tự lưu vào danh sách và Google Sheet.'; }
   }
 }
 function setHint(t) { $('#hint').textContent = t; }
@@ -1035,9 +1133,11 @@ function onCode(text, fmt) {
   }
   cam.confirm = { text: '', t: 0 };
   cam.lastText = text; cam.lastSeen = now;
-  const added = addSerial(text, fmt, 'cam');
-  cam.cooldownUntil = now + (added ? 900 : 1200);
-  if (added && !S.settings.continuous) { cam.paused = true; setView('paused'); setHint('Đã tạm dừng – bấm “Quét tiếp” cho thùng tiếp theo'); }
+  cam.cooldownUntil = now + 1200;
+  addSerial(text, fmt, 'cam').then((added) => {
+    cam.lastSeen = Date.now();
+    if (added && !S.settings.continuous && cam.running) { cam.paused = true; setView('paused'); setHint('Đã tạm dừng – bấm “Quét tiếp” cho thùng tiếp theo'); }
+  });
 }
 
 /* Súng quét mã vạch (USB/Bluetooth) – gõ phím rất nhanh rồi Enter */
@@ -1062,8 +1162,7 @@ $('#manualForm').addEventListener('submit', (e) => {
   const v = inp.value;
   if (!v.trim()) { inp.focus(); return; }
   if (!S.session.user || !S.session.location) { ensureSession(); return; }
-  if (addSerial(v, 'Nhập tay', 'manual')) inp.value = '';
-  else inp.select();
+  addSerial(v, 'Nhập tay', 'manual').then((ok) => { if (ok) inp.value = ''; else inp.select(); });
 });
 document.querySelectorAll('.field').forEach((b) => { b.onclick = () => openPicker(b.dataset.field); });
 
@@ -1174,12 +1273,12 @@ function batchFile(batch) {
   const recs = batch.records.slice().sort((a, b) => a.at - b.at);
   const rows = recs.map((r, i) => [i + 1, { v: r.serial, s: 5 }, r.model, r.location, r.user, new Date(r.at), r.note ? { v: statusText(r), s: 7 } : statusText(r)]);
   const grp = new Map();
-  recs.forEach((r) => { const k = (r.location || '') + '\u0001' + (r.model || '(không model)'); grp.set(k, (grp.get(k) || 0) + 1); });
+  recs.forEach((r) => { const k = (r.location || '') + '\u0001' + (r.model || '(chưa chọn)'); grp.set(k, (grp.get(k) || 0) + 1); });
   const sum = [...grp.entries()].sort((a, b) => a[0].localeCompare(b[0], 'vi')).map(([k, n]) => { const [l, m] = k.split('\u0001'); return [l, m, n]; });
   sum.push([{ v: 'Tổng cộng', s: 5 }, { v: '', s: 5 }, { v: recs.length, s: 6 }]);
   const blob = buildXlsx([
-    { name: 'Serial', header: ['STT', 'Serial', 'Model', 'Kho / NPP / Đại lý', 'Người quét', 'Thời gian quét', 'Google Sheet'], rows, cols: [6, 20, 16, 30, 20, 20, 48], filter: true },
-    { name: 'Tổng hợp', header: ['Kho / NPP / Đại lý', 'Model', 'Số lượng'], rows: sum, cols: [34, 20, 12], filter: false },
+    { name: 'Serial', header: ['STT', 'Serial', 'Sản phẩm', 'Kho / NPP / Đại lý', 'Người quét', 'Thời gian quét', 'Google Sheet'], rows, cols: [6, 20, 24, 30, 20, 20, 48], filter: true },
+    { name: 'Tổng hợp', header: ['Kho / NPP / Đại lý', 'Sản phẩm', 'Số lượng'], rows: sum, cols: [34, 26, 12], filter: false },
   ]);
   const locs = [...new Set(recs.map((r) => r.location).filter(Boolean))];
   const d = new Date(recs.length ? recs[recs.length - 1].at : Date.now());
@@ -1382,7 +1481,7 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
   window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
 }
 // Cho kiểm thử tự động
-window.__qs = { S, cam, addSerial, sync, buildXlsx, batchFile, exportBatch };
+window.__qs = { S, cam, addSerial, sync, buildXlsx, batchFile, exportBatch, productList };
 })();
 
 </script>
