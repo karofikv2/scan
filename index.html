@@ -1,0 +1,1390 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Quét Serial KV2</title>
+<meta name="description" content="Quét mã vạch serial bằng camera điện thoại, tự ghi vào Google Sheet và xuất Excel.">
+<meta name="theme-color" content="#0e5fae">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Quét Serial">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eef2f7; --card:#fff; --ink:#0f172a; --ink2:#334155; --muted:#64748b; --line:#e2e8f0; --line2:#cbd5e1;
+  --brand:#0e5fae; --brand2:#0b4f93; --brandSoft:#e8f1fb;
+  --ok:#15803d; --okSoft:#e6f6ec; --warn:#b45309; --warnSoft:#fff4d6; --bad:#c02626; --badSoft:#fde8e8;
+  --r:14px; --shadow:0 1px 2px rgba(15,23,42,.06),0 6px 18px rgba(15,23,42,.06);
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:15px;line-height:1.4;-webkit-text-size-adjust:100%}
+body{padding-bottom:calc(84px + env(safe-area-inset-bottom));overscroll-behavior-y:contain}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+[hidden]{display:none!important}
+
+/* App bar */
+.appbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top)) 12px 10px;background:var(--brand);color:#fff;box-shadow:0 2px 10px rgba(14,95,174,.35)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
+.brand .logo{width:34px;height:34px;border-radius:10px;background:#fff;color:var(--brand);display:grid;place-items:center;flex:none}
+.brand b{display:block;font-size:17px;font-weight:700;letter-spacing:.2px;line-height:1.1}
+.brand small{display:block;font-size:12px;opacity:.85}
+.pill{display:inline-flex;align-items:center;gap:6px;max-width:52vw;padding:6px 11px;border-radius:999px;border:0;background:rgba(255,255,255,.16);color:#fff;font-size:12.5px;font-weight:600;white-space:nowrap}
+.pill .dot{width:8px;height:8px;border-radius:50%;background:#cbd5e1;flex:none}
+.pill.ok .dot{background:#4ade80}.pill.wait .dot{background:#fbbf24}.pill.bad .dot{background:#f87171}.pill.busy .dot{background:#93c5fd;animation:pulse 1s infinite}
+.pill span{overflow:hidden;text-overflow:ellipsis}
+.icon-btn{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;border:0;background:rgba(255,255,255,.14);color:#fff;flex:none}
+@keyframes pulse{50%{opacity:.35}}
+
+main{max-width:560px;margin:0 auto;padding:12px 12px 0;display:grid;gap:12px}
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow)}
+
+/* Đợt quét – thông tin gắn kèm */
+.session{overflow:hidden}
+.field{display:flex;align-items:center;gap:12px;width:100%;padding:11px 14px;background:none;border:0;border-top:1px solid var(--line);text-align:left}
+.field:first-child{border-top:0}
+.field:active{background:#f8fafc}
+.field .ic{width:34px;height:34px;border-radius:10px;background:var(--brandSoft);color:var(--brand);display:grid;place-items:center;flex:none}
+.field .txt{flex:1;min-width:0}
+.field .lbl{display:block;font-size:12px;color:var(--muted);font-weight:500}
+.field .val{display:block;font-weight:600;font-size:15.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.field .val.missing{color:var(--bad);font-weight:500}
+.field .val.opt{color:var(--muted);font-weight:500}
+.field .chev{color:#94a3b8}
+
+/* Camera */
+.scanner{overflow:hidden}
+.viewport{position:relative;aspect-ratio:4/3;max-height:48vh;width:100%;background:#0b1220;overflow:hidden;touch-action:manipulation}
+.viewport video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#0b1220}
+.guide{position:absolute;left:7%;right:7%;top:29%;height:42%;border-radius:12px;box-shadow:0 0 0 100vmax rgba(2,6,23,.42);outline:2px solid rgba(255,255,255,.92);transition:outline-color .15s,box-shadow .15s}
+.guide .laser{position:absolute;left:5%;right:5%;top:50%;height:2px;background:#ff4040;box-shadow:0 0 10px 1px #ff4040;animation:laser 1.8s ease-in-out infinite}
+@keyframes laser{0%,100%{transform:translateY(-30px);opacity:.55}50%{transform:translateY(30px);opacity:1}}
+.guide.f-ok{outline:4px solid #22c55e}.guide.f-dup{outline:4px solid #ef4444}.guide.f-warn{outline:4px solid #f59e0b}
+.hint{position:absolute;left:0;right:0;top:10px;text-align:center;color:#fff;font-size:13px;font-weight:500;text-shadow:0 1px 3px rgba(0,0,0,.6);padding:0 12px}
+.cam-ctrl{position:absolute;left:0;right:0;bottom:10px;display:flex;justify-content:center;gap:10px;padding:0 10px;z-index:2}
+.cbtn{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 13px;border-radius:999px;border:0;background:rgba(15,23,42,.62);color:#fff;font-size:13px;font-weight:600;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.cbtn.on{background:#facc15;color:#1f2937}
+.cbtn.stop{background:rgba(220,38,38,.85)}
+.idle{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:18px;text-align:center;color:#cbd5e1;background:radial-gradient(120% 90% at 50% 0%,#17325a 0%,#0b1220 70%)}
+.idle p{margin:0;font-size:13px;max-width:320px}
+.idle .err{color:#fecaca;background:rgba(220,38,38,.18);border:1px solid rgba(248,113,113,.5);padding:8px 10px;border-radius:10px}
+.resume{position:absolute;inset:0;display:grid;place-items:center;background:rgba(2,6,23,.35);z-index:1}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 16px;border-radius:12px;border:1px solid var(--line2);background:#fff;font-weight:600;white-space:nowrap}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.big{height:54px;padding:0 24px;font-size:16.5px;border-radius:14px;box-shadow:0 6px 18px rgba(14,95,174,.45)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--brand)}
+.btn.danger{background:var(--bad);border-color:var(--bad);color:#fff}
+.btn.sm{height:36px;padding:0 12px;font-size:13.5px;border-radius:10px}
+.btn[disabled]{opacity:.5;pointer-events:none}
+
+/* Kết quả quét gần nhất */
+.last{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line);min-height:68px}
+.last .badge{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;flex:none;background:#f1f5f9;color:var(--muted)}
+.last .t{min-width:0;flex:1}
+.last .sn{font-family:var(--mono);font-weight:600;font-size:20px;letter-spacing:.5px;word-break:break-all;line-height:1.2}
+.last .msg{font-size:13px;color:var(--muted)}
+.last.ok .badge{background:var(--okSoft);color:var(--ok)}.last.ok .msg{color:var(--ok)}
+.last.dup .badge{background:var(--badSoft);color:var(--bad)}.last.dup .msg{color:var(--bad);font-weight:600}
+.last.warn .badge{background:var(--warnSoft);color:var(--warn)}.last.warn .msg{color:var(--warn);font-weight:600}
+.last.skip .msg{color:var(--muted)}
+.manual{display:flex;gap:8px;padding:10px 12px}
+.manual input{flex:1;min-width:0;height:44px;padding:0 12px;border:1px solid var(--line2);border-radius:12px;background:#f8fafc;font-family:var(--mono);font-weight:500;text-transform:uppercase}
+.manual input::placeholder{font-family:'Be Vietnam Pro',system-ui,sans-serif;text-transform:none;font-weight:400;color:#94a3b8}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
+
+/* Danh sách */
+.list-head{display:flex;align-items:center;gap:8px;padding:12px 14px 6px}
+.list-head h2{margin:0;font-size:16px;flex:1}
+.list-head h2 .n{display:inline-grid;place-items:center;min-width:28px;height:24px;padding:0 8px;margin-left:6px;border-radius:999px;background:var(--brand);color:#fff;font-size:13px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;padding:4px 14px 8px}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;background:#f1f5f9;color:var(--ink2);font-size:12.5px;font-weight:500}
+.chip b{color:var(--ink)}
+.chip.warn{background:var(--warnSoft);color:var(--warn)}
+.chip.wait{background:#fef3c7;color:#92400e}
+.search{display:flex;align-items:center;gap:8px;margin:0 12px 6px;padding:0 12px;border:1px solid var(--line);border-radius:12px;background:#f8fafc;color:var(--muted)}
+.search input{flex:1;height:40px;border:0;background:transparent;outline:0;min-width:0}
+ol.recs{list-style:none;margin:0;padding:0 0 4px}
+.rec{display:flex;align-items:center;gap:10px;padding:10px 14px;border-top:1px solid var(--line)}
+.rec .no{width:30px;text-align:right;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;flex:none}
+.rec .m{flex:1;min-width:0}
+.rec .sn{font-family:var(--mono);font-weight:600;font-size:15.5px;letter-spacing:.3px;word-break:break-all}
+.rec .meta{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rec .note{font-size:12px;color:var(--warn);font-weight:500;margin-top:2px}
+.rec .note.err{color:var(--bad)}
+.rec .st{width:26px;height:26px;display:grid;place-items:center;border-radius:50%;flex:none}
+.rec .st svg{width:17px;height:17px}
+.st.ok{color:var(--ok);background:var(--okSoft)}.st.wait{color:#b45309;background:#fef3c7}.st.busy{color:var(--brand);background:var(--brandSoft)}.st.bad{color:var(--bad);background:var(--badSoft)}.st.local{color:var(--muted);background:#f1f5f9}
+.rec .del{width:34px;height:34px;display:grid;place-items:center;border:0;background:none;color:#94a3b8;border-radius:10px;flex:none}
+.rec .del:active{background:var(--badSoft);color:var(--bad)}
+.rec.fresh{animation:fresh 1.2s ease-out}
+@keyframes fresh{0%{background:#dcfce7}100%{background:transparent}}
+.empty{padding:22px 16px 26px;text-align:center;color:var(--muted);font-size:14px}
+.more{padding:10px;text-align:center;color:var(--muted);font-size:13px;border-top:1px solid var(--line)}
+
+/* Thanh dưới */
+.bottombar{position:fixed;left:0;right:0;bottom:0;z-index:25;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:10px 12px calc(10px + env(safe-area-inset-bottom))}
+.bottombar .in{max-width:560px;margin:0 auto;display:flex;gap:8px}
+.bottombar .btn{flex:1;padding:0 10px}
+.bottombar .btn.primary{flex:1.4}
+
+/* Modal dạng bottom-sheet */
+.modal{position:fixed;inset:0;z-index:50;display:flex;align-items:flex-end;justify-content:center;background:rgba(2,6,23,.5);animation:fade .15s}
+.sheet{width:100%;max-width:560px;max-height:90vh;max-height:90dvh;display:flex;flex-direction:column;background:#fff;border-radius:18px 18px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.2);animation:up .2s ease-out;padding-bottom:env(safe-area-inset-bottom)}
+@media (min-width:640px){.modal{align-items:center}.sheet{border-radius:18px;max-height:84vh}}
+@keyframes up{from{transform:translateY(30px);opacity:.4}}
+@keyframes fade{from{opacity:0}}
+.sh-head{display:flex;align-items:center;gap:8px;padding:14px 14px 10px;border-bottom:1px solid var(--line)}
+.sh-head h3{margin:0;font-size:17px;flex:1}
+.sh-head .x{width:38px;height:38px;border-radius:10px;border:0;background:#f1f5f9;display:grid;place-items:center}
+.sh-body{overflow:auto;padding:12px 14px;-webkit-overflow-scrolling:touch}
+.sh-foot{display:flex;gap:8px;padding:10px 14px 14px;border-top:1px solid var(--line)}
+.sh-foot .btn{flex:1}
+.pick-hint{margin:0 0 10px;font-size:13.5px;color:var(--ink2);background:var(--brandSoft);padding:9px 12px;border-radius:10px}
+.opt-list{list-style:none;margin:8px 0 0;padding:0}
+.opt-list li button{display:flex;align-items:center;gap:10px;width:100%;padding:12px 10px;border:0;border-bottom:1px solid var(--line);background:none;text-align:left;font-size:15.5px}
+.opt-list li button:active{background:#f1f5f9}
+.opt-list li button.sel{color:var(--brand);font-weight:700}
+.opt-list .tag{margin-left:auto;font-size:11.5px;color:var(--muted);font-weight:500}
+.opt-list .add{color:var(--brand);font-weight:600}
+.inp{width:100%;height:46px;padding:0 12px;border:1px solid var(--line2);border-radius:12px;background:#f8fafc}
+.sec{margin:4px 0 16px}
+.sec h4{margin:0 0 8px;font-size:13px;letter-spacing:.4px;text-transform:uppercase;color:var(--muted)}
+.row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row .grow{flex:1;min-width:0}
+.row .sub{display:block;font-size:12.5px;color:var(--muted)}
+.row input[type=text],.row input[type=number],.row select{height:40px;padding:0 10px;border:1px solid var(--line2);border-radius:10px;background:#f8fafc;width:120px}
+.switch{position:relative;width:48px;height:28px;flex:none}
+.switch input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.switch span{position:absolute;inset:0;border-radius:999px;background:#cbd5e1;transition:.15s;pointer-events:none}
+.switch span::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:.15s}
+.switch input:checked+span{background:var(--brand)}
+.switch input:checked+span::after{transform:translateX(20px)}
+.switch input:focus-visible+span{outline:2px solid var(--brand);outline-offset:2px}
+.status-box{margin-top:8px;padding:10px 12px;border-radius:10px;font-size:13.5px;background:#f1f5f9;color:var(--ink2);word-break:break-word}
+.status-box.ok{background:var(--okSoft);color:var(--ok)}.status-box.bad{background:var(--badSoft);color:var(--bad)}
+.btn-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.muted{color:var(--muted);font-size:13px}
+.hist{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px}
+.hist .h1{font-weight:600}
+.hist .h2{font-size:13px;color:var(--muted);margin-top:2px}
+.hist .btn-row{margin-top:8px}
+a{color:var(--brand)}
+
+/* Toast */
+.toast{position:fixed;left:12px;right:12px;margin:0 auto;width:fit-content;bottom:calc(86px + env(safe-area-inset-bottom));z-index:60;max-width:520px;text-align:center;padding:11px 16px;border-radius:12px;background:#0f172a;color:#fff;font-size:14px;font-weight:500;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:up .18s ease-out}
+.toast.ok{background:#14532d}.toast.warn{background:#92400e}.toast.bad{background:#991b1b}
+.spin{width:16px;height:16px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;animation:rot .7s linear infinite;flex:none}
+@keyframes rot{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></symbol>
+  <symbol id="i-store" viewBox="0 0 24 24"><path d="M3 9l1.6-5h14.8L21 9"/><path d="M4 9v11h16V9"/><path d="M3 9h18"/><path d="M9.5 20v-6h5v6"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+  <symbol id="i-scan" viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 8v8M11 8v8M14 8v8M17 8v8"/></symbol>
+  <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></symbol>
+  <symbol id="i-flash" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></symbol>
+  <symbol id="i-zoom" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5M11 8v6M8 11h6"/></symbol>
+  <symbol id="i-cam" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v12H4z"/><path d="M9 13.5a3 3 0 0 1 5.2-2l.8.8M15 13.5a3 3 0 0 1-5.2 2l-.8-.8"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V6M6 11l6-6 6 6"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4.5M12 17.5v.01"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
+  <symbol id="i-xls" viewBox="0 0 24 24"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5"/><path d="M9 12l6 6M15 12l-6 6"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></symbol>
+  <symbol id="i-hist" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8.2"/><path d="M3 3.5v4.7h4.7"/><path d="M12 7.5V12l3 2"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20.5 20.5l-4.2-4.2"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 12a8 8 0 0 1-14.2 5L4 15M4 12a8 8 0 0 1 14.2-5L20 9"/><path d="M20 4v5h-5M4 20v-5h5"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18h2"/></symbol>
+  <symbol id="i-new" viewBox="0 0 24 24"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5M12 11v6M9 14h6"/></symbol>
+</svg>
+
+<header class="appbar">
+  <div class="brand">
+    <div class="logo"><svg class="i"><use href="#i-scan"/></svg></div>
+    <div><b>Quét Serial</b><small>Karofi · KV2</small></div>
+  </div>
+  <button class="pill" id="pill" type="button"><i class="dot"></i><span id="pillTxt">…</span></button>
+  <button class="icon-btn" id="btnSettings" type="button" aria-label="Cài đặt"><svg class="i"><use href="#i-gear"/></svg></button>
+</header>
+
+<main>
+  <section class="card session" aria-label="Thông tin đợt quét">
+    <button class="field" type="button" data-field="user">
+      <span class="ic"><svg class="i"><use href="#i-user"/></svg></span>
+      <span class="txt"><span class="lbl">Người quét</span><span class="val" id="v-user"></span></span>
+      <svg class="i chev"><use href="#i-chev"/></svg>
+    </button>
+    <button class="field" type="button" data-field="location">
+      <span class="ic"><svg class="i"><use href="#i-store"/></svg></span>
+      <span class="txt"><span class="lbl">Kho / NPP / Đại lý</span><span class="val" id="v-location"></span></span>
+      <svg class="i chev"><use href="#i-chev"/></svg>
+    </button>
+    <button class="field" type="button" data-field="model">
+      <span class="ic"><svg class="i"><use href="#i-box"/></svg></span>
+      <span class="txt"><span class="lbl">Model (áp cho serial quét tiếp theo)</span><span class="val" id="v-model"></span></span>
+      <svg class="i chev"><use href="#i-chev"/></svg>
+    </button>
+  </section>
+
+  <section class="card scanner" aria-label="Quét mã vạch">
+    <div class="viewport" id="viewport">
+      <video id="video" playsinline muted autoplay></video>
+      <div class="guide" id="guide" hidden><i class="laser"></i></div>
+      <div class="hint" id="hint" hidden>Đưa mã vạch vào khung</div>
+      <div class="cam-ctrl" id="camCtrl" hidden>
+        <button class="cbtn" id="btnTorch" type="button" hidden><svg class="i"><use href="#i-flash"/></svg>Đèn</button>
+        <button class="cbtn" id="btnZoom" type="button" hidden><svg class="i"><use href="#i-zoom"/></svg><span>1×</span></button>
+        <button class="cbtn" id="btnSwitch" type="button" hidden><svg class="i"><use href="#i-cam"/></svg>Đổi</button>
+        <button class="cbtn stop" id="btnStop" type="button"><svg class="i"><use href="#i-stop"/></svg>Dừng</button>
+      </div>
+      <div class="resume" id="resume" hidden><button class="btn primary big" id="btnResume" type="button"><svg class="i"><use href="#i-scan"/></svg>Quét tiếp</button></div>
+      <div class="idle" id="idle">
+        <button class="btn primary big" id="btnStart" type="button"><svg class="i"><use href="#i-scan"/></svg>Bắt đầu quét</button>
+        <p id="idleMsg">Hướng camera vào mã vạch serial trên thùng. Serial tự nhảy vào danh sách và Google Sheet.</p>
+      </div>
+    </div>
+    <div class="last" id="last">
+      <span class="badge"><svg class="i"><use href="#i-scan"/></svg></span>
+      <div class="t"><div class="msg">Chưa quét serial nào trong đợt này</div></div>
+    </div>
+    <form class="manual" id="manualForm" autocomplete="off">
+      <input id="manualInput" type="text" inputmode="text" autocapitalize="characters" autocorrect="off" spellcheck="false" placeholder="Nhập serial tay / dùng súng quét" aria-label="Nhập serial">
+      <button class="btn" type="submit"><svg class="i"><use href="#i-plus"/></svg>Thêm</button>
+    </form>
+  </section>
+
+  <section class="card" aria-label="Danh sách serial">
+    <div class="list-head">
+      <h2>Đợt này<span class="n" id="count">0</span></h2>
+      <button class="btn sm ghost" id="btnHistory" type="button"><svg class="i"><use href="#i-hist"/></svg>Lịch sử</button>
+      <button class="btn sm" id="btnNewBatch" type="button"><svg class="i"><use href="#i-new"/></svg>Đợt mới</button>
+    </div>
+    <div class="chips" id="chips"></div>
+    <label class="search" id="searchBox" hidden><svg class="i"><use href="#i-search"/></svg><input id="search" type="search" placeholder="Tìm serial trong đợt…" autocomplete="off"></label>
+    <ol class="recs" id="list"></ol>
+    <div class="empty" id="empty">Danh sách trống. Bấm <b>Bắt đầu quét</b> hoặc nhập serial tay.</div>
+  </section>
+</main>
+
+<nav class="bottombar">
+  <div class="in">
+    <button class="btn primary" id="btnExcel" type="button"><svg class="i"><use href="#i-xls"/></svg>Tải Excel</button>
+    <button class="btn" id="btnShare" type="button" hidden><svg class="i"><use href="#i-share"/></svg>Gửi file</button>
+    <button class="btn" id="btnCopy" type="button"><svg class="i"><use href="#i-copy"/></svg>Sao chép</button>
+  </div>
+</nav>
+
+<script>
+/* =====================================================================
+   QUÉT SERIAL KV2
+   ---------------------------------------------------------------------
+   ⚙️  DÁN URL Apps Script (Ứng dụng web, đuôi /exec) vào SCRIPT_URL để
+       cả team dùng chung – không phải cài đặt trên từng điện thoại.
+       Để trống thì mỗi máy tự dán URL trong Cài đặt (hoặc mở link cài đặt
+       dạng  .../scan/#api=<URL>  mà app tạo ra).
+   ===================================================================== */
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwaumb04tZoVcZE6V--lb37675aqM1EGSszBm2f_tH_Ulq_bErLdtuDfzr77S0x3MimPA/exec';
+const APP_VERSION = '1.0.0';
+(() => {
+'use strict';
+
+/* ------------------------------------------------------------------
+   Tiện ích chung
+------------------------------------------------------------------ */
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const pad = (n) => String(n).padStart(2, '0');
+const fmtTime = (ms) => { const d = new Date(ms); return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; };
+const fmtDT = (ms) => { const d = new Date(ms); return `${pad(d.getDate())}/${pad(d.getMonth() + 1)} ${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+const fold = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase();
+const icon = (id, cls = '') => `<svg class="i ${cls}"><use href="#i-${id}"/></svg>`;
+const uid = () => (crypto.randomUUID ? crypto.randomUUID().replace(/-/g, '').slice(0, 20) : Date.now().toString(36) + Math.random().toString(36).slice(2, 10));
+
+const KEY = { settings: 'qs.settings', session: 'qs.session', batches: 'qs.batches', dels: 'qs.dels', config: 'qs.config', recent: 'qs.recent', device: 'qs.device' };
+const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } };
+let storageWarned = false;
+const store = (k, v) => {
+  try { localStorage.setItem(k, JSON.stringify(v)); }
+  catch (e) { if (!storageWarned) { storageWarned = true; toast('Bộ nhớ trình duyệt đầy – hãy xuất Excel và xoá bớt đợt cũ trong Lịch sử', 'bad', 5000); } }
+};
+
+/* ------------------------------------------------------------------
+   Trạng thái
+------------------------------------------------------------------ */
+const DEF = { api: '', sound: true, vibrate: true, continuous: true, retail: false, prefix: '', minLen: 6, engine: 'auto', cameraId: '' };
+const newBatch = () => ({ id: uid(), at: Date.now(), records: [] });
+const S = {
+  settings: Object.assign({}, DEF, load(KEY.settings, {})),
+  session: Object.assign({ user: '', location: '', model: '' }, load(KEY.session, {})),
+  batches: load(KEY.batches, null),
+  dels: load(KEY.dels, []),
+  config: Object.assign({ models: [], locations: [], users: [], sheetUrl: '', sheetName: '', at: 0 }, load(KEY.config, {})),
+  recent: Object.assign({ models: [], locations: [], users: [] }, load(KEY.recent, {})),
+  device: load(KEY.device, ''),
+};
+if (!Array.isArray(S.batches) || !S.batches.length) S.batches = [newBatch()];
+if (!S.device) {
+  const ua = navigator.userAgent;
+  const kind = /iPhone|iPad|iPod/i.test(ua) ? 'iPhone' : /Android/i.test(ua) ? 'Android' : 'PC';
+  S.device = `${kind}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+  store(KEY.device, S.device);
+}
+// Bản ghi đang gửi dở khi tắt app → đưa về chờ gửi
+S.batches.forEach((b) => b.records.forEach((r) => { if (r.st === 'sending') r.st = 'pending'; }));
+
+const saveSettings = () => store(KEY.settings, S.settings);
+const saveSession = () => store(KEY.session, S.session);
+const saveBatches = () => store(KEY.batches, S.batches);
+const saveDels = () => store(KEY.dels, S.dels);
+const cur = () => S.batches[S.batches.length - 1];
+const allRecs = () => S.batches.flatMap((b) => b.records);
+const apiUrl = () => (S.settings.api || SCRIPT_URL || '').trim();
+
+// Link cài đặt cho team: .../#api=<URL>
+(function readHash() {
+  const m = location.hash.match(/(?:^#|&)api=([^&]+)/);
+  if (!m) return;
+  try {
+    const u = decodeURIComponent(m[1]);
+    if (/^https:\/\//.test(u) || /^http:\/\/(localhost|127\.0\.0\.1)[:/]/.test(u)) { S.settings.api = u; saveSettings(); setTimeout(() => toast('Đã kết nối Google Sheet từ link cài đặt', 'ok'), 400); }
+  } catch (e) { /* bỏ qua */ }
+  history.replaceState(null, '', location.pathname + location.search);
+})();
+
+/* ------------------------------------------------------------------
+   Phản hồi: âm thanh, rung, toast
+------------------------------------------------------------------ */
+let actx = null;
+function unlockAudio() {
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === 'suspended') actx.resume();
+  } catch (e) { actx = null; }
+}
+function tone(f, t, d, v = 0.16, type = 'square') {
+  const o = actx.createOscillator(), g = actx.createGain();
+  o.type = type; o.frequency.value = f;
+  g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+  o.connect(g).connect(actx.destination); o.start(t); o.stop(t + d + 0.03);
+}
+function beep(kind) {
+  if (!S.settings.sound || !actx) return;
+  try {
+    const t = actx.currentTime + 0.01;
+    if (kind === 'ok') tone(1760, t, 0.09);
+    else if (kind === 'warn') { tone(988, t, 0.1, 0.14); tone(988, t + 0.17, 0.1, 0.14); }
+    else { tone(330, t, 0.16, 0.2, 'sawtooth'); tone(247, t + 0.2, 0.24, 0.2, 'sawtooth'); }
+  } catch (e) { /* bỏ qua */ }
+}
+function buzz(kind) {
+  if (!S.settings.vibrate || !navigator.vibrate) return;
+  try { navigator.vibrate(kind === 'ok' ? 70 : kind === 'warn' ? [70, 60, 70] : [150, 80, 150]); } catch (e) { /* bỏ qua */ }
+}
+function feedback(kind) {
+  beep(kind); buzz(kind);
+  const g = $('#guide');
+  g.classList.remove('f-ok', 'f-dup', 'f-warn');
+  void g.offsetWidth;
+  g.classList.add(kind === 'ok' ? 'f-ok' : kind === 'warn' ? 'f-warn' : 'f-dup');
+  clearTimeout(feedback.t); feedback.t = setTimeout(() => g.classList.remove('f-ok', 'f-dup', 'f-warn'), 650);
+}
+let toastEl = null, toastT = 0;
+function toast(msg, kind = '', ms = 2600) {
+  if (toastEl) toastEl.remove();
+  toastEl = document.createElement('div');
+  toastEl.className = 'toast ' + kind; toastEl.setAttribute('role', 'status');
+  toastEl.textContent = msg; document.body.appendChild(toastEl);
+  clearTimeout(toastT); toastT = setTimeout(() => { if (toastEl) { toastEl.remove(); toastEl = null; } }, ms);
+}
+
+/* ------------------------------------------------------------------
+   Modal (bottom sheet)
+------------------------------------------------------------------ */
+let modalStack = [];
+const modalOpen = () => modalStack.length > 0;
+function openModal({ title, body, foot, onClose }) {
+  const root = document.createElement('div');
+  root.className = 'modal';
+  root.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(title)}">
+    <div class="sh-head"><h3>${esc(title)}</h3><button class="x" type="button" aria-label="Đóng">${icon('x')}</button></div>
+    <div class="sh-body"></div>${foot ? '<div class="sh-foot"></div>' : ''}</div>`;
+  const m = { root, body: $('.sh-body', root), foot: $('.sh-foot', root), onClose };
+  if (typeof body === 'string') m.body.innerHTML = body; else if (body) m.body.appendChild(body);
+  if (foot) { if (typeof foot === 'string') m.foot.innerHTML = foot; else m.foot.appendChild(foot); }
+  m.close = () => closeModal(m);
+  $('.x', root).onclick = m.close;
+  root.addEventListener('mousedown', (e) => { if (e.target === root) m.close(); });
+  document.body.appendChild(root);
+  modalStack.push(m);
+  return m;
+}
+function closeModal(m) {
+  const i = modalStack.indexOf(m);
+  if (i < 0) return;
+  modalStack.splice(i, 1);
+  m.root.remove();
+  if (m.onClose) m.onClose();
+}
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modalOpen()) closeModal(modalStack[modalStack.length - 1]); });
+
+function confirmBox(title, html, okText = 'Đồng ý', danger = false) {
+  return new Promise((resolve) => {
+    let done = false;
+    const foot = document.createElement('div');
+    foot.style.display = 'contents';
+    foot.innerHTML = `<button class="btn" type="button" data-a="no">Huỷ</button><button class="btn ${danger ? 'danger' : 'primary'}" type="button" data-a="yes">${esc(okText)}</button>`;
+    const m = openModal({ title, body: `<div style="font-size:15px">${html}</div>`, foot, onClose: () => { if (!done) resolve(false); } });
+    foot.querySelector('[data-a=no]').onclick = () => m.close();
+    foot.querySelector('[data-a=yes]').onclick = () => { done = true; m.close(); resolve(true); };
+  });
+}
+
+/* ------------------------------------------------------------------
+   Người quét / Kho-NPP-Đại lý / Model
+------------------------------------------------------------------ */
+const FIELDS = {
+  user: { title: 'Người quét', list: 'users', ph: 'Gõ tên người quét…', optional: false, empty: 'Chưa chọn – bấm để chọn' },
+  location: { title: 'Kho / NPP / Đại lý', list: 'locations', ph: 'Tìm hoặc gõ tên kho / NPP / đại lý…', optional: false, empty: 'Chưa chọn – bấm để chọn' },
+  model: { title: 'Model sản phẩm', list: 'models', ph: 'Tìm hoặc gõ model…', optional: true, empty: 'Không ghi model' },
+};
+function renderSession() {
+  for (const k of Object.keys(FIELDS)) {
+    const v = S.session[k], el = $('#v-' + k);
+    el.textContent = v || FIELDS[k].empty;
+    el.className = 'val' + (v ? '' : FIELDS[k].optional ? ' opt' : ' missing');
+  }
+}
+function pushRecent(listName, v) {
+  if (!v) return;
+  const a = S.recent[listName].filter((x) => x.toUpperCase() !== v.toUpperCase());
+  a.unshift(v); S.recent[listName] = a.slice(0, 8); store(KEY.recent, S.recent);
+}
+function openPicker(field, then, hintText) {
+  const f = FIELDS[field];
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `${hintText ? `<p class="pick-hint">${esc(hintText)}</p>` : ''}<input class="inp" type="search" placeholder="${esc(f.ph)}" autocomplete="off" autocapitalize="${field === 'model' ? 'characters' : 'words'}">
+    <ul class="opt-list"></ul><p class="muted" data-hint></p>`;
+  const inp = $('input', wrap), ul = $('ul', wrap), hint = $('[data-hint]', wrap);
+  const m = openModal({ title: f.title, body: wrap });
+  const choose = (v) => {
+    S.session[field] = v; saveSession(); pushRecent(f.list, v); renderSession(); m.close();
+    if (then) then();
+  };
+  const draw = () => {
+    const q = inp.value.trim(), fq = fold(q);
+    const recent = S.recent[f.list] || [], base = S.config[f.list] || [];
+    const seen = new Set(), items = [];
+    const add = (v, tag) => { const k = v.toUpperCase(); if (seen.has(k)) return; seen.add(k); items.push({ v, tag }); };
+    recent.forEach((v) => add(v, 'gần đây'));
+    base.forEach((v) => add(v, ''));
+    const hits = fq ? items.filter((x) => fold(x.v).includes(fq)) : items;
+    const exact = q && items.some((x) => x.v.toUpperCase() === q.toUpperCase());
+    let html = '';
+    if (f.optional && !q) html += `<li><button type="button" data-v="" class="${S.session[field] ? '' : 'sel'}">${icon('x')}Không ghi model</button></li>`;
+    hits.slice(0, 80).forEach((x) => {
+      html += `<li><button type="button" data-v="${esc(x.v)}" class="${x.v === S.session[field] ? 'sel' : ''}">${esc(x.v)}${x.tag ? `<span class="tag">${x.tag}</span>` : ''}</button></li>`;
+    });
+    if (q && !exact) html += `<li><button type="button" class="add" data-v="${esc(q)}">${icon('plus')}Dùng tên mới “${esc(q)}”</button></li>`;
+    ul.innerHTML = html;
+    hint.textContent = hits.length > 80 ? `Còn ${hits.length - 80} mục nữa – gõ thêm để lọc.`
+      : !items.length ? (apiUrl() ? 'Danh sách trống. Gõ tên rồi bấm “Dùng tên mới…”, hoặc điền tab “Danh mục” trong Google Sheet.' : 'Gõ tên rồi bấm “Dùng tên mới…”.') : '';
+  };
+  ul.addEventListener('click', (e) => { const b = e.target.closest('button[data-v]'); if (b) choose(b.dataset.v); });
+  inp.addEventListener('input', draw);
+  inp.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    const q = inp.value.trim(); if (!q) return;
+    const opts = [...ul.querySelectorAll('button[data-v]:not(.add)')].filter((b) => b.dataset.v);
+    const exact = opts.find((b) => b.dataset.v.toUpperCase() === q.toUpperCase());
+    choose(exact ? exact.dataset.v : opts.length === 1 ? opts[0].dataset.v : q);
+  });
+  draw();
+  const total = (S.config[f.list] || []).length + (S.recent[f.list] || []).length;
+  if (!matchMedia('(pointer:coarse)').matches || total === 0 || total > 12) setTimeout(() => inp.focus(), 60);
+  if (apiUrl() && Date.now() - (S.config.at || 0) > 30 * 60 * 1000) loadConfig(true).then(() => { if (modalStack.includes(m)) draw(); });
+}
+/** Bắt buộc có Người quét + Kho/NPP/Đại lý trước khi quét */
+function ensureSession(then) {
+  const next = () => { if (ensureSession(then) && then) then(); };
+  if (!S.session.user) { openPicker('user', next, 'Chọn tên người quét (chỉ hỏi lần đầu).'); return false; }
+  if (!S.session.location) { openPicker('location', next, 'Đang quét ở kho / NPP / đại lý nào?'); return false; }
+  // Đầu mỗi đợt: hỏi model 1 lần (có lựa chọn "Không ghi model")
+  const b = cur();
+  if (then === startScan && !S.session.model && !b.modelAsked && !b.records.length) {
+    b.modelAsked = true; saveBatches();
+    openPicker('model', next, 'Chọn model cho lô đang quét – đổi được bất cứ lúc nào. Không cần thì chọn “Không ghi model”.'); return false;
+  }
+  return true;
+}
+
+/* ------------------------------------------------------------------
+   Thêm serial vào đợt
+------------------------------------------------------------------ */
+let lastEvt = null;
+function showLast(kind, serial, msg) {
+  lastEvt = { kind, serial, msg };
+  const box = $('#last');
+  box.className = 'last ' + kind;
+  const ic = kind === 'ok' ? 'check' : kind === 'skip' ? 'scan' : 'alert';
+  box.innerHTML = `<span class="badge">${icon(ic)}</span><div class="t">${serial ? `<div class="sn">${esc(serial)}</div>` : ''}<div class="msg">${esc(msg)}</div></div>`;
+}
+function cleanCode(s) { return String(s || '').replace(/[\u0000-\u001F\u007F]/g, '').trim(); }
+
+/** src: 'cam' | 'hid' | 'manual' */
+function addSerial(raw, fmt, src) {
+  let serial = cleanCode(raw);
+  if (src === 'manual') serial = serial.replace(/\s+/g, '').toUpperCase();
+  if (!serial) return false;
+  if (src !== 'manual') {
+    if (serial.length < (+S.settings.minLen || 0)) { showLast('skip', serial, `Bỏ qua: mã quá ngắn (< ${S.settings.minLen} ký tự)`); return false; }
+    const pf = (S.settings.prefix || '').trim().toUpperCase();
+    if (pf && !serial.toUpperCase().startsWith(pf)) { showLast('skip', serial, `Bỏ qua: không bắt đầu bằng “${pf}”`); return false; }
+  }
+  if (!S.session.user || !S.session.location) { ensureSession(); return false; }
+  const b = cur(), key = serial.toUpperCase();
+  const idx = b.records.findIndex((r) => r.serial.toUpperCase() === key);
+  if (idx >= 0) {
+    const r = b.records[idx];
+    feedback('dup');
+    showLast('dup', serial, `TRÙNG – đã quét lúc ${fmtTime(r.at)} (dòng #${idx + 1})`);
+    flashRow(r.id);
+    return false;
+  }
+  const rec = { id: uid(), serial, model: S.session.model, location: S.session.location, user: S.session.user, at: Date.now(), fmt: fmt || '', src, st: 'pending', tries: 0, note: '' };
+  b.records.push(rec);
+  saveBatches();
+  feedback('ok');
+  showLast('ok', serial, `Đã thêm #${b.records.length}${rec.model ? ' · ' + rec.model : ''}`);
+  renderList(rec.id);
+  renderStatus();
+  sync();
+  return true;
+}
+async function deleteRecord(id) {
+  const b = cur(), i = b.records.findIndex((r) => r.id === id);
+  if (i < 0) return;
+  const r = b.records[i];
+  const ok = await confirmBox('Xoá serial?', `<div style="font-family:var(--mono);font-weight:600;font-size:18px;margin-bottom:6px">${esc(r.serial)}</div>` +
+    (r.st === 'ok' ? 'Dòng này cũng sẽ được xoá khỏi Google Sheet (chuyển sang tab “Đã xoá”).' : 'Serial chưa lên Google Sheet, chỉ xoá trên máy.'), 'Xoá', true);
+  if (!ok) return;
+  const j = b.records.findIndex((x) => x.id === id);
+  if (j < 0) return;
+  b.records.splice(j, 1);
+  if (r.st === 'ok' || r.tries > 0) { S.dels.push(r.id); saveDels(); }
+  saveBatches(); renderList(); renderStatus(); sync();
+  toast('Đã xoá ' + r.serial);
+}
+
+/* ------------------------------------------------------------------
+   Danh sách
+------------------------------------------------------------------ */
+const ST = {
+  ok: ['ok', 'check', 'Đã lên Google Sheet'],
+  pending: ['wait', 'clock', 'Chờ gửi lên Sheet'],
+  sending: ['busy', 'up', 'Đang gửi…'],
+  err: ['bad', 'alert', 'Gửi lỗi – sẽ thử lại'],
+  bad: ['bad', 'alert', 'Sheet từ chối'],
+  local: ['local', 'phone', 'Chỉ lưu trên máy'],
+};
+function stOf(r) { return !apiUrl() && r.st !== 'ok' ? ST.local : (ST[r.st] || ST.pending); }
+function renderList(freshId) {
+  const b = cur(), recs = b.records;
+  $('#count').textContent = recs.length;
+  $('#empty').hidden = recs.length > 0;
+  $('#searchBox').hidden = recs.length < 8;
+  // chip tổng hợp theo model
+  const byModel = new Map();
+  recs.forEach((r) => byModel.set(r.model || '(không model)', (byModel.get(r.model || '(không model)') || 0) + 1));
+  const repeats = recs.filter((r) => r.note).length;
+  const waiting = apiUrl() ? recs.filter((r) => r.st !== 'ok').length : 0;
+  let chips = '';
+  if (recs.length) {
+    [...byModel.entries()].sort((a, b2) => b2[1] - a[1]).forEach(([m, n]) => { chips += `<span class="chip">${esc(m)} <b>${n}</b></span>`; });
+    if (repeats) chips += `<span class="chip warn">${icon('alert')}Đã có trên Sheet <b>${repeats}</b></span>`;
+    if (waiting) chips += `<span class="chip wait">${icon('clock')}Chờ gửi <b>${waiting}</b></span>`;
+  }
+  $('#chips').innerHTML = chips;
+  const q = $('#search').value.trim().toUpperCase();
+  const rows = [];
+  for (let i = recs.length - 1; i >= 0; i--) {
+    const r = recs[i];
+    if (q && !r.serial.toUpperCase().includes(q)) continue;
+    rows.push([i, r]);
+  }
+  const LIMIT = 300;
+  const html = rows.slice(0, LIMIT).map(([i, r]) => {
+    const [cls, ic, tip] = stOf(r);
+    const meta = [r.model, r.location, fmtTime(r.at)].filter(Boolean).map(esc).join(' · ');
+    const note = r.note ? `<div class="note">${icon('alert')} ${esc(r.note)}</div>` : r.st === 'bad' || (r.st === 'err' && r.err) ? `<div class="note err">${esc(r.err || '')}</div>` : '';
+    return `<li class="rec${r.id === freshId ? ' fresh' : ''}" data-id="${r.id}"><span class="no">${i + 1}</span>
+      <div class="m"><div class="sn">${esc(r.serial)}</div><div class="meta">${meta}</div>${note}</div>
+      <span class="st ${cls}" title="${tip}" aria-label="${tip}">${icon(ic)}</span>
+      <button class="del" type="button" aria-label="Xoá ${esc(r.serial)}">${icon('trash')}</button></li>`;
+  }).join('');
+  $('#list').innerHTML = html + (rows.length > LIMIT ? `<li class="more">… và ${rows.length - LIMIT} serial khác (dùng ô tìm kiếm)</li>` : '') +
+    (q && !rows.length ? '<li class="more">Không tìm thấy serial phù hợp</li>' : '');
+}
+function flashRow(id) {
+  const li = document.querySelector(`.rec[data-id="${id}"]`);
+  if (!li) return;
+  li.classList.remove('fresh'); void li.offsetWidth; li.classList.add('fresh');
+}
+$('#list').addEventListener('click', (e) => {
+  const d = e.target.closest('.del'); if (!d) return;
+  deleteRecord(d.closest('.rec').dataset.id);
+});
+$('#search').addEventListener('input', () => renderList());
+
+/* ------------------------------------------------------------------
+   Đồng bộ Google Sheet (Apps Script)
+------------------------------------------------------------------ */
+let syncBusy = false, syncAgain = false, syncTimer = 0, backoff = 0, lastErr = '';
+async function api(payload, timeoutMs = 30000) {
+  const url = apiUrl();
+  if (!url) throw new Error('Chưa cài URL Google Sheet');
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), timeoutMs);
+  let res;
+  try {
+    // text/plain → "simple request", không bị chặn CORS với Apps Script
+    res = await fetch(url, { method: 'POST', body: JSON.stringify(payload), signal: ctrl.signal, redirect: 'follow', cache: 'no-store' });
+  } catch (e) {
+    if (e.name === 'AbortError') throw new Error('Hết thời gian chờ Google Sheet phản hồi');
+    throw new Error('Không gửi được – kiểm tra mạng, URL, hoặc quyền “Bất kỳ ai” khi triển khai');
+  } finally { clearTimeout(t); }
+  if (!res.ok) throw new Error('Google Sheet báo lỗi HTTP ' + res.status);
+  const txt = await res.text();
+  let data;
+  try { data = JSON.parse(txt); } catch (e) { throw new Error(/<html/i.test(txt) ? 'Script trả về trang đăng nhập – triển khai lại với quyền “Bất kỳ ai”' : 'Phản hồi không hợp lệ từ Google Sheet'); }
+  if (!data.ok) throw new Error(data.error || 'Google Sheet báo lỗi');
+  return data;
+}
+function payloadOf(r) {
+  return { id: r.id, serial: r.serial, model: r.model, location: r.location, user: r.user, scannedAt: r.at, device: S.device };
+}
+function scheduleSync(ms) { clearTimeout(syncTimer); syncTimer = setTimeout(sync, ms); }
+async function sync() {
+  clearTimeout(syncTimer);
+  if (!apiUrl()) { renderStatus(); return; }
+  if (syncBusy) { syncAgain = true; return; }
+  if (navigator.onLine === false) { renderStatus(); return; }
+  syncBusy = true; syncAgain = false; renderStatus();
+  const repeats = [];
+  try {
+    if (S.dels.length) {
+      const ids = S.dels.slice(0, 100);
+      const res = await api({ action: 'delete', ids, by: S.session.user });
+      const done = new Set([].concat(res.deleted || [], res.notFound || []));
+      S.dels = S.dels.filter((id) => !done.has(id)); saveDels();
+    }
+    const batch = allRecs().filter((r) => r.st === 'pending' || r.st === 'err').slice(0, 25);
+    if (batch.length) {
+      batch.forEach((r) => { r.st = 'sending'; r.tries = (r.tries || 0) + 1; });
+      renderList();
+      let res;
+      try { res = await api({ action: 'add', items: batch.map(payloadOf) }); }
+      catch (e) { batch.forEach((r) => { if (r.st === 'sending') { r.st = 'err'; r.err = ''; } }); throw e; }
+      const byId = new Map(batch.map((r) => [r.id, r]));
+      (res.results || []).forEach((x) => {
+        const r = byId.get(x.id); if (!r) return;
+        if (x.status === 'ok') {
+          r.st = 'ok'; r.row = x.row; r.note = x.note || ''; r.err = '';
+          if (r.note && !r.warned) { r.warned = true; repeats.push(r); }
+        } else { r.st = 'bad'; r.err = x.error || 'Sheet từ chối bản ghi này'; }
+      });
+      batch.forEach((r) => { if (r.st === 'sending') r.st = 'pending'; });
+      // Bản ghi bị xoá trên máy trong lúc đang gửi → xoá luôn trên Sheet
+      const live = new Set(allRecs().map((r) => r.id));
+      batch.forEach((r) => { if (!live.has(r.id) && r.st === 'ok' && !S.dels.includes(r.id)) S.dels.push(r.id); });
+      saveDels();
+    }
+    backoff = 0; lastErr = '';
+    saveBatches();
+    if (repeats.length) {
+      const r = repeats[repeats.length - 1];
+      feedback('warn');
+      const inBanner = repeats.length === 1 && lastEvt && lastEvt.serial === r.serial;
+      if (lastEvt && lastEvt.serial === r.serial) showLast('warn', r.serial, 'Đã có trên Sheet: ' + r.note);
+      if (!inBanner) toast(repeats.length === 1 ? `${r.serial} đã từng quét: ${r.note}` : `${repeats.length} serial đã từng có trên Sheet (dòng có dấu ⚠)`, 'warn', 5000);
+    }
+    if (allRecs().some((r) => r.st === 'pending' || r.st === 'err') || S.dels.length) syncAgain = true;
+  } catch (e) {
+    lastErr = e.message || String(e);
+    backoff = Math.min(backoff ? backoff * 2 : 4000, 120000);
+    scheduleSync(backoff);
+  } finally {
+    syncBusy = false;
+    renderList(); renderStatus();
+    if (syncAgain && !lastErr) { syncAgain = false; scheduleSync(250); }
+  }
+}
+function renderStatus() {
+  const pill = $('#pill'), txt = $('#pillTxt');
+  const waiting = allRecs().filter((r) => r.st !== 'ok').length + S.dels.length;
+  let cls = '', t = '';
+  if (!apiUrl()) { cls = ''; t = 'Chưa nối Sheet'; }
+  else if (navigator.onLine === false) { cls = 'wait'; t = waiting ? `Mất mạng · chờ ${waiting}` : 'Mất mạng'; }
+  else if (syncBusy) { cls = 'busy'; t = 'Đang gửi…'; }
+  else if (lastErr && waiting) { cls = 'bad'; t = `Lỗi gửi · chờ ${waiting}`; }
+  else if (waiting) { cls = 'wait'; t = `Chờ gửi ${waiting}`; }
+  else { cls = 'ok'; t = allRecs().length ? 'Đã lên Sheet' : 'Đã nối Sheet'; }
+  pill.className = 'pill ' + cls; txt.textContent = t;
+  pill.title = lastErr || t;
+}
+$('#pill').addEventListener('click', () => {
+  if (!apiUrl()) { openSettings(); return; }
+  if (lastErr) toast(lastErr, 'bad', 4500);
+  backoff = 0; sync();
+});
+async function loadConfig(silent) {
+  const url = apiUrl();
+  if (!url) return false;
+  try {
+    const ctrl = new AbortController(); const t = setTimeout(() => ctrl.abort(), 20000);
+    const res = await fetch(url + (url.includes('?') ? '&' : '?') + 'action=config', { signal: ctrl.signal, cache: 'no-store' });
+    clearTimeout(t);
+    const data = JSON.parse(await res.text());
+    if (!data.ok) throw new Error(data.error || 'lỗi');
+    S.config = { models: data.models || [], locations: data.locations || [], users: data.users || [], sheetUrl: data.sheetUrl || '', sheetName: data.sheetName || '', at: Date.now() };
+    store(KEY.config, S.config);
+    if (!silent) toast(`Đã tải danh mục: ${S.config.models.length} model, ${S.config.locations.length} kho/NPP/đại lý, ${S.config.users.length} người`, 'ok', 3500);
+    return true;
+  } catch (e) {
+    if (!silent) toast('Không tải được danh mục từ Google Sheet', 'bad');
+    return false;
+  }
+}
+window.addEventListener('online', () => { backoff = 0; renderStatus(); sync(); });
+window.addEventListener('offline', renderStatus);
+setInterval(() => { if (!syncBusy && (allRecs().some((r) => r.st !== 'ok') || S.dels.length)) sync(); }, 45000);
+
+/* ------------------------------------------------------------------
+   CAMERA + GIẢI MÃ
+   - Android Chrome: BarcodeDetector của hệ thống + ZXing (chạy song song)
+   - iPhone / máy khác: ZXing (WebAssembly) chạy trong Web Worker
+------------------------------------------------------------------ */
+const video = $('#video');
+const cam = {
+  stream: null, track: null, running: false, starting: false, paused: false, resumeOnShow: false,
+  native: null, nativeFormatsKey: '', worker: null, workerBusy: false, workerReady: false, workerDead: false, reqId: 0, sentAt: 0,
+  stratIdx: 0, torch: false, zoomLevels: [], zoomIdx: 0, devices: [],
+  lastText: '', lastSeen: 0, cooldownUntil: 0, confirm: { text: '', t: 0, n: 0 },
+  cnvN: document.createElement('canvas'), cnvW: document.createElement('canvas'),
+};
+// Chiến lược giải mã luân phiên giữa các khung hình (đã thử trên ảnh mờ thực tế)
+const STRATS = [
+  { sharpen: 1.5, binarizer: 'FixedThreshold' },
+  { sharpen: 0, binarizer: 'LocalAverage' },
+  { sharpen: 1.5, binarizer: 'LocalAverage' },
+  { sharpen: 0, binarizer: 'FixedThreshold' },
+];
+const NATIVE_MAP = { code_128: 'Code128', code_39: 'Code39', code_93: 'Code93', codabar: 'Codabar', itf: 'ITF', qr_code: 'QRCode', data_matrix: 'DataMatrix', ean_13: 'EAN13', ean_8: 'EAN8', upc_a: 'UPCA', upc_e: 'UPCE', pdf417: 'PDF417', aztec: 'Aztec' };
+const WEAK = new Set(['Code39', 'ITF', 'Codabar']); // mã không bắt buộc checksum → cần đọc 2 lần giống nhau
+const zxFormats = () => ['Code128', 'Code39', 'Code93', 'ITF', 'Codabar', 'QRCode', 'DataMatrix'].concat(S.settings.retail ? ['EAN13', 'EAN8', 'UPCA', 'UPCE'] : []);
+const nativeFormats = () => ['code_128', 'code_39', 'code_93', 'itf', 'codabar', 'qr_code', 'data_matrix'].concat(S.settings.retail ? ['ean_13', 'ean_8', 'upc_a', 'upc_e'] : []);
+
+function setView(state, msg) {
+  // state: idle | starting | running | paused
+  $('#idle').hidden = state === 'running' || state === 'paused';
+  $('#guide').hidden = $('#hint').hidden = $('#camCtrl').hidden = !(state === 'running' || state === 'paused');
+  $('#resume').hidden = state !== 'paused';
+  const btn = $('#btnStart');
+  btn.disabled = state === 'starting';
+  btn.innerHTML = state === 'starting' ? '<i class="spin"></i>Đang mở camera…' : `${icon('scan')}Bắt đầu quét`;
+  if (state === 'idle' || state === 'starting') {
+    const p = $('#idleMsg');
+    if (msg) { p.className = 'err'; p.textContent = msg; }
+    else if (state === 'idle') { p.className = ''; p.textContent = 'Hướng camera vào mã vạch serial trên thùng. Serial tự nhảy vào danh sách và Google Sheet.'; }
+  }
+}
+function setHint(t) { $('#hint').textContent = t; }
+
+function camError(e) {
+  const n = e && e.name;
+  if (!window.isSecureContext) return 'Camera chỉ chạy khi mở app qua đường link https (VD: https://karofikv2.github.io/scan/).';
+  if (n === 'NotAllowedError' || n === 'PermissionDeniedError') return 'Chưa cho phép dùng camera. Bấm biểu tượng ổ khoá/“Aa” cạnh thanh địa chỉ → Camera → Cho phép, rồi bấm Bắt đầu quét lại.';
+  if (n === 'NotFoundError' || n === 'DevicesNotFoundError' || n === 'OverconstrainedError') return 'Không tìm thấy camera phù hợp trên máy này.';
+  if (n === 'NotReadableError' || n === 'TrackStartError') return 'Camera đang bị ứng dụng khác dùng (Zalo, máy ảnh…). Tắt ứng dụng đó rồi thử lại.';
+  return 'Không mở được camera' + (n ? ` (${n})` : '') + '. Hãy dùng Chrome (Android) hoặc Safari (iPhone).';
+}
+
+async function startScan() {
+  if (cam.running || cam.starting) return;
+  unlockAudio();
+  if (!ensureSession(startScan)) return;
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { setView('idle', camError({ name: window.isSecureContext ? 'NoMedia' : '' })); return; }
+  cam.starting = true; setView('starting');
+  const base = { width: { ideal: 1920 }, height: { ideal: 1080 } };
+  try {
+    let stream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: S.settings.cameraId ? Object.assign({ deviceId: { exact: S.settings.cameraId } }, base) : Object.assign({ facingMode: { ideal: 'environment' } }, base) });
+    } catch (e) {
+      if (!S.settings.cameraId || e.name === 'NotAllowedError') throw e;
+      S.settings.cameraId = ''; saveSettings();
+      stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: Object.assign({ facingMode: { ideal: 'environment' } }, base) });
+    }
+    cam.stream = stream; cam.track = stream.getVideoTracks()[0];
+    video.srcObject = stream;
+    try { await video.play(); } catch (e) { /* iOS có thể tự phát */ }
+    await new Promise((res) => { if (video.videoWidth) return res(); const t = setTimeout(res, 3000); video.addEventListener('loadedmetadata', () => { clearTimeout(t); res(); }, { once: true }); });
+    cam.running = true; cam.paused = false; cam.starting = false; cam.gen = (cam.gen || 0) + 1;
+    cam.lastText = ''; cam.confirm = { text: '', t: 0, n: 0 };
+    setView('running');
+    setupTrack();
+    await initDecoders();
+    requestWakeLock();
+    loopNative(cam.gen); loopWorker();
+    if (!cam.native && !cam.workerReady) setHint('Đang tải bộ giải mã…');
+    else setHint('Đưa mã vạch serial vào khung');
+  } catch (e) {
+    cam.starting = false; stopTracks();
+    setView('idle', camError(e));
+  }
+}
+function stopTracks() {
+  if (cam.stream) cam.stream.getTracks().forEach((t) => { try { t.stop(); } catch (e) { /* bỏ qua */ } });
+  cam.stream = null; cam.track = null; cam.torch = false;
+  try { video.srcObject = null; } catch (e) { /* bỏ qua */ }
+}
+function stopScan() {
+  cam.running = false; cam.paused = false;
+  stopTracks(); releaseWakeLock(); setView('idle');
+}
+function setupTrack() {
+  const t = cam.track; let caps = {};
+  try { caps = t.getCapabilities ? t.getCapabilities() : {}; } catch (e) { caps = {}; }
+  if (caps.focusMode && caps.focusMode.includes && caps.focusMode.includes('continuous')) t.applyConstraints({ advanced: [{ focusMode: 'continuous' }] }).catch(() => {});
+  $('#btnTorch').hidden = !caps.torch;
+  $('#btnTorch').classList.remove('on');
+  cam.zoomLevels = [];
+  if (caps.zoom && caps.zoom.max > caps.zoom.min) {
+    const lv = [1, 1.5, 2, 3].map((z) => clamp(z, caps.zoom.min, caps.zoom.max)).filter((z, i, a) => a.indexOf(z) === i);
+    if (lv.length > 1) cam.zoomLevels = lv;
+    let curZ = 1; try { curZ = t.getSettings().zoom || 1; } catch (e) { /* */ }
+    cam.zoomIdx = Math.max(0, cam.zoomLevels.findIndex((z) => z >= curZ - 0.01));
+  }
+  $('#btnZoom').hidden = cam.zoomLevels.length < 2;
+  $('#btnZoom span').textContent = (cam.zoomLevels[cam.zoomIdx] || 1) + '×';
+  navigator.mediaDevices.enumerateDevices().then((ds) => {
+    cam.devices = ds.filter((d) => d.kind === 'videoinput');
+    $('#btnSwitch').hidden = cam.devices.length < 2;
+  }).catch(() => {});
+}
+$('#btnTorch').onclick = async () => {
+  if (!cam.track) return;
+  try { await cam.track.applyConstraints({ advanced: [{ torch: !cam.torch }] }); cam.torch = !cam.torch; $('#btnTorch').classList.toggle('on', cam.torch); }
+  catch (e) { toast('Máy không cho bật đèn từ trình duyệt'); }
+};
+$('#btnZoom').onclick = async () => {
+  if (!cam.track || cam.zoomLevels.length < 2) return;
+  cam.zoomIdx = (cam.zoomIdx + 1) % cam.zoomLevels.length;
+  const z = cam.zoomLevels[cam.zoomIdx];
+  try { await cam.track.applyConstraints({ advanced: [{ zoom: z }] }); $('#btnZoom span').textContent = z + '×'; } catch (e) { /* bỏ qua */ }
+};
+$('#btnSwitch').onclick = async () => {
+  if (cam.devices.length < 2) return;
+  let curId = ''; try { curId = cam.track.getSettings().deviceId; } catch (e) { /* */ }
+  const i = cam.devices.findIndex((d) => d.deviceId === curId);
+  const next = cam.devices[(i + 1) % cam.devices.length];
+  S.settings.cameraId = next.deviceId; saveSettings();
+  stopScan(); await startScan();
+  toast(next.label ? 'Camera: ' + next.label : 'Đã đổi camera');
+};
+$('#btnStart').onclick = startScan;
+$('#btnStop').onclick = stopScan;
+// Quét tiếp: mã vừa quét nếu còn trong khung vẫn được bỏ qua (không báo trùng)
+$('#btnResume').onclick = () => { cam.paused = false; cam.lastSeen = Date.now(); setView('running'); setHint('Đưa mã vạch serial vào khung'); };
+
+let wakeLock = null;
+async function requestWakeLock() { try { if ('wakeLock' in navigator && !wakeLock) { wakeLock = await navigator.wakeLock.request('screen'); wakeLock.addEventListener('release', () => { wakeLock = null; }); } } catch (e) { wakeLock = null; } }
+function releaseWakeLock() { try { if (wakeLock) wakeLock.release(); } catch (e) { /* */ } wakeLock = null; }
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { if (cam.running) { cam.resumeOnShow = true; stopScan(); } }
+  else {
+    if (cam.resumeOnShow) { cam.resumeOnShow = false; startScan(); }
+    sync();
+  }
+});
+
+async function initDecoders() {
+  const fk = nativeFormats().join(',');
+  if (S.settings.engine !== 'zxing' && 'BarcodeDetector' in window && cam.nativeFormatsKey !== fk) {
+    cam.native = null;
+    try {
+      const sup = await window.BarcodeDetector.getSupportedFormats();
+      const want = nativeFormats().filter((f) => sup.includes(f));
+      if (want.includes('code_128')) { cam.native = new window.BarcodeDetector({ formats: want }); cam.nativeFormatsKey = fk; }
+    } catch (e) { cam.native = null; }
+  }
+  if (S.settings.engine === 'zxing') { cam.native = null; cam.nativeFormatsKey = ''; }
+  const needWorker = !(S.settings.engine === 'native' && cam.native);
+  if (needWorker && !cam.worker && !cam.workerDead) {
+    try {
+      cam.worker = new Worker('zxing-worker.js');
+      cam.worker.onmessage = onWorkerMsg;
+      cam.worker.onerror = () => { killWorker('Không tải được bộ giải mã ZXing'); };
+      cam.worker.postMessage({ type: 'init' });
+    } catch (e) { killWorker('Trình duyệt không chạy được bộ giải mã nền'); }
+  }
+  if (!needWorker && cam.worker) { cam.worker.terminate(); cam.worker = null; cam.workerReady = false; }
+}
+function killWorker(msg) {
+  if (cam.worker) { try { cam.worker.terminate(); } catch (e) { /* */ } }
+  cam.worker = null; cam.workerBusy = false; cam.workerReady = false; cam.workerDead = true;
+  if (!cam.native && cam.running) { setHint(msg + ' – kiểm tra mạng rồi tải lại trang'); toast(msg, 'bad', 4000); }
+}
+
+/** Cắt vùng ảnh nằm trong khung ngắm (tính theo object-fit: cover) */
+function grabROI(canvas, maxW) {
+  const vw = video.videoWidth, vh = video.videoHeight;
+  if (!vw || !vh || video.readyState < 2) return null;
+  const vp = $('#viewport').getBoundingClientRect(), g = $('#guide').getBoundingClientRect();
+  if (!vp.width || !g.width) return null;
+  const sc = Math.max(vp.width / vw, vp.height / vh);
+  const ox = (vp.width - vw * sc) / 2, oy = (vp.height - vh * sc) / 2;
+  const px = g.width * 0.06, py = g.height * 0.2;
+  let sx = (g.left - vp.left - px - ox) / sc, sy = (g.top - vp.top - py - oy) / sc;
+  let sw = (g.width + 2 * px) / sc, sh = (g.height + 2 * py) / sc;
+  sx = clamp(sx, 0, vw - 1); sy = clamp(sy, 0, vh - 1); sw = Math.min(sw, vw - sx); sh = Math.min(sh, vh - sy);
+  const k = Math.min(1, maxW / sw);
+  const cw = Math.max(1, Math.round(sw * k)), ch = Math.max(1, Math.round(sh * k));
+  if (canvas.width !== cw) canvas.width = cw;
+  if (canvas.height !== ch) canvas.height = ch;
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  ctx.drawImage(video, sx, sy, sw, sh, 0, 0, cw, ch);
+  return ctx;
+}
+const scanBlocked = () => !cam.running || cam.paused || modalOpen() || Date.now() < cam.cooldownUntil;
+
+async function loopNative(gen) {
+  if (!cam.running || !cam.native || gen !== cam.gen) return;
+  if (!scanBlocked()) {
+    const ctx = grabROI(cam.cnvN, 1280);
+    if (ctx) {
+      try {
+        const codes = await cam.native.detect(cam.cnvN);
+        if (codes && codes.length) {
+          codes.sort((a, b) => (b.boundingBox ? b.boundingBox.width : 0) - (a.boundingBox ? a.boundingBox.width : 0));
+          onCode(codes[0].rawValue, NATIVE_MAP[codes[0].format] || codes[0].format);
+        }
+      } catch (e) { /* khung lỗi – bỏ qua */ }
+    }
+  }
+  setTimeout(() => loopNative(gen), 100);
+}
+function loopWorker() {
+  if (!cam.running || !cam.worker || cam.workerBusy) return;
+  if (scanBlocked() || !cam.workerReady) { setTimeout(loopWorker, 120); return; }
+  const ctx = grabROI(cam.cnvW, 960);
+  if (!ctx) { setTimeout(loopWorker, 120); return; }
+  const img = ctx.getImageData(0, 0, cam.cnvW.width, cam.cnvW.height);
+  const st = STRATS[cam.stratIdx++ % STRATS.length];
+  cam.workerBusy = true; cam.sentAt = Date.now();
+  cam.worker.postMessage({ type: 'decode', id: ++cam.reqId, w: img.width, h: img.height, buf: img.data.buffer, sharpen: st.sharpen, binarizer: st.binarizer, formats: zxFormats() }, [img.data.buffer]);
+}
+function onWorkerMsg(e) {
+  const m = e.data || {};
+  if (m.type === 'ready') {
+    cam.workerReady = true;
+    if (cam.running) { setHint('Đưa mã vạch serial vào khung'); loopWorker(); }
+    return;
+  }
+  if (m.type === 'fatal') { killWorker('Không tải được bộ giải mã ZXing'); return; }
+  if (m.type === 'result' || m.type === 'error') {
+    cam.workerBusy = false;
+    if (m.type === 'result' && m.results && m.results.length && cam.running) onCode(m.results[0].text, m.results[0].format);
+    if (cam.running) setTimeout(loopWorker, m.type === 'error' ? 400 : 20);
+  }
+}
+// Phòng khi worker treo
+setInterval(() => { if (cam.running && cam.workerBusy && Date.now() - cam.sentAt > 6000) { cam.workerBusy = false; loopWorker(); } }, 2000);
+
+/** Nhận 1 mã từ camera (đã giải mã) */
+function onCode(text, fmt) {
+  text = cleanCode(text);
+  if (!text || scanBlocked()) return;
+  const now = Date.now();
+  // Mã vẫn còn trong khung → bỏ qua (tránh thêm liên tục)
+  if (text === cam.lastText && now - cam.lastSeen < 2500) { cam.lastSeen = now; return; }
+  if (WEAK.has(fmt)) {
+    if (cam.confirm.text !== text || now - cam.confirm.t > 1500) { cam.confirm = { text, t: now }; return; }
+  }
+  cam.confirm = { text: '', t: 0 };
+  cam.lastText = text; cam.lastSeen = now;
+  const added = addSerial(text, fmt, 'cam');
+  cam.cooldownUntil = now + (added ? 900 : 1200);
+  if (added && !S.settings.continuous) { cam.paused = true; setView('paused'); setHint('Đã tạm dừng – bấm “Quét tiếp” cho thùng tiếp theo'); }
+}
+
+/* Súng quét mã vạch (USB/Bluetooth) – gõ phím rất nhanh rồi Enter */
+let hid = { buf: '', last: 0, start: 0 };
+document.addEventListener('keydown', (e) => {
+  const a = document.activeElement;
+  if (modalOpen() || (a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA' || a.tagName === 'SELECT' || a.isContentEditable))) return;
+  const now = performance.now();
+  if (now - hid.last > 100) { hid.buf = ''; hid.start = now; }
+  hid.last = now;
+  if (e.key === 'Enter') {
+    if (hid.buf.length >= 4 && (now - hid.start) / hid.buf.length < 45) { e.preventDefault(); unlockAudio(); addSerial(hid.buf, 'HID', 'hid'); }
+    hid.buf = '';
+    return;
+  }
+  if (e.key && e.key.length === 1) hid.buf += e.key;
+});
+$('#manualForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  unlockAudio();
+  const inp = $('#manualInput');
+  const v = inp.value;
+  if (!v.trim()) { inp.focus(); return; }
+  if (!S.session.user || !S.session.location) { ensureSession(); return; }
+  if (addSerial(v, 'Nhập tay', 'manual')) inp.value = '';
+  else inp.select();
+});
+document.querySelectorAll('.field').forEach((b) => { b.onclick = () => openPicker(b.dataset.field); });
+
+/* ------------------------------------------------------------------
+   XUẤT EXCEL (.xlsx tự tạo, có định dạng – không cần thư viện)
+------------------------------------------------------------------ */
+const XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+const CRC_T = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+function crc32(u8) { let c = 0xFFFFFFFF; for (let i = 0; i < u8.length; i++) c = CRC_T[(c ^ u8[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+function zipStore(files) {
+  const enc = new TextEncoder(), parts = [], central = [];
+  let off = 0;
+  const d = new Date();
+  const time = (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1);
+  const date = ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate();
+  for (const f of files) {
+    const name = enc.encode(f.name), data = typeof f.data === 'string' ? enc.encode(f.data) : f.data;
+    const crc = crc32(data), size = data.length;
+    const lh = new DataView(new ArrayBuffer(30));
+    lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true); lh.setUint16(8, 0, true);
+    lh.setUint16(10, time, true); lh.setUint16(12, date, true); lh.setUint32(14, crc, true); lh.setUint32(18, size, true);
+    lh.setUint32(22, size, true); lh.setUint16(26, name.length, true); lh.setUint16(28, 0, true);
+    parts.push(new Uint8Array(lh.buffer), name, data);
+    const ch = new DataView(new ArrayBuffer(46));
+    ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true); ch.setUint16(8, 0x0800, true);
+    ch.setUint16(10, 0, true); ch.setUint16(12, time, true); ch.setUint16(14, date, true); ch.setUint32(16, crc, true);
+    ch.setUint32(20, size, true); ch.setUint32(24, size, true); ch.setUint16(28, name.length, true);
+    ch.setUint16(30, 0, true); ch.setUint16(32, 0, true); ch.setUint16(34, 0, true); ch.setUint16(36, 0, true);
+    ch.setUint32(38, 0, true); ch.setUint32(42, off, true);
+    central.push(new Uint8Array(ch.buffer), name);
+    off += 30 + name.length + size;
+  }
+  const cdSize = central.reduce((a, c) => a + c.length, 0);
+  const eo = new DataView(new ArrayBuffer(22));
+  eo.setUint32(0, 0x06054b50, true); eo.setUint16(8, files.length, true); eo.setUint16(10, files.length, true);
+  eo.setUint32(12, cdSize, true); eo.setUint32(16, off, true);
+  return new Blob(parts.concat(central, [new Uint8Array(eo.buffer)]), { type: XLSX_MIME });
+}
+const xEsc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '');
+const colL = (n) => { let s = ''; n += 1; while (n) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); } return s; };
+const xlDate = (ms) => { const d = new Date(ms); return (ms - d.getTimezoneOffset() * 60000) / 86400000 + 25569; };
+/* Style: 0 mặc định · 1 tiêu đề · 2 chữ · 3 ngày giờ · 4 số giữa · 5 chữ đậm · 6 số đậm · 7 chữ nền vàng */
+const STYLES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<numFmts count="1"><numFmt numFmtId="164" formatCode="dd/mm/yyyy hh:mm:ss"/></numFmts>
+<fonts count="3"><font><sz val="11"/><name val="Calibri"/><family val="2"/></font><font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/><family val="2"/></font><font><b/><sz val="11"/><name val="Calibri"/><family val="2"/></font></fonts>
+<fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF0E5FAE"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFFF4D6"/><bgColor indexed="64"/></patternFill></fill></fills>
+<borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FFD0D7E2"/></left><right style="thin"><color rgb="FFD0D7E2"/></right><top style="thin"><color rgb="FFD0D7E2"/></top><bottom style="thin"><color rgb="FFD0D7E2"/></bottom><diagonal/></border></borders>
+<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
+<cellXfs count="8">
+<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>
+<xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>
+<xf numFmtId="49" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1"/>
+<xf numFmtId="164" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center"/></xf>
+<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment horizontal="center"/></xf>
+<xf numFmtId="49" fontId="2" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyBorder="1"/>
+<xf numFmtId="0" fontId="2" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center"/></xf>
+<xf numFmtId="49" fontId="0" fillId="3" borderId="1" xfId="0" applyNumberFormat="1" applyFill="1" applyBorder="1"/>
+</cellXfs>
+<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>
+</styleSheet>`;
+/** sheets: [{name, header:[], rows:[[...]], cols:[width], filter, style(ri,ci,v)}] — ô {v, s} để chỉ định style */
+function buildXlsx(sheets) {
+  const sst = [], sIdx = new Map();
+  const si = (s) => { let i = sIdx.get(s); if (i === undefined) { i = sst.length; sst.push(s); sIdx.set(s, i); } return i; };
+  const ns = 'xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"';
+  const files = [];
+  const sheetXml = (sh) => {
+    const all = [sh.header].concat(sh.rows);
+    const rows = all.map((row, ri) => {
+      const cells = row.map((cell, ci) => {
+        let v = cell, s;
+        if (cell && typeof cell === 'object' && !(cell instanceof Date) && 'v' in cell) { v = cell.v; s = cell.s; }
+        if (s === undefined) s = ri === 0 ? 1 : v instanceof Date ? 3 : typeof v === 'number' ? 4 : 2;
+        const ref = colL(ci) + (ri + 1);
+        if (v === null || v === undefined || v === '') return `<c r="${ref}" s="${s}"/>`;
+        if (v instanceof Date) return `<c r="${ref}" s="${s}"><v>${xlDate(v.getTime())}</v></c>`;
+        if (typeof v === 'number') return `<c r="${ref}" s="${s}"><v>${v}</v></c>`;
+        return `<c r="${ref}" s="${s}" t="s"><v>${si(String(v))}</v></c>`;
+      }).join('');
+      return `<row r="${ri + 1}"${ri === 0 ? ' ht="24" customHeight="1"' : ''}>${cells}</row>`;
+    }).join('');
+    const ref = `A1:${colL(sh.header.length - 1)}${all.length}`;
+    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<worksheet ${ns}><sheetPr><pageSetUpPr fitToPage="1"/></sheetPr><dimension ref="${ref}"/><sheetViews><sheetView workbookViewId="0"${sh.first ? ' tabSelected="1"' : ''}><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/><selection pane="bottomLeft" activeCell="A2" sqref="A2"/></sheetView></sheetViews><sheetFormatPr defaultRowHeight="15"/><cols>${sh.cols.map((w, i) => `<col min="${i + 1}" max="${i + 1}" width="${w}" customWidth="1"/>`).join('')}</cols><sheetData>${rows}</sheetData>${sh.filter && all.length > 1 ? `<autoFilter ref="${ref}"/>` : ''}<pageMargins left="0.5" right="0.5" top="0.6" bottom="0.6" header="0.3" footer="0.3"/><pageSetup paperSize="9" orientation="landscape" fitToWidth="1" fitToHeight="0"/></worksheet>`;
+  };
+  sheets.forEach((sh, i) => { sh.first = i === 0; files.push({ name: `xl/worksheets/sheet${i + 1}.xml`, data: sheetXml(sh) }); });
+  const defNames = sheets.map((sh, i) => sh.filter && sh.rows.length ? `<definedName name="_xlnm._FilterDatabase" localSheetId="${i}" hidden="1">'${sh.name.replace(/'/g, "''")}'!$A$1:$${colL(sh.header.length - 1)}$${sh.rows.length + 1}</definedName>` : '').join('');
+  files.unshift(
+    { name: '[Content_Types].xml', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>${sheets.map((_, i) => `<Override PartName="/xl/worksheets/sheet${i + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('')}<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/><Override PartName="/xl/sharedStrings.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/></Types>` },
+    { name: '_rels/.rels', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/></Relationships>` },
+    { name: 'docProps/core.xml', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>Danh sách serial</dc:title><dc:creator>Quét Serial KV2</dc:creator><dcterms:created xsi:type="dcterms:W3CDTF">${new Date().toISOString().replace(/\.\d+Z$/, 'Z')}</dcterms:created></cp:coreProperties>` },
+    { name: 'docProps/app.xml', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"><Application>Quét Serial KV2</Application></Properties>` },
+    { name: 'xl/workbook.xml', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<workbook ${ns}><bookViews><workbookView activeTab="0"/></bookViews><sheets>${sheets.map((sh, i) => `<sheet name="${xEsc(sh.name)}" sheetId="${i + 1}" r:id="rId${i + 1}"/>`).join('')}</sheets>${defNames ? `<definedNames>${defNames}</definedNames>` : ''}</workbook>` },
+    { name: 'xl/_rels/workbook.xml.rels', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${sheets.map((_, i) => `<Relationship Id="rId${i + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i + 1}.xml"/>`).join('')}<Relationship Id="rId${sheets.length + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rId${sheets.length + 2}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings" Target="sharedStrings.xml"/></Relationships>` },
+    { name: 'xl/styles.xml', data: STYLES },
+  );
+  files.push({ name: 'xl/sharedStrings.xml', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="${sst.length}" uniqueCount="${sst.length}">${sst.map((s) => `<si><t xml:space="preserve">${xEsc(s)}</t></si>`).join('')}</sst>` });
+  return zipStore(files);
+}
+function statusText(r) {
+  if (r.st === 'ok') return r.note ? 'Đã lên Sheet · ' + r.note : 'Đã lên Sheet';
+  if (!apiUrl()) return 'Chỉ lưu trên máy';
+  if (r.st === 'bad') return 'Lỗi: ' + (r.err || 'Sheet từ chối');
+  return 'Chưa đồng bộ';
+}
+const slug = (s) => fold(s).replace(/[^a-z0-9]+/gi, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'KV2';
+function batchFile(batch) {
+  const recs = batch.records.slice().sort((a, b) => a.at - b.at);
+  const rows = recs.map((r, i) => [i + 1, { v: r.serial, s: 5 }, r.model, r.location, r.user, new Date(r.at), r.note ? { v: statusText(r), s: 7 } : statusText(r)]);
+  const grp = new Map();
+  recs.forEach((r) => { const k = (r.location || '') + '\u0001' + (r.model || '(không model)'); grp.set(k, (grp.get(k) || 0) + 1); });
+  const sum = [...grp.entries()].sort((a, b) => a[0].localeCompare(b[0], 'vi')).map(([k, n]) => { const [l, m] = k.split('\u0001'); return [l, m, n]; });
+  sum.push([{ v: 'Tổng cộng', s: 5 }, { v: '', s: 5 }, { v: recs.length, s: 6 }]);
+  const blob = buildXlsx([
+    { name: 'Serial', header: ['STT', 'Serial', 'Model', 'Kho / NPP / Đại lý', 'Người quét', 'Thời gian quét', 'Google Sheet'], rows, cols: [6, 20, 16, 30, 20, 20, 48], filter: true },
+    { name: 'Tổng hợp', header: ['Kho / NPP / Đại lý', 'Model', 'Số lượng'], rows: sum, cols: [34, 20, 12], filter: false },
+  ]);
+  const locs = [...new Set(recs.map((r) => r.location).filter(Boolean))];
+  const d = new Date(recs.length ? recs[recs.length - 1].at : Date.now());
+  const name = `Serial_${slug(locs.length === 1 ? locs[0] : 'KV2')}_${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}.xlsx`;
+  return { blob, name, n: recs.length };
+}
+function downloadBlob(blob, name) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name; a.rel = 'noopener';
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 5000);
+}
+function canShareFiles() {
+  try { return !!(navigator.canShare && navigator.canShare({ files: [new File(['x'], 'a.xlsx', { type: XLSX_MIME })] })); } catch (e) { return false; }
+}
+async function exportBatch(batch, mode) {
+  if (!batch.records.length) { toast('Đợt này chưa có serial nào'); return; }
+  const { blob, name, n } = batchFile(batch);
+  if (mode === 'share') {
+    try { await navigator.share({ files: [new File([blob], name, { type: XLSX_MIME })], title: name }); return; }
+    catch (e) { if (e.name === 'AbortError') return; toast('Không mở được chia sẻ – đang tải file về máy'); }
+  }
+  downloadBlob(blob, name);
+  toast(`Đã xuất ${n} serial → ${name}`, 'ok', 3500);
+}
+$('#btnExcel').onclick = () => exportBatch(cur(), 'download');
+$('#btnShare').onclick = () => exportBatch(cur(), 'share');
+$('#btnShare').hidden = !canShareFiles();
+$('#btnCopy').onclick = async () => {
+  const recs = cur().records;
+  if (!recs.length) { toast('Đợt này chưa có serial nào'); return; }
+  const text = recs.map((r) => r.serial).join('\n');
+  try { await navigator.clipboard.writeText(text); }
+  catch (e) {
+    const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e2) { /* */ } ta.remove();
+  }
+  toast(`Đã sao chép ${recs.length} serial – dán vào Zalo/Excel`, 'ok');
+};
+
+/* ------------------------------------------------------------------
+   Đợt mới & Lịch sử
+------------------------------------------------------------------ */
+$('#btnNewBatch').onclick = async () => {
+  const b = cur();
+  if (!b.records.length) { toast('Đợt hiện tại đang trống'); return; }
+  const wait = apiUrl() ? b.records.filter((r) => r.st !== 'ok').length : 0;
+  const ok = await confirmBox('Bắt đầu đợt mới?', `Danh sách hiện tại (<b>${b.records.length}</b> serial) được chuyển vào <b>Lịch sử</b> – vẫn xuất Excel lại được.` +
+    (wait ? `<br><br>${wait} serial chưa lên Sheet sẽ tiếp tục được gửi khi có mạng.` : ''), 'Đợt mới');
+  if (!ok) return;
+  S.batches.push(newBatch());
+  pruneBatches();
+  saveBatches(); renderList(); renderStatus();
+  showLast('skip', '', 'Đợt mới – sẵn sàng quét');
+  // Đợt mới thường là điểm khác → cho chọn lại Kho/NPP/Đại lý (đóng lại = giữ nguyên)
+  openPicker('location', null, 'Đợt mới đang quét ở kho / NPP / đại lý nào? Đóng lại nếu vẫn là: ' + (S.session.location || '—'));
+};
+function pruneBatches() {
+  const MAX_BATCHES = 40, MAX_RECS = 10000;
+  while (S.batches.length > 1 && (S.batches.length > MAX_BATCHES || allRecs().length > MAX_RECS)) {
+    // Có Google Sheet: chỉ bỏ đợt cũ đã gửi xong. Chỉ lưu trên máy: bỏ đợt cũ nhất.
+    const i = S.batches.findIndex((b, k) => k < S.batches.length - 1 && (!apiUrl() || b.records.every((r) => r.st === 'ok')));
+    if (i < 0) break;
+    S.batches.splice(i, 1);
+  }
+}
+function openHistory() {
+  const wrap = document.createElement('div');
+  const draw = () => {
+    const past = S.batches.slice(0, -1).reverse();
+    if (!past.length) { wrap.innerHTML = '<p class="muted">Chưa có đợt cũ. Khi bấm “Đợt mới”, danh sách hiện tại sẽ được lưu ở đây.</p>'; return; }
+    wrap.innerHTML = past.map((b) => {
+      const recs = b.records, n = recs.length;
+      const locs = [...new Set(recs.map((r) => r.location).filter(Boolean))];
+      const wait = apiUrl() ? recs.filter((r) => r.st !== 'ok').length : 0;
+      const t0 = n ? Math.min(...recs.map((r) => r.at)) : b.at, t1 = n ? Math.max(...recs.map((r) => r.at)) : b.at;
+      return `<div class="hist" data-id="${b.id}"><div class="h1">${fmtDT(t0)} → ${fmtDT(t1).slice(-5)} · ${n} serial</div>
+        <div class="h2">${esc(locs.join(', ') || '—')}${wait ? ` · <b style="color:var(--warn)">chờ gửi ${wait}</b>` : apiUrl() && n ? ' · đã lên Sheet' : ''}</div>
+        <div class="btn-row"><button class="btn sm" data-a="xls" type="button">${icon('xls')}Excel</button>${canShareFiles() ? `<button class="btn sm" data-a="share" type="button">${icon('share')}Gửi</button>` : ''}<button class="btn sm ghost" data-a="del" type="button" style="color:var(--bad)">${icon('trash')}Xoá khỏi máy</button></div></div>`;
+    }).join('');
+  };
+  wrap.addEventListener('click', async (e) => {
+    const btn = e.target.closest('button[data-a]'); if (!btn) return;
+    const b = S.batches.find((x) => x.id === btn.closest('.hist').dataset.id); if (!b) return;
+    if (btn.dataset.a === 'xls') exportBatch(b, 'download');
+    if (btn.dataset.a === 'share') exportBatch(b, 'share');
+    if (btn.dataset.a === 'del') {
+      const wait = apiUrl() ? b.records.filter((r) => r.st !== 'ok').length : 0;
+      const ok = await confirmBox('Xoá đợt khỏi máy?', 'Chỉ xoá trên điện thoại này, dữ liệu trên Google Sheet giữ nguyên.' + (wait ? `<br><br><b style="color:var(--bad)">${wait} serial chưa lên Sheet sẽ bị mất.</b>` : ''), 'Xoá', true);
+      if (!ok) return;
+      S.batches = S.batches.filter((x) => x !== b); saveBatches(); draw(); renderStatus();
+    }
+  });
+  draw();
+  openModal({ title: 'Lịch sử đợt quét', body: wrap });
+}
+$('#btnHistory').onclick = openHistory;
+
+/* ------------------------------------------------------------------
+   Cài đặt
+------------------------------------------------------------------ */
+let installEvt = null;
+window.addEventListener('beforeinstallprompt', (e) => { installEvt = e; });
+function openSettings() {
+  const s = S.settings;
+  const wrap = document.createElement('div');
+  const sw = (k, label, sub) => `<div class="row"><div class="grow">${label}${sub ? `<span class="sub">${sub}</span>` : ''}</div><label class="switch"><input type="checkbox" data-k="${k}" ${s[k] ? 'checked' : ''}><span></span></label></div>`;
+  const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+  const ios = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  wrap.innerHTML = `
+  <div class="sec"><h4>Google Sheet</h4>
+    <input class="inp" id="setApi" type="url" inputmode="url" placeholder="${SCRIPT_URL ? 'Đang dùng URL cài sẵn trong app' : 'Dán URL Apps Script (…/exec)'}" value="${esc(s.api)}" autocomplete="off" spellcheck="false">
+    <div class="btn-row">
+      <button class="btn sm primary" data-a="test" type="button">${icon('refresh')}Kiểm tra kết nối</button>
+      <button class="btn sm" data-a="cfg" type="button">${icon('refresh')}Tải lại danh mục</button>
+      <button class="btn sm" data-a="link" type="button">${icon('link')}Link cài đặt cho team</button>
+    </div>
+    <div class="status-box" id="setStatus">${apiUrl() ? (S.config.sheetName ? `Đang nối: <b>${esc(S.config.sheetName)}</b>` : 'Đã có URL – bấm “Kiểm tra kết nối”.') : 'Chưa nối Google Sheet – serial chỉ lưu trên máy, vẫn xuất Excel được.'}${S.config.sheetUrl ? ` · <a href="${esc(S.config.sheetUrl)}" target="_blank" rel="noopener">Mở Google Sheet</a>` : ''}</div>
+  </div>
+  <div class="sec"><h4>Quét</h4>
+    ${sw('continuous', 'Quét liên tục', 'Tắt: mỗi lần quét xong tạm dừng, bấm “Quét tiếp”')}
+    ${sw('sound', 'Âm thanh “bíp”')}
+    ${sw('vibrate', 'Rung khi quét', 'Không có trên iPhone')}
+    ${sw('retail', 'Nhận cả mã vạch sản phẩm (EAN/UPC)', 'Mặc định bỏ qua để không quét nhầm mã sản phẩm trên thùng')}
+    <div class="row"><div class="grow">Chỉ nhận mã bắt đầu bằng<span class="sub">VD: SN – để trống nếu không lọc</span></div><input type="text" data-k="prefix" value="${esc(s.prefix)}" autocapitalize="characters" spellcheck="false"></div>
+    <div class="row"><div class="grow">Số ký tự tối thiểu</div><input type="number" data-k="minLen" min="1" max="40" value="${esc(s.minLen)}"></div>
+    <div class="row"><div class="grow">Bộ giải mã<span class="sub">Đổi nếu máy quét chậm/khó nhận</span></div><select data-k="engine"><option value="auto">Tự động</option><option value="zxing">Chỉ ZXing</option><option value="native">Ưu tiên hệ thống</option></select></div>
+  </div>
+  <div class="sec"><h4>Ứng dụng</h4>
+    <div class="row"><div class="grow">Cài vào màn hình chính<span class="sub">${standalone ? 'Đang chạy như ứng dụng' : ios ? 'Safari → nút Chia sẻ → “Thêm vào MH chính”' : 'Mở nhanh như app, chạy được khi mạng yếu'}</span></div>${!standalone && !ios ? `<button class="btn sm" data-a="install" type="button">Cài app</button>` : ''}</div>
+    <div class="row"><div class="grow">Mã thiết bị<span class="sub">Ghi vào cột “Thiết bị” trên Sheet</span></div><b>${esc(S.device)}</b></div>
+    <div class="row"><div class="grow">Xoá toàn bộ dữ liệu trên máy<span class="sub">Không ảnh hưởng Google Sheet</span></div><button class="btn sm danger" data-a="wipe" type="button">Xoá</button></div>
+    <p class="muted">Phiên bản ${APP_VERSION}</p>
+  </div>`;
+  $('select[data-k=engine]', wrap).value = s.engine;
+  const status = (html, cls = '') => { const b = $('#setStatus', wrap); b.className = 'status-box ' + cls; b.innerHTML = html; };
+  const saveApi = () => {
+    const v = $('#setApi', wrap).value.trim();
+    if (v === s.api) return false;
+    s.api = v; saveSettings(); S.config = { models: [], locations: [], users: [], sheetUrl: '', sheetName: '', at: 0 }; store(KEY.config, S.config);
+    lastErr = ''; backoff = 0; renderStatus(); renderList();
+    return true;
+  };
+  $('#setApi', wrap).addEventListener('change', () => { if (saveApi() && apiUrl()) { status('Đã lưu URL – đang kiểm tra…'); doTest(); } });
+  const doTest = async () => {
+    saveApi();
+    if (!apiUrl()) { status('Chưa có URL.', 'bad'); return; }
+    if (!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec/.test(apiUrl())) status('Lưu ý: URL đúng thường có dạng https://script.google.com/macros/s/…/exec – đang thử…');
+    else status('<i class="spin" style="display:inline-block;vertical-align:-3px"></i> Đang kiểm tra…');
+    try {
+      const r = await api({ action: 'ping' }, 25000);
+      S.config.sheetName = r.sheetName || ''; S.config.sheetUrl = r.sheetUrl || ''; store(KEY.config, S.config);
+      status(`✓ Kết nối OK: <b>${esc(r.sheetName || 'Google Sheet')}</b> · ${r.rows} dòng serial${r.sheetUrl ? ` · <a href="${esc(r.sheetUrl)}" target="_blank" rel="noopener">Mở Google Sheet</a>` : ''}`, 'ok');
+      loadConfig(true); lastErr = ''; backoff = 0; sync();
+    } catch (e) { status('✗ ' + esc(e.message), 'bad'); }
+  };
+  wrap.addEventListener('change', (e) => {
+    const k = e.target.dataset && e.target.dataset.k; if (!k) return;
+    if (e.target.type === 'checkbox') s[k] = e.target.checked;
+    else if (k === 'minLen') s[k] = clamp(parseInt(e.target.value, 10) || 1, 1, 40);
+    else s[k] = e.target.value.trim();
+    saveSettings();
+    if (k === 'retail' || k === 'engine') { cam.nativeFormatsKey = ''; cam.workerDead = false; if (cam.running) initDecoders().then(() => { cam.gen++; loopNative(cam.gen); loopWorker(); }); }
+  });
+  wrap.addEventListener('click', async (e) => {
+    const b = e.target.closest('button[data-a]'); if (!b) return;
+    const a = b.dataset.a;
+    if (a === 'test') doTest();
+    if (a === 'cfg') { saveApi(); if (!apiUrl()) { status('Chưa có URL.', 'bad'); return; } status('Đang tải danh mục…'); const ok = await loadConfig(false); status(ok ? `✓ ${S.config.models.length} model · ${S.config.locations.length} kho/NPP/đại lý · ${S.config.users.length} người quét` : '✗ Không tải được danh mục', ok ? 'ok' : 'bad'); }
+    if (a === 'link') {
+      saveApi();
+      if (!apiUrl()) { status('Dán URL Apps Script trước.', 'bad'); return; }
+      const link = location.origin + location.pathname + '#api=' + encodeURIComponent(apiUrl());
+      try { if (navigator.share) { await navigator.share({ title: 'Cài app Quét Serial', text: 'Mở link này để dùng app Quét Serial (tự nối Google Sheet):', url: link }); return; } } catch (err) { if (err.name === 'AbortError') return; }
+      try { await navigator.clipboard.writeText(link); toast('Đã sao chép link cài đặt – gửi qua Zalo cho team', 'ok'); } catch (err) { status('Link cài đặt: <br><span style="font-size:12px;word-break:break-all">' + esc(link) + '</span>'); }
+    }
+    if (a === 'install') {
+      let shown = false;
+      if (installEvt) { try { await installEvt.prompt(); shown = true; } catch (err) { shown = false; } installEvt = null; }
+      if (!shown) toast('Chrome → menu ⋮ → “Thêm vào màn hình chính” / “Cài đặt ứng dụng”', '', 4500);
+    }
+    if (a === 'wipe') {
+      const wait = allRecs().filter((r) => r.st !== 'ok').length;
+      const ok = await confirmBox('Xoá toàn bộ dữ liệu trên máy?', 'Xoá danh sách, lịch sử và cài đặt trên điện thoại này. Google Sheet giữ nguyên.' + (wait && apiUrl() ? `<br><br><b style="color:var(--bad)">${wait} serial chưa lên Sheet sẽ bị mất.</b>` : ''), 'Xoá hết', true);
+      if (!ok) return;
+      Object.values(KEY).forEach((k) => { try { localStorage.removeItem(k); } catch (err) { /* */ } });
+      location.reload();
+    }
+  });
+  openModal({ title: 'Cài đặt', body: wrap, onClose: () => { saveApi(); renderStatus(); } });
+}
+$('#btnSettings').onclick = openSettings;
+
+/* ------------------------------------------------------------------
+   Khởi động
+------------------------------------------------------------------ */
+renderSession(); renderList(); renderStatus();
+if (apiUrl()) { sync(); if (Date.now() - (S.config.at || 0) > 6 * 3600 * 1000) loadConfig(true); }
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+}
+// Cho kiểm thử tự động
+window.__qs = { S, cam, addSerial, sync, buildXlsx, batchFile, exportBatch };
+})();
+
+</script>
+</body>
+</html>
