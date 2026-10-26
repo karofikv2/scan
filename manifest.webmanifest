@@ -1,7 +1,7 @@
 {
-  "name": "Quét Serial – Karofi KV2",
-  "short_name": "Quét Serial",
-  "description": "Quét mã vạch serial, tự ghi vào Google Sheet và xuất Excel.",
+  "name": "Quét xuất kho – Karofi KV2",
+  "short_name": "Quét xuất kho",
+  "description": "NPP quét serial khi xuất kho cho đại lý, tự ghi vào Google Sheet, xem báo cáo và mã QR.",
   "lang": "vi",
   "start_url": "./",
   "scope": "./",

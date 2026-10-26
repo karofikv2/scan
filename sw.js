@@ -1,6 +1,6 @@
 /* Service worker: cho app mở được khi mạng yếu / mất mạng.
-   Khi sửa app, tăng số phiên bản CACHE để máy NVBH tải bản mới. */
-const CACHE = 'quet-serial-v1';
+   Khi sửa app, tăng số phiên bản CACHE để máy NPP tải bản mới. */
+const CACHE = 'quet-xuat-kho-v2.0.0';
 const ASSETS = ['./', 'index.html', 'manifest.webmanifest', 'zxing-worker.js', 'lib/zxing-reader.js', 'lib/zxing_reader.wasm',
   'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 
