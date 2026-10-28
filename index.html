@@ -37,7 +37,7 @@ svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .appbar .bar{display:flex;align-items:center;gap:10px;max-width:584px;margin:0 auto;padding:calc(10px + env(safe-area-inset-top)) 12px 10px}
 .brand{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
 .brand .logo{width:34px;height:34px;border-radius:10px;background:#fff;color:var(--brand);display:grid;place-items:center;flex:none}
-.brand b{display:block;font-size:17px;font-weight:700;letter-spacing:.2px;line-height:1.1}
+.brand b{display:block;font-size:17px;font-weight:700;letter-spacing:.2px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .brand small{display:block;font-size:12px;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .brand>div:last-child{min-width:0}
 .pill{display:inline-flex;align-items:center;gap:6px;max-width:52vw;padding:6px 11px;border-radius:999px;border:0;background:rgba(255,255,255,.16);color:#fff;font-size:12.5px;font-weight:600;white-space:nowrap}
@@ -207,7 +207,7 @@ a{color:var(--brand)}
 .eye.on{color:var(--brand)}
 .btn.wide{width:100%;margin-top:16px}
 #lgErr{margin-top:12px}
-.lg-note{margin-top:14px;font-size:12.5px;color:var(--muted);text-align:center}
+.login .lg-note{margin:16px 0 0;font-size:12.5px;color:var(--muted);text-align:center}
 
 /* Đơn đang quét */
 .ord-empty{display:flex;flex-direction:column;align-items:center;gap:12px;padding:20px 16px;text-align:center}
@@ -329,6 +329,83 @@ a{color:var(--brand)}
 .qcell .qm{font-size:11.5px;color:var(--muted);text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .qr-modal .sh-foot .btn[data-a=prev],.qr-modal .sh-foot .btn[data-a=next]{flex:0 0 64px}
 .acc-ic{width:38px;height:38px;border-radius:12px;background:var(--brandSoft);color:var(--brand);display:grid;place-items:center;flex:none}
+
+/* Báo cáo: chuyển Đơn xuất / Doanh thu */
+.viewseg{display:flex;gap:4px;padding:4px;border-radius:14px;background:#dde5ef}
+.viewseg button{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;height:40px;border:0;border-radius:11px;background:transparent;color:var(--ink2);font-weight:600;font-size:14.5px}
+.viewseg button svg{width:18px;height:18px}
+.viewseg button.on{background:#fff;color:var(--brand);box-shadow:0 1px 2px rgba(15,23,42,.08),0 4px 12px rgba(15,23,42,.06)}
+.kt-seg{padding:2px 0 6px}
+.kt-seg button b{margin-left:3px;font-weight:700}
+.kt-seg:empty{display:none}
+/* Nhãn KTeam ở danh sách đơn + ô xác nhận trong chi tiết */
+.ost-col{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex:none}
+.ktb{font-size:11px;font-weight:600;padding:3px 8px;border-radius:999px;background:#eef2f7;color:var(--muted);white-space:nowrap}
+.ktb.on{background:var(--okSoft);color:var(--ok)}
+.ktbox{display:flex;align-items:center;gap:10px;margin:0 0 10px;padding:10px 12px;border-radius:12px;border:1px dashed var(--line2);background:#f8fafc}
+.ktbox.on{border:1px solid #bbf7d0;background:var(--okSoft)}
+.ktbox>svg{color:var(--ok);flex:none}
+.ktbox .kt-t{flex:1;min-width:0;font-size:12.5px;color:var(--muted)}
+.ktbox .kt-t b{display:block;font-size:14.5px;color:var(--ink)}
+.ktbox.on .kt-t b{color:var(--ok)}
+.ktbox .btn{flex:none}
+.dgrid .wide{grid-column:span 2}
+/* Doanh thu */
+.sales{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.sales>*{min-width:0}
+.tile b.money{font-size:20px}
+.warnbox{padding:10px 12px;border-radius:12px;background:var(--warnSoft);color:var(--warn);font-size:13.5px;line-height:1.45}
+.fchip{display:flex;align-items:center;gap:8px;padding:8px 8px 8px 12px;border-radius:12px;background:var(--brandSoft);color:var(--brand);font-size:13.5px;font-weight:600}
+.fchip span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.list-head .tot{font-size:13px;color:var(--muted);font-weight:600;white-space:nowrap}
+.agg{list-style:none;margin:0;padding:0 0 4px}
+.arow{position:relative;display:flex;align-items:center;gap:10px;width:100%;padding:11px 14px 15px;border:0;border-top:1px solid var(--line);background:none;text-align:left}
+button.arow:active{background:#f8fafc}
+.arow.sel{background:var(--brandSoft)}
+.arow .an{flex:1;min-width:0}
+.arow .an b{display:block;font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.arow .an small{display:block;font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.arow .av{flex:none;text-align:right}
+.arow .av b{display:block;font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
+.arow .av small{display:block;font-size:12.5px;color:var(--muted)}
+.arow .bar{position:absolute;left:14px;right:14px;bottom:6px;height:4px;border-radius:2px;background:#eef2f7;overflow:hidden}
+.arow .bar i{display:block;height:100%;border-radius:2px;background:var(--brand);opacity:.7}
+@media (max-width:430px){#barReport .btn .t{font-size:14px}}
+/* Báo lỗi: nút mở link Apps Script */
+.status-box a.btn{height:30px;margin:6px 0 0;text-decoration:none;color:var(--ink)}
+#rpErr .btn,#lgErr .btn{margin-top:6px}
+/* Quản lý KV2: xoá dữ liệu test */
+#rpWarn{margin:0}
+#rpWarn svg{width:17px;height:17px;vertical-align:-3px}
+.list-head .icon-btn2.del-ic{color:var(--bad)}
+.list-head .icon-btn2.del-ic.on{background:var(--badSoft);border-color:#fecaca}
+.selbar{margin:0 12px 8px;padding:10px 12px;border-radius:12px;background:var(--badSoft);color:var(--bad);font-size:13.5px}
+.selbar .sb-t{display:flex;gap:8px;align-items:flex-start;line-height:1.4}
+.selbar .sb-t svg{flex:none;width:18px;height:18px;margin-top:1px}
+.selbar .sb-a{display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap}
+.selbar .sb-a .btn{height:34px;background:#fff;border-color:#fecaca;color:var(--bad)}
+.selbar .sb-n{font-weight:500}
+.oitem.selm{gap:10px}
+.oitem .ock{flex:none;width:24px;height:24px;border-radius:7px;border:2px solid var(--line2);background:#fff;display:grid;place-items:center;color:#fff}
+.oitem .ock svg{width:16px;height:16px;stroke-width:3}
+.oitem.picked{background:#fff5f5}
+.oitem.picked .ock{background:var(--bad);border-color:var(--bad)}
+#barSel .btn.danger{flex:2}
+#barSel .btn.danger:disabled{background:#f3b6b6;border-color:#f3b6b6;opacity:1}
+.purge-sum{font-size:16px;margin-bottom:6px}
+.purge-sum b{font-size:20px;color:var(--bad)}
+.purge-list{list-style:none;margin:0 0 10px;padding:0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.purge-list li{padding:8px 12px;border-top:1px solid var(--line);font-size:13.5px}
+.purge-list li:first-child{border-top:0}
+.purge-list li b{display:block;font-size:14.5px}
+.purge-list li span{color:var(--muted)}
+.purge-modal p{margin:0 0 10px;font-size:14px;line-height:1.45}
+.purge-modal .pick-hint{background:var(--warnSoft);color:var(--warn)}
+.purge-modal .pick-hint svg{width:16px;height:16px;vertical-align:-3px}
+.purge-ok{display:block;font-size:14px;font-weight:500}
+.purge-ok .inp{margin-top:6px;font-family:'IBM Plex Mono',ui-monospace,monospace;font-weight:600;letter-spacing:2px;text-transform:uppercase}
+.purge-one{margin-top:14px;padding-top:10px;border-top:1px dashed var(--line2);text-align:center}
+.purge-one .btn{color:var(--bad)}
 </style>
 </head>
 <body>
@@ -362,6 +439,7 @@ a{color:var(--brand)}
   <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></symbol>
   <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5"/><path d="M5 20h14"/></symbol>
   <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 20H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h3"/><path d="M16 17l5-5-5-5M21 12H9"/></symbol>
+  <symbol id="i-money" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9.5v5M18 9.5v5"/></symbol>
   <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
 </svg>
 
@@ -439,6 +517,10 @@ a{color:var(--brand)}
   </div>
 
   <div id="tabReport" hidden>
+    <div class="viewseg" id="rpView" role="tablist" aria-label="Loại báo cáo">
+      <button type="button" role="tab" data-v="orders" class="on"><svg class="i"><use href="#i-report"/></svg>Đơn xuất</button>
+      <button type="button" role="tab" data-v="sales"><svg class="i"><use href="#i-money"/></svg>Doanh thu</button>
+    </div>
     <section class="card rpt-filter" aria-label="Lọc báo cáo">
       <div class="seg" id="rpPeriod">
         <button type="button" data-p="today">Hôm nay</button>
@@ -453,15 +535,19 @@ a{color:var(--brand)}
       </div>
       <select class="inp" id="rpNpp" aria-label="Lọc theo NPP" hidden></select>
       <label class="search"><svg class="i"><use href="#i-search"/></svg><input id="rpSearch" type="search" placeholder="Tìm đại lý, mã đơn, số phiếu…" autocomplete="off"></label>
+      <div class="seg kt-seg" id="rpKt" aria-label="Lọc theo quét nhập KTeam"></div>
     </section>
+    <div class="warnbox" id="rpWarn" hidden></div>
     <section class="tiles" id="rpTiles" aria-label="Tổng hợp"></section>
     <section class="card" id="rpLocal" hidden></section>
-    <section class="card" aria-label="Danh sách đơn xuất">
-      <div class="list-head"><h2 id="rpTitle">Đơn xuất</h2><button class="icon-btn2" id="rpRefresh" type="button" aria-label="Tải lại báo cáo"><svg class="i"><use href="#i-refresh"/></svg></button></div>
+    <section class="card" id="rpOrders" aria-label="Danh sách đơn xuất">
+      <div class="list-head"><h2 id="rpTitle">Đơn xuất</h2><button class="icon-btn2 del-ic" id="rpSel" type="button" aria-label="Xoá dữ liệu test" title="Xoá dữ liệu test (quản lý KV2)" hidden><svg class="i"><use href="#i-trash"/></svg></button><button class="icon-btn2" id="rpRefresh" type="button" aria-label="Tải lại báo cáo"><svg class="i"><use href="#i-refresh"/></svg></button></div>
       <div class="status-box bad" id="rpErr" hidden></div>
+      <div class="selbar" id="rpSelBar" hidden></div>
       <ol class="olist" id="rpList"></ol>
       <div class="empty" id="rpEmpty" hidden></div>
     </section>
+    <div id="rpSales" class="sales" hidden></div>
   </div>
 </main>
 
@@ -475,8 +561,14 @@ a{color:var(--brand)}
 </nav>
 <nav class="bottombar" id="barReport" hidden>
   <div class="in">
-    <button class="btn primary" id="btnRptExcel" type="button"><svg class="i"><use href="#i-xls"/></svg>Tải Excel báo cáo</button>
+    <button class="btn primary" id="btnRptExcel" type="button"><svg class="i"><use href="#i-xls"/></svg><span class="t">Tải Excel báo cáo</span></button>
     <button class="btn" id="btnRptShare" type="button" hidden><svg class="i"><use href="#i-share"/></svg>Gửi file</button>
+  </div>
+</nav>
+<nav class="bottombar" id="barSel" hidden>
+  <div class="in">
+    <button class="btn" id="btnSelCancel" type="button">Huỷ</button>
+    <button class="btn danger" id="btnSelDel" type="button" disabled><svg class="i"><use href="#i-trash"/></svg><span class="t">Chọn đơn để xoá</span></button>
   </div>
 </nav>
 
@@ -494,7 +586,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
    ⚙️  SCRIPT_URL = URL Apps Script (Ứng dụng web, đuôi /exec).
    ===================================================================== */
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwaumb04tZoVcZE6V--lb37675aqM1EGSszBm2f_tH_Ulq_bErLdtuDfzr77S0x3MimPA/exec";
-const APP_VERSION = '2.0.0';
+const APP_VERSION = '2.2.0';
 (() => {
 'use strict';
 /* ------------------------------------------------------------------
@@ -1155,32 +1247,102 @@ function renderAll() { renderOrder(); renderList(); renderStatus(); }
 /* ------------------------------------------------------------------
    Máy chủ Google Sheet (Apps Script)
 ------------------------------------------------------------------ */
-class ApiError extends Error { constructor(msg, code) { super(msg); this.code = code || ''; } }
+/** kind (lỗi mạng): OFFLINE = mất mạng · SERVER = Apps Script trả trang lỗi (code lỗi / chưa cấp quyền / sai link)
+ *  · BLIP = chập chờn, Apps Script vẫn chạy · TIMEOUT · HTTP · HTML */
+class ApiError extends Error { constructor(msg, code, kind) { super(msg); this.code = code || ''; this.kind = kind || ''; } }
+const MIN_SERVER = '2.2.0';                 // bản Apps Script đi cùng app này
+const RETRY = new Set(['ping', 'me', 'orders', 'order', 'rows', 'login', 'kteam']);   // thao tác đọc / làm lại được
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const verCmp = (a, b) => { const x = String(a || '0').split('.').map(Number), y = String(b || '0').split('.').map(Number); for (let i = 0; i < 3; i++) { const d = (x[i] || 0) - (y[i] || 0); if (d) return d; } return 0; };
+/** Apps Script đang chạy bản cũ hơn app? (bản ≤ 2.1 không gửi sv) */
+const serverOld = () => !!(S.server && verCmp(S.server.build, MIN_SERVER) < 0);
+function noteServer(d) {
+  if (!d || typeof d !== 'object' || !('ok' in d)) return;
+  const was = serverOld();
+  S.server = { build: d.sv || d.build || '', at: Date.now() };
+  if (was !== serverOld() && S.tab === 'report' && typeof renderReport === 'function') renderReport();
+}
+async function fetchT(url, opts, ms) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), ms);
+  try { return await fetch(url, Object.assign({ signal: ctrl.signal, redirect: 'follow', cache: 'no-store' }, opts)); }
+  finally { clearTimeout(t); }
+}
+async function apiOnce(url, body, timeoutMs) {
+  let res;
+  try {
+    // text/plain → "simple request", không bị chặn CORS với Apps Script
+    res = await fetchT(url, { method: 'POST', body: JSON.stringify(body) }, timeoutMs);
+  } catch (e) {
+    if (e.name === 'AbortError') throw new ApiError('Google Sheet phản hồi quá lâu – thử lại sau ít phút', 'NET', 'TIMEOUT');
+    throw new ApiError('Không kết nối được', 'NET', 'FETCH');
+  }
+  if (!res.ok) throw new ApiError('Google Sheet báo lỗi HTTP ' + res.status + ' – thử lại sau ít phút', 'NET', 'HTTP');
+  const txt = await res.text();
+  let data;
+  try { data = JSON.parse(txt); } catch (e) { throw new ApiError(/<html/i.test(txt) ? 'Máy chủ trả về trang đăng nhập Google – báo quản lý KV2 kiểm tra quyền triển khai' : 'Phản hồi không hợp lệ từ Google Sheet', 'NET', 'HTML'); }
+  noteServer(data);
+  return data;
+}
 async function api(payload, timeoutMs = 30000) {
   const url = apiUrl();
   if (!url) throw new ApiError('Chưa cài URL Google Sheet', 'NOURL');
   const body = Object.assign({}, payload);
   if (body.action !== 'login' && body.action !== 'ping') body.token = S.auth && S.auth.token;
-  const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), timeoutMs);
-  let res;
-  try {
-    // text/plain → "simple request", không bị chặn CORS với Apps Script
-    res = await fetch(url, { method: 'POST', body: JSON.stringify(body), signal: ctrl.signal, redirect: 'follow', cache: 'no-store' });
-  } catch (e) {
-    if (e.name === 'AbortError') throw new ApiError('Hết thời gian chờ Google Sheet phản hồi', 'NET');
-    throw new ApiError('Không kết nối được – kiểm tra mạng', 'NET');
-  } finally { clearTimeout(t); }
-  if (!res.ok) throw new ApiError('Google Sheet báo lỗi HTTP ' + res.status, 'NET');
-  const txt = await res.text();
+  const tries = RETRY.has(body.action) ? 3 : 1;
   let data;
-  try { data = JSON.parse(txt); } catch (e) { throw new ApiError(/<html/i.test(txt) ? 'Máy chủ trả về trang đăng nhập Google – báo quản lý KV2 kiểm tra quyền triển khai' : 'Phản hồi không hợp lệ từ Google Sheet', 'NET'); }
+  for (let i = 1; ; i++) {
+    try { data = await apiOnce(url, body, timeoutMs); break; }
+    catch (e) {
+      if (e.kind !== 'FETCH') throw e;
+      // Mạng chập chờn (đổi Wi-Fi ↔ 4G, mở lại app…) → tự thử lại; vẫn lỗi → tìm nguyên nhân để báo đúng
+      if (i >= tries || navigator.onLine === false) throw await diagnose(url);
+      await sleep(i === 1 ? 700 : 2000);
+    }
+  }
   if (!data.ok) {
     if (data.code === 'AUTH' && body.action !== 'login') sessionExpired(data.error);
+    if (data.code === 'BAD' && /Không rõ thao tác/.test(data.error || '')) throw new ApiError(OLD_SERVER_MSG, 'OLD');
     throw new ApiError(data.error || 'Google Sheet báo lỗi', data.code || 'ERR');
   }
   return data;
 }
+const OLD_SERVER_MSG = 'Apps Script trên Google Sheet đang chạy bản cũ – quản lý KV2 dán Code.gs bản 2.2.0 rồi Triển khai bản mới';
+/** Gửi lỗi (fetch không đọc được phản hồi): mất mạng thật hay Apps Script đang trả trang lỗi?
+ *  - GET link /exec đọc được JSON → Apps Script vẫn chạy, chỉ chập chờn
+ *  - GET chế độ no-cors có phản hồi (không đọc được) → mạng tốt, Apps Script trả trang lỗi
+ *  - không có phản hồi nào → mất mạng */
+let lastDiag = null;
+async function diagnose(url) {
+  let kind = 'OFFLINE';
+  if (navigator.onLine !== false) {
+    if (lastDiag && lastDiag.url === url && Date.now() - lastDiag.at < 20000) kind = lastDiag.kind;
+    else {
+      const q = (k) => url + (url.includes('?') ? '&' : '?') + k + '=' + Date.now();
+      try {
+        const j = await (await fetchT(q('ping'), {}, 10000)).json();
+        noteServer(j);
+        kind = j && j.ok ? 'BLIP' : 'SERVER';
+      } catch (e) {
+        try { await fetchT(q('probe'), { mode: 'no-cors' }, 10000); kind = 'SERVER'; } catch (e2) { kind = 'OFFLINE'; }
+      }
+      lastDiag = { url, kind, at: Date.now() };
+    }
+  }
+  return new ApiError(netMsg(kind), 'NET', kind);
+}
+function netMsg(kind) {
+  if (kind === 'BLIP') return 'Google Sheet phản hồi chập chờn – thử lại sau ít giây';
+  if (kind === 'SERVER') {
+    if (!loggedIn()) return 'Google Sheet đang lỗi (không phải do mạng) – báo quản lý KV2. Quản lý: mở link Apps Script để xem lỗi';
+    return isAdmin() ? 'Apps Script đang báo lỗi (mạng vẫn bình thường) – mở link Apps Script để xem lỗi, dán lại Code.gs rồi Triển khai bản mới'
+      : 'Google Sheet đang lỗi (không phải do mạng) – báo quản lý KV2. Serial vẫn lưu trên máy';
+  }
+  return 'Không kết nối được – kiểm tra mạng (Wi-Fi/4G) rồi thử lại';
+}
+/** Nút mở link Apps Script để quản lý KV2 đọc lỗi Google báo (VD "ReferenceError … dòng 1426") */
+const scriptLinkBtn = (kind) => (kind === 'SERVER' && apiUrl() && (isAdmin() || !loggedIn())
+  ? ` <a class="btn sm" href="${esc(apiUrl())}" target="_blank" rel="noopener" data-a="slink">${icon('eye')}Mở link Apps Script</a>` : '');
 
 /* ------------------------------------------------------------------
    Đăng nhập / phiên
@@ -1189,6 +1351,20 @@ function applySession(d) {
   S.auth = { token: d.token, user: d.user, dealers: d.dealers || [], models: d.models || [], at: Date.now(), api: apiUrl() };
   saveAuth();
   store(KEY.lastUser, d.user.username);
+  applyPurged(d.purged);
+}
+/** Đơn đã bị quản lý KV2 xoá (dữ liệu test) → bỏ khỏi máy để không còn trong "Đơn vừa xong" và không báo
+ *  trùng serial sai. Chỉ bỏ đơn không còn serial chờ gửi; force = chính máy này vừa xoá. */
+function applyPurged(ids, force) {
+  if (!Array.isArray(ids) || !ids.length) return [];
+  const gone = new Set(ids), cur = curOrder();
+  const drop = new Set(S.orders.filter((o) => gone.has(o.id) && (force || !unsentOf(o))));
+  if (!drop.size) return [];
+  S.orders = S.orders.filter((o) => !drop.has(o));
+  saveOrders();
+  if (cur && drop.has(cur)) { if (cam.running) stopScan(); lastEvt = null; }
+  renderOrder(); renderList(); renderStatus();
+  return [...drop];
 }
 /** Lấy lại token mới + danh sách đại lý/sản phẩm (tab Đại lý, Danh mục có thể đã sửa) */
 async function refreshSession(silent) {
@@ -1224,7 +1400,7 @@ async function logout() {
   if (cam.running) stopScan();
   closeAllModals();
   S.auth = null; saveAuth();
-  S.rptData = null;
+  S.rptData = null; S.salesData = null; RPT.sale = '';
   showLogin();
 }
 
@@ -1258,7 +1434,9 @@ async function sync() {
         res = await api({ action: 'add', items: batch.map(([o, r]) => ({ id: r.id, serial: r.serial, model: r.model, orderId: o.id, dealerCode: o.dlCode, orderNo: o.no, scanner: o.scanner, scannedAt: r.at, device: S.device })) });
       } catch (e) { batch.forEach(([, r]) => { if (r.st === 'sending') { r.st = 'err'; r.err = ''; } }); throw e; }
       const byId = new Map(batch.map(([o, r]) => [r.id, [o, r]]));
+      const goneIds = new Set();
       (res.results || []).forEach((x) => {
+        if (x.gone && byId.get(x.id)) goneIds.add(byId.get(x.id)[0].id);
         const p = byId.get(x.id); if (!p) return;
         const r = p[1];
         if (x.status === 'ok') {
@@ -1272,6 +1450,9 @@ async function sync() {
       const live = new Set(myItems().map(([, r]) => r.id));
       batch.forEach(([o, r]) => { if (!live.has(r.id) && r.st === 'ok' && !S.dels.some((x) => x.id === r.id)) S.dels.push({ id: r.id, owner: o.owner }); });
       saveDels();
+      // Đơn đã bị quản lý KV2 xoá (dữ liệu test) trong lúc máy này chưa gửi xong → bỏ đơn khỏi máy, báo cho người quét
+      const dropped = applyPurged([...goneIds]);
+      if (dropped.length) toast(`Đơn ${dropped.map((o) => o.dlName).join(', ')} đã bị quản lý KV2 xoá (dữ liệu test) – serial quét thêm không được lưu. Tạo đơn mới nếu cần quét lại.`, 'warn', 7000);
     }
     saveOrders();
     for (const o of myOrders().filter((x) => x.status === 'done' && !x.finSynced && !unsentOf(x))) {
@@ -1314,9 +1495,9 @@ function renderStatus() {
   let cls = '', t = '';
   if (!apiUrl()) { cls = 'bad'; t = 'Chưa nối Sheet'; }
   else if (!loggedIn()) { cls = 'bad'; t = 'Cần đăng nhập'; }
-  else if (navigator.onLine === false) { cls = 'wait'; t = waiting ? `Mất mạng · chờ ${waiting}` : 'Mất mạng'; }
+  else if (navigator.onLine === false) { cls = 'wait'; t = waiting ? `Mất mạng (${waiting})` : 'Mất mạng'; }
   else if (syncBusy) { cls = 'busy'; t = 'Đang gửi…'; }
-  else if (lastErr && waiting) { cls = 'bad'; t = `Lỗi gửi · chờ ${waiting}`; }
+  else if (lastErr && waiting) { cls = 'bad'; t = `Lỗi gửi (${waiting})`; }
   else if (waiting) { cls = 'wait'; t = `Chờ gửi ${waiting}`; }
   else { cls = 'ok'; t = myItems().length ? 'Đã lên Sheet' : 'Đã kết nối'; }
   pill.className = 'pill ' + cls; txt.textContent = t;
@@ -1328,8 +1509,15 @@ $('#pill').addEventListener('click', () => {
   else toast(navigator.onLine === false ? 'Đang mất mạng – serial vẫn lưu trên máy, có mạng sẽ tự gửi' : 'Serial được gửi lên Google Sheet ngay sau khi quét');
   backoff = 0; sync();
 });
-window.addEventListener('online', () => { backoff = 0; renderStatus(); sync(); });
+window.addEventListener('online', () => { backoff = 0; lastDiag = null; renderStatus(); sync(); retryReportIfErr(); });
 window.addEventListener('offline', renderStatus);
+// Mở lại app (từ app KTeam, Zalo…) khi báo cáo đang lỗi → tự tải lại
+document.addEventListener('visibilitychange', () => { if (!document.hidden) retryReportIfErr(); });
+function retryReportIfErr() {
+  if (S.tab !== 'report' || !loggedIn()) return;
+  if (S.rptErr && !S.rptLoading) loadReport(true);
+  if (RPT.view === 'sales' && S.salesErr && !S.salesLoading) loadSales(true);
+}
 setInterval(() => { if (!syncBusy && loggedIn() && hasWork()) sync(); }, 45000);
 
 /* ------------------------------------------------------------------
@@ -1345,7 +1533,8 @@ function showLogin(msg) {
   $('#loginView').hidden = false;
   $('#appView').hidden = true;
   $('#tabs').hidden = true;
-  $('#barScan').hidden = $('#barReport').hidden = true;
+  $('#barScan').hidden = $('#barReport').hidden = $('#barSel').hidden = true;
+  S.sel = null;
   renderHeader(); renderStatus();
   const err = $('#lgErr');
   err.hidden = !msg; err.textContent = msg || '';
@@ -1367,7 +1556,8 @@ function setTab(t) {
   $$('.tab').forEach((b) => { const on = b.dataset.tab === t; b.classList.toggle('on', on); b.setAttribute('aria-selected', on ? 'true' : 'false'); });
   $('#tabScan').hidden = t !== 'scan';
   $('#tabReport').hidden = t !== 'report';
-  $('#barReport').hidden = t !== 'report';
+  if (t !== 'report') S.sel = null;
+  renderBars();
   if (t !== 'scan' && cam.running) stopScan();
   renderAll();
   if (t === 'report') openReportTab();
@@ -1384,7 +1574,7 @@ $('#loginForm').addEventListener('submit', async (e) => {
   if (!apiUrl()) { err.hidden = false; err.textContent = 'App chưa được cài địa chỉ Google Sheet – báo quản lý KV2.'; return; }
   btn.disabled = true; btn.innerHTML = '<i class="spin"></i>Đang đăng nhập…'; err.hidden = true;
   try { await doLogin(u, p); }
-  catch (ex) { err.hidden = false; err.textContent = ex.code === 'NET' ? ex.message + ' rồi thử lại.' : ex.message; $('#lgPass').select(); }
+  catch (ex) { err.hidden = false; err.innerHTML = esc(ex.message) + scriptLinkBtn(ex.kind); $('#lgPass').select(); }
   finally { btn.disabled = false; btn.textContent = 'Đăng nhập'; }
 });
 $('#lgEye').onclick = () => {
@@ -1735,7 +1925,7 @@ function zipStore(files) {
 const xEsc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '');
 const colL = (n) => { let s = ''; n += 1; while (n) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); } return s; };
 const xlDate = (ms) => (ms + VN) / 86400000 + 25569; // giờ Việt Nam (UTC+7)
-/* Style: 0 mặc định · 1 tiêu đề · 2 chữ · 3 ngày giờ · 4 số giữa · 5 chữ đậm · 6 số đậm · 7 chữ nền vàng */
+/* Style: 0 mặc định · 1 tiêu đề · 2 chữ · 3 ngày giờ · 4 số giữa · 5 chữ đậm · 6 số đậm · 7 chữ nền vàng · 8 tiền #,##0 · 9 tiền đậm */
 const STYLES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
 <numFmts count="1"><numFmt numFmtId="164" formatCode="dd/mm/yyyy hh:mm:ss"/></numFmts>
@@ -1743,7 +1933,7 @@ const STYLES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF0E5FAE"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFFF4D6"/><bgColor indexed="64"/></patternFill></fill></fills>
 <borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FFD0D7E2"/></left><right style="thin"><color rgb="FFD0D7E2"/></right><top style="thin"><color rgb="FFD0D7E2"/></top><bottom style="thin"><color rgb="FFD0D7E2"/></bottom><diagonal/></border></borders>
 <cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
-<cellXfs count="8">
+<cellXfs count="10">
 <xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>
 <xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>
 <xf numFmtId="49" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1"/>
@@ -1752,6 +1942,8 @@ const STYLES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <xf numFmtId="49" fontId="2" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyBorder="1"/>
 <xf numFmtId="0" fontId="2" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center"/></xf>
 <xf numFmtId="49" fontId="0" fillId="3" borderId="1" xfId="0" applyNumberFormat="1" applyFill="1" applyBorder="1"/>
+<xf numFmtId="3" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1"/>
+<xf numFmtId="3" fontId="2" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyBorder="1"/>
 </cellXfs>
 <cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>
 </styleSheet>`;
@@ -1805,23 +1997,30 @@ function canShareFiles() {
 }
 
 /* ------------------------------------------------------------------
-   File Excel: 1 đơn xuất · báo cáo nhiều đơn
+   File Excel: 1 đơn xuất · báo cáo đơn xuất · báo cáo doanh thu
+   Style ô: 1 tiêu đề · 2 chữ · 3 ngày giờ · 4 số · 5 chữ đậm · 6 số đậm · 7 nền vàng · 8 tiền · 9 tiền đậm
 ------------------------------------------------------------------ */
-/** order: {id,npp,dlCode,dlName,dlAddr,sale,no,start,upd,user,status} · items: [{serial,model,at,user,note,pending}] */
+const money = (n, bold) => ({ v: Math.round(+n || 0), s: bold ? 9 : 8 });
+const ktText = (o) => (o.kt ? 'Đã nhập' : 'Chưa xác nhận');
+/** order: {id,npp,dlCode,dlName,dlAddr,sale,no,start,upd,user,status,kt,ktAt,ktBy} · items: [{serial,model,at,user,note,pending,price}] */
 function orderWorkbook(order, items) {
   const recs = items.slice().sort((a, b) => a.at - b.at);
-  const rows = recs.map((r, i) => [i + 1, { v: r.serial, s: 5 }, r.model, new Date(r.at), r.user || '',
-    r.note ? { v: '⚠ ' + r.note, s: 7 } : r.pending ? 'Chưa lên Google Sheet' : '']);
+  const hasPrice = recs.some((r) => +r.price > 0);
+  const rev = recs.reduce((s, r) => s + (+r.price || 0), 0);
+  const rows = recs.map((r, i) => [i + 1, { v: r.serial, s: 5 }, r.model, new Date(r.at), r.user || ''].concat(hasPrice ? [r.price ? money(r.price) : ''] : [],
+    [r.note ? { v: '⚠ ' + r.note, s: 7 } : r.pending ? 'Chưa lên Google Sheet' : '']));
   const info = [
     ['Mã đơn', order.id], ['NPP', order.npp || ''], ['Mã đại lý', order.dlCode], ['Đại lý', { v: order.dlName, s: 5 }],
     ['Địa chỉ', order.dlAddr || ''], ['Sale phụ trách', order.sale || ''], ['Số phiếu', order.no || ''],
-    ['Bắt đầu quét', order.start ? new Date(order.start) : ''], ['Cập nhật', order.upd ? new Date(order.upd) : ''],
-    ['Người quét', order.user || ''], ['Trạng thái', order.status || ''], ['Tổng số serial', { v: recs.length, s: 6 }], ['', ''],
-    [{ v: 'Sản phẩm', s: 1 }, { v: 'Số lượng', s: 1 }],
-  ].concat(modelSummary(recs).map(([m, n]) => [m, n]));
+    ['Bắt đầu quét', toMs(order.start) ? new Date(toMs(order.start)) : ''], ['Cập nhật', toMs(order.upd) ? new Date(toMs(order.upd)) : ''],
+    ['Người quét', order.user || ''], ['Trạng thái', order.status || ''],
+    ['Quét nhập KTeam', order.kt ? `Đã nhập · ${toMs(order.ktAt) ? fmtDTY(toMs(order.ktAt)) : ''} · ${order.ktBy || ''}` : 'Chưa xác nhận'],
+    ['Tổng số serial', { v: recs.length, s: 6 }],
+  ].concat(hasPrice ? [['Doanh thu (VNĐ, theo Bảng giá)', money(rev, true)]] : [], [['', ''], [{ v: 'Sản phẩm', s: 1 }, { v: 'Số lượng', s: 1 }]],
+    modelSummary(recs).map(([m, n]) => [m, n]));
   const blob = buildXlsx([
-    { name: 'Serial', header: ['STT', 'Serial', 'Sản phẩm', 'Thời gian quét', 'Người quét', 'Ghi chú'], rows, cols: [6, 22, 26, 20, 20, 60], filter: true },
-    { name: 'Thông tin đơn', header: ['Thông tin', 'Giá trị'], rows: info, cols: [22, 44], filter: false },
+    { name: 'Serial', header: ['STT', 'Serial', 'Sản phẩm', 'Thời gian quét', 'Người quét'].concat(hasPrice ? ['Đơn giá (VNĐ)'] : [], ['Ghi chú']), rows, cols: [6, 22, 26, 20, 20].concat(hasPrice ? [16] : [], [60]), filter: true },
+    { name: 'Thông tin đơn', header: ['Thông tin', 'Giá trị'], rows: info, cols: [30, 48], filter: false },
   ]);
   return { blob, name: `XuatKho_${slug(order.dlName)}_${order.id}.xlsx`, n: recs.length };
 }
@@ -1844,36 +2043,74 @@ function exportLocalOrder(o, mode) {
   const f = orderWorkbook(localOrderInfo(o), localOrderItems(o));
   saveFile(f.blob, f.name, mode, `Đã xuất ${f.n} serial → ${f.name}`);
 }
+const fileWho = (npp) => (isAdmin() ? (npp || 'TatCaNPP') : me().npp);
+const fileRange = (d) => `${d.from.replace(/-/g, '')}${d.to !== d.from ? '-' + d.to.replace(/-/g, '') : ''}`;
+async function withBusy(fn) {
+  const btn = $('#btnRptExcel'), old = btn.innerHTML;
+  S.exportBusy = true; btn.disabled = true; btn.innerHTML = '<i class="spin"></i>Đang tạo file…';
+  try { await fn(); } catch (e) { toast('Không tạo được file: ' + e.message, 'bad', 4500); }
+  finally { S.exportBusy = false; btn.disabled = false; btn.innerHTML = old; if (S.tab === 'report') renderReport(); }
+}
 
-/** Báo cáo: danh sách đơn + toàn bộ serial + tổng hợp theo đại lý/sản phẩm */
-async function exportReport(mode) {
+/** Báo cáo đơn xuất: danh sách đơn (kèm KTeam, doanh thu) + toàn bộ serial + tổng hợp đại lý/sản phẩm */
+function exportReport(mode) {
   const d = S.rptData, orders = rptFiltered();
   if (!d || !orders.length) { toast('Không có đơn nào để xuất'); return; }
-  const btn = $('#btnRptExcel'), old = btn.innerHTML;
-  btn.disabled = true; btn.innerHTML = '<i class="spin"></i>Đang tạo file…';
-  try {
+  return withBusy(async () => {
     const res = await api({ action: 'rows', from: d.from, to: d.to, npp: isAdmin() ? d.npp : '' }, 60000);
     const ids = new Set(orders.map((o) => o.id));
     const rows = res.rows.filter((r) => ids.has(r[3]));
+    const revOf = new Map();
+    rows.forEach((r) => revOf.set(r[3], (revOf.get(r[3]) || 0) + (+r[10] || 0)));
     const admin = isAdmin();
     const oRows = orders.slice().sort((a, b) => toMs(a.start) - toMs(b.start)).map((o) => [toMs(o.start) ? new Date(toMs(o.start)) : '', { v: o.id, s: 2 }]
-      .concat(admin ? [o.npp] : [], [{ v: o.dlCode, s: 2 }, { v: o.dlName, s: 5 }, o.sale, o.no, o.qty, o.user, o.status === 'Hoàn tất' ? o.status : { v: o.status || 'Đang quét', s: 7 }, toMs(o.upd) ? new Date(toMs(o.upd)) : '']));
-    const sRows = rows.map((r) => [toMs(r[0]) ? new Date(toMs(r[0])) : '', { v: r[1], s: 5 }, r[2], { v: r[3], s: 2 }].concat(admin ? [r[4]] : [], [{ v: r[5], s: 2 }, r[6], r[7], r[8] ? { v: '⚠ ' + r[8], s: 7 } : '']));
+      .concat(admin ? [o.npp] : [], [{ v: o.dlCode, s: 2 }, { v: o.dlName, s: 5 }, o.sale, o.no, o.qty, money(revOf.get(o.id)), o.user,
+        o.status === 'Hoàn tất' ? o.status : { v: o.status || 'Đang quét', s: 7 }, toMs(o.upd) ? new Date(toMs(o.upd)) : '',
+        o.kt ? ktText(o) : { v: ktText(o), s: 7 }, toMs(o.ktAt) ? new Date(toMs(o.ktAt)) : '', o.ktBy || '']));
+    const sRows = rows.map((r) => [toMs(r[0]) ? new Date(toMs(r[0])) : '', { v: r[1], s: 5 }, r[2], r[10] ? money(r[10]) : '', { v: r[3], s: 2 }]
+      .concat(admin ? [r[4]] : [], [{ v: r[5], s: 2 }, r[6], r[9], r[7], r[8] ? { v: '⚠ ' + r[8], s: 7 } : '']));
     const grp = new Map();
-    rows.forEach((r) => { const k = r[6] + '\u0001' + (r[2] || '(chưa chọn)'); grp.set(k, (grp.get(k) || 0) + 1); });
-    const sum = [...grp.entries()].sort((a, b) => a[0].localeCompare(b[0], 'vi')).map(([k, n]) => { const [dl, m] = k.split('\u0001'); return [dl, m, n]; });
-    sum.push([{ v: 'Tổng cộng', s: 5 }, { v: '', s: 5 }, { v: rows.length, s: 6 }]);
+    rows.forEach((r) => { const k = r[6] + '\u0001' + (r[2] || '(chưa chọn)'); const g = grp.get(k) || { n: 0, rev: 0 }; g.n++; g.rev += +r[10] || 0; grp.set(k, g); });
+    const sum = [...grp.entries()].sort((a, b) => a[0].localeCompare(b[0], 'vi')).map(([k, g]) => { const [dl, m] = k.split('\u0001'); return [dl, m, g.n, money(g.rev)]; });
+    sum.push([{ v: 'Tổng cộng', s: 5 }, { v: '', s: 5 }, { v: rows.length, s: 6 }, money(rows.reduce((s, r) => s + (+r[10] || 0), 0), true)]);
     const blob = buildXlsx([
-      { name: 'Đơn xuất', header: ['Bắt đầu quét', 'Mã đơn'].concat(admin ? ['NPP'] : [], ['Mã ĐL', 'Đại lý', 'Sale phụ trách', 'Số phiếu', 'Số lượng', 'Người quét', 'Trạng thái', 'Cập nhật']), rows: oRows, cols: [20, 18].concat(admin ? [20] : [], [14, 30, 22, 14, 10, 20, 12, 20]), filter: true },
-      { name: 'Serial', header: ['Thời gian quét', 'Serial', 'Sản phẩm', 'Mã đơn'].concat(admin ? ['NPP'] : [], ['Mã ĐL', 'Đại lý', 'Người quét', 'Ghi chú']), rows: sRows, cols: [20, 22, 24, 18].concat(admin ? [20] : [], [14, 30, 20, 60]), filter: true },
-      { name: 'Tổng hợp', header: ['Đại lý', 'Sản phẩm', 'Số lượng'], rows: sum, cols: [34, 26, 12], filter: false },
+      { name: 'Đơn xuất', header: ['Bắt đầu quét', 'Mã đơn'].concat(admin ? ['NPP'] : [], ['Mã ĐL', 'Đại lý', 'Sale phụ trách', 'Số phiếu', 'Số lượng', 'Doanh thu (VNĐ)', 'Người quét', 'Trạng thái', 'Cập nhật', 'Quét nhập KTeam', 'Thời gian nhập KTeam', 'Xác nhận KTeam bởi']),
+        rows: oRows, cols: [20, 18].concat(admin ? [20] : [], [14, 30, 22, 14, 10, 16, 20, 12, 20, 16, 20, 22]), filter: true },
+      { name: 'Serial', header: ['Thời gian quét', 'Serial', 'Sản phẩm', 'Đơn giá (VNĐ)', 'Mã đơn'].concat(admin ? ['NPP'] : [], ['Mã ĐL', 'Đại lý', 'Sale phụ trách', 'Người quét', 'Ghi chú']),
+        rows: sRows, cols: [20, 22, 24, 16, 18].concat(admin ? [20] : [], [14, 30, 22, 20, 60]), filter: true },
+      { name: 'Tổng hợp', header: ['Đại lý', 'Sản phẩm', 'Số lượng', 'Doanh thu (VNĐ)'], rows: sum, cols: [34, 26, 12, 18], filter: false },
     ]);
-    const who = admin ? (d.npp || 'TatCaNPP') : me().npp;
-    const name = `BaoCao_XuatKho_${slug(who)}_${d.from.replace(/-/g, '')}${d.to !== d.from ? '-' + d.to.replace(/-/g, '') : ''}.xlsx`;
+    const name = `BaoCao_XuatKho_${slug(fileWho(d.npp))}_${fileRange(d)}.xlsx`;
     await saveFile(blob, name, mode, `Đã xuất ${orders.length} đơn · ${rows.length} serial → ${name}`);
     if (res.truncated) toast('File chỉ có ' + res.rows.length + ' serial đầu – chọn khoảng thời gian ngắn hơn', 'warn', 5000);
-  } catch (e) { toast('Không tạo được file: ' + e.message, 'bad', 4500); }
-  finally { btn.disabled = false; btn.innerHTML = old; }
+  });
+}
+
+/** Báo cáo doanh thu: theo Sale, theo đại lý, theo sản phẩm + chi tiết từng máy (theo bộ lọc đang chọn) */
+function exportSales(mode) {
+  const d = S.salesData, A = salesAgg();
+  if (!d || !A || !A.qty) { toast('Không có dữ liệu doanh thu để xuất'); return; }
+  return withBusy(async () => {
+    const admin = isAdmin();
+    const total = (label, cols) => [{ v: label, s: 5 }].concat(Array(cols).fill({ v: '', s: 5 }));
+    const saleRows = A.sales.map((s) => [{ v: s.name, s: 5 }].concat(admin ? [[...s.npps].join(', ')] : [], [s.dealers.size, s.orders.size, s.qty, money(s.rev)]));
+    saleRows.push(total('Tổng cộng', admin ? 1 : 0).concat([{ v: A.dealers.size, s: 6 }, { v: A.orders.size, s: 6 }, { v: A.qty, s: 6 }, money(A.rev, true)]));
+    const dlRows = A.dealerList.map((x) => [{ v: x.code, s: 2 }, { v: x.name, s: 5 }, x.sale].concat(admin ? [x.npp] : [], [x.orders.size, x.qty, money(x.rev)]));
+    dlRows.push(total('Tổng cộng', admin ? 3 : 2).concat([{ v: A.orders.size, s: 6 }, { v: A.qty, s: 6 }, money(A.rev, true)]));
+    const mRows = A.models.map((x) => [{ v: x.name, s: 5 }, x.qty, x.priced === x.qty && x.qty ? money(x.rev / x.qty) : '', money(x.rev)]);
+    mRows.push([{ v: 'Tổng cộng', s: 5 }, { v: A.qty, s: 6 }, { v: '', s: 5 }, money(A.rev, true)]);
+    const detail = A.rows.slice().sort((a, b) => toMs(a[0]) - toMs(b[0])).map((r) => [toMs(r[0]) ? new Date(toMs(r[0])) : '', { v: r[1], s: 5 }, r[2],
+      +r[10] ? money(r[10]) : { v: 'Chưa có giá', s: 7 }, { v: r[3], s: 2 }, { v: r[5], s: 2 }, r[6], r[9] || 'Chưa có Sale'].concat(admin ? [r[4]] : []));
+    const blob = buildXlsx([
+      { name: 'Theo Sale', header: ['Sale phụ trách'].concat(admin ? ['NPP'] : [], ['Số đại lý', 'Số đơn', 'Số máy', 'Doanh thu (VNĐ)']), rows: saleRows, cols: [26].concat(admin ? [26] : [], [11, 10, 10, 18]), filter: false },
+      { name: 'Theo đại lý', header: ['Mã ĐL', 'Đại lý', 'Sale phụ trách'].concat(admin ? ['NPP'] : [], ['Số đơn', 'Số máy', 'Doanh thu (VNĐ)']), rows: dlRows, cols: [14, 32, 24].concat(admin ? [22] : [], [10, 10, 18]), filter: true },
+      { name: 'Theo sản phẩm', header: ['Sản phẩm', 'Số máy', 'Đơn giá (VNĐ)', 'Doanh thu (VNĐ)'], rows: mRows, cols: [28, 10, 16, 18], filter: false },
+      { name: 'Chi tiết', header: ['Thời gian quét', 'Serial', 'Sản phẩm', 'Đơn giá (VNĐ)', 'Mã đơn', 'Mã ĐL', 'Đại lý', 'Sale phụ trách'].concat(admin ? ['NPP'] : []), rows: detail, cols: [20, 22, 24, 16, 18, 14, 30, 22].concat(admin ? [20] : []), filter: true },
+    ]);
+    const name = `DoanhThu_${slug(fileWho(d.npp))}${RPT.sale ? '_' + slug(RPT.sale) : ''}_${fileRange(d)}.xlsx`;
+    await saveFile(blob, name, mode, `Đã xuất doanh thu ${A.qty} máy → ${name}`);
+    if (A.noPrice) toast(`${A.noPrice} máy chưa có giá – ghi “Chưa có giá” trong file`, 'warn', 5000);
+  });
 }
 
 /* ------------------------------------------------------------------
@@ -1983,12 +2220,20 @@ function openQrViewer(items, idx, title) {
 }
 
 /* ------------------------------------------------------------------
-   BÁO CÁO: đơn xuất đã quét (lấy từ Google Sheet) → bấm đơn để xem
-   lịch sử quét xuất → bấm serial để xem mã QR
+   BÁO CÁO
+   - Đơn xuất: các đơn đã quét (lấy từ Google Sheet) → bấm đơn xem lịch sử
+     quét xuất, mã QR; NPP xác nhận đơn đã quét nhập trên app KTeam.
+   - Doanh thu: số máy + doanh thu theo Sale / đại lý / sản phẩm
+     (đơn giá lấy từ tab "Bảng giá" theo ngày quét).
 ------------------------------------------------------------------ */
-const RPT = Object.assign({ period: 'today', from: '', to: '', npp: '', q: '' }, load(KEY.rpt, {}));
-RPT.q = '';
-const saveRpt = () => store(KEY.rpt, { period: RPT.period, from: RPT.from, to: RPT.to, npp: RPT.npp });
+const RPT = Object.assign({ period: 'today', from: '', to: '', npp: '', q: '', view: 'orders', kt: '' }, load(KEY.rpt, {}));
+RPT.q = ''; RPT.sale = '';
+if (RPT.view !== 'sales') RPT.view = 'orders';
+if (!['', 'no', 'yes'].includes(RPT.kt)) RPT.kt = '';
+const saveRpt = () => store(KEY.rpt, { period: RPT.period, from: RPT.from, to: RPT.to, npp: RPT.npp, view: RPT.view, kt: RPT.kt });
+const fmtNum = (n) => Math.round(+n || 0).toLocaleString('vi-VN');
+const fmtMoney = (n) => fmtNum(n) + ' đ';
+const fmtMoneyShort = (n) => (n >= 1e9 ? `${(n / 1e9).toLocaleString('vi-VN', { maximumFractionDigits: 2 })} tỷ` : n >= 1e6 ? `${(n / 1e6).toLocaleString('vi-VN', { maximumFractionDigits: 1 })} tr` : fmtNum(n));
 function rptRange() {
   const today = ymd(Date.now());
   if (RPT.period === '7d') return [ymdShift(today, -6), today];
@@ -2002,12 +2247,19 @@ function rptRange() {
   return [today, today];
 }
 const rptKey = () => { const [a, b] = rptRange(); return `${a}|${b}|${isAdmin() ? RPT.npp : ''}`; };
-function rptFiltered() {
+const qTokens = () => fold(RPT.q).split(/\s+/).filter(Boolean);
+/** Đơn theo ô tìm kiếm (+ lọc KTeam nếu withKt) */
+function rptFiltered(withKt = true) {
   const d = S.rptData;
   if (!d) return [];
-  const toks = fold(RPT.q).split(/\s+/).filter(Boolean);
-  if (!toks.length) return d.orders;
-  return d.orders.filter((o) => { const k = fold(`${o.dlName} ${o.dlCode} ${o.id} ${o.no} ${o.user} ${o.sale} ${o.npp}`); return toks.every((t) => k.includes(t)); });
+  const toks = qTokens();
+  return d.orders.filter((o) => {
+    if (withKt && RPT.kt === 'yes' && !o.kt) return false;
+    if (withKt && RPT.kt === 'no' && o.kt) return false;
+    if (!toks.length) return true;
+    const k = fold(`${o.dlName} ${o.dlCode} ${o.id} ${o.no} ${o.user} ${o.sale} ${o.npp}`);
+    return toks.every((t) => k.includes(t));
+  });
 }
 let rptSeq = 0;
 async function loadReport(force) {
@@ -2019,20 +2271,44 @@ async function loadReport(force) {
   }
   if (!force && S.rptData && Date.now() - S.rptData.at < 30000) { renderReport(); return; }
   const seq = ++rptSeq;
-  S.rptLoading = true; S.rptErr = ''; renderReport();
+  S.rptLoading = true; S.rptErr = ''; S.rptErrKind = ''; renderReport();
   try {
     const npp = isAdmin() ? RPT.npp : '';
     const d = await api({ action: 'orders', from, to, npp });
     if (seq !== rptSeq) return;
     S.rptData = { key, user: me().username, from, to, npp, at: Date.now(), orders: d.orders || [], totalOrders: d.totalOrders, totalQty: d.totalQty, truncated: d.truncated };
     store(KEY.rptCache, S.rptData);
+    applyPurged(d.purged);
+    if (S.sel) { const have = new Set(S.rptData.orders.map((o) => o.id)); [...S.sel].forEach((id) => { if (!have.has(id)) S.sel.delete(id); }); }
   } catch (e) {
     if (seq !== rptSeq) return;
-    S.rptErr = e.message;
+    S.rptErr = e.message; S.rptErrKind = e.kind || '';
   } finally {
     if (seq === rptSeq) { S.rptLoading = false; renderReport(); }
   }
 }
+/** Doanh thu: tải toàn bộ serial của các đơn trong khoảng (kèm Sale + đơn giá) rồi cộng dồn trên máy */
+let salesSeq = 0;
+async function loadSales(force) {
+  if (!loggedIn()) return;
+  const key = rptKey(), [from, to] = rptRange(), user = me().username;
+  if (S.salesData && (S.salesData.key !== key || S.salesData.user !== user)) S.salesData = null;
+  if (!force && S.salesData && Date.now() - S.salesData.at < 60000) { renderReport(); return; }
+  const seq = ++salesSeq;
+  S.salesLoading = true; S.salesErr = ''; S.salesErrKind = ''; renderReport();
+  try {
+    const npp = isAdmin() ? RPT.npp : '';
+    const d = await api({ action: 'rows', from, to, npp }, 60000);
+    if (seq !== salesSeq) return;
+    S.salesData = { key, user, from, to, npp, at: Date.now(), rows: d.rows || [], total: d.total, truncated: d.truncated };
+  } catch (e) {
+    if (seq !== salesSeq) return;
+    S.salesErr = e.message; S.salesErrKind = e.kind || '';
+  } finally {
+    if (seq === salesSeq) { S.salesLoading = false; renderReport(); }
+  }
+}
+function refreshReport(force) { loadReport(force); if (RPT.view === 'sales') loadSales(force); }
 function openReportTab() {
   const sel = $('#rpNpp');
   sel.hidden = !isAdmin();
@@ -2043,42 +2319,154 @@ function openReportTab() {
     RPT.npp = sel.value;
   }
   $('#rpSearch').value = RPT.q;
-  loadReport(false);
+  refreshReport(false);
 }
+
+/* -------- Cộng dồn doanh thu: rows = [thời gian, serial, SP, mã đơn, NPP, mã ĐL, đại lý, người quét, ghi chú, Sale, đơn giá] */
+function salesAgg() {
+  const d = S.salesData;
+  if (!d) return null;
+  const toks = qTokens();
+  const rows = d.rows.filter((r) => {
+    if (RPT.sale && (r[9] || 'Chưa có Sale') !== RPT.sale) return false;
+    if (!toks.length) return true;
+    const k = fold(`${r[6]} ${r[5]} ${r[9]} ${r[2]} ${r[3]} ${r[4]}`);
+    return toks.every((t) => k.includes(t));
+  });
+  const A = { rows, qty: rows.length, rev: 0, noPrice: 0, noPriceModels: new Map(), orders: new Set(), dealers: new Set() };
+  const sale = new Map(), dealer = new Map(), model = new Map();
+  for (const r of rows) {
+    const price = +r[10] || 0, sn = r[9] || 'Chưa có Sale', mn = r[2] || '(chưa chọn SP)';
+    A.rev += price;
+    if (!price) { A.noPrice++; A.noPriceModels.set(mn, (A.noPriceModels.get(mn) || 0) + 1); }
+    A.orders.add(r[3]); A.dealers.add(r[5]);
+    let s = sale.get(sn);
+    if (!s) sale.set(sn, (s = { name: sn, qty: 0, rev: 0, dealers: new Set(), orders: new Set(), npps: new Set() }));
+    s.qty++; s.rev += price; s.dealers.add(r[5]); s.orders.add(r[3]); if (r[4]) s.npps.add(r[4]);
+    let dl = dealer.get(r[5]);
+    if (!dl) dealer.set(r[5], (dl = { code: r[5], name: r[6], sale: sn, npp: r[4], qty: 0, rev: 0, orders: new Set() }));
+    dl.qty++; dl.rev += price; dl.orders.add(r[3]);
+    let m = model.get(mn);
+    if (!m) model.set(mn, (m = { name: mn, qty: 0, rev: 0, priced: 0 }));
+    m.qty++; m.rev += price; if (price) m.priced++;
+  }
+  const by = (a, b) => b.rev - a.rev || b.qty - a.qty || a.name.localeCompare(b.name, 'vi');
+  A.sales = [...sale.values()].sort(by);
+  A.dealerList = [...dealer.values()].sort(by);
+  A.models = [...model.values()].sort(by);
+  return A;
+}
+
 function renderReport() {
+  $$('#rpView button').forEach((b) => { const on = b.dataset.v === RPT.view; b.classList.toggle('on', on); b.setAttribute('aria-selected', on ? 'true' : 'false'); });
   $$('#rpPeriod button').forEach((b) => b.classList.toggle('on', b.dataset.p === RPT.period));
   const [from, to] = rptRange();
   $('#rpDates').hidden = RPT.period !== 'custom';
   if (RPT.period === 'custom') { $('#rpFrom').value = from; $('#rpTo').value = to; }
+  const sales = RPT.view === 'sales';
+  $('#rpOrders').hidden = sales;
+  $('#rpSales').hidden = !sales;
+  $('#rpSearch').placeholder = sales ? 'Tìm đại lý, Sale, sản phẩm…' : 'Tìm đại lý, mã đơn, số phiếu…';
+  const xt = $('#btnRptExcel .t');
+  if (xt) xt.textContent = sales ? 'Tải Excel doanh thu' : 'Tải Excel báo cáo';
+  $('#btnRptShare').hidden = !canShareFiles();
+  const warn = $('#rpWarn'), old = isAdmin() && serverOld();
+  warn.hidden = !old;
+  warn.innerHTML = old ? `${icon('alert')} <b>Apps Script trên Google Sheet đang chạy bản cũ</b>${S.server.build ? ' (' + esc(S.server.build) + ')' : ''} – app ${APP_VERSION} cần Apps Script bản ${MIN_SERVER} để xoá dữ liệu test và báo lỗi chính xác. Cập nhật: dán Code.gs mới → Lưu → chạy setup → Triển khai → Quản lý các bản triển khai → ✏️ → Bản mới → Triển khai.` : '';
+  $('#rpSel').hidden = !isAdmin() || sales;
+  $('#rpSel').classList.toggle('on', !!S.sel);
+  $('#rpSel').innerHTML = icon(S.sel ? 'x' : 'trash');
+  $('#rpSel').setAttribute('aria-label', S.sel ? 'Thoát chế độ xoá' : 'Xoá dữ liệu test');
+  if (sales) renderSalesView(from, to); else renderOrdersView(from, to);
+  renderLocalPending();
+  renderBars();
+}
+
+function renderOrdersView(from, to) {
   $('#rpTitle').textContent = from === to ? `Đơn xuất ngày ${ymdText(from)}` : `Đơn xuất ${ymdText(from).slice(0, 5)} → ${ymdText(to)}`;
   const btn = $('#rpRefresh');
   btn.disabled = !!S.rptLoading;
   btn.innerHTML = S.rptLoading ? '<i class="spin"></i>' : icon('refresh');
-  const d = S.rptData, list = rptFiltered();
+  const d = S.rptData, list = rptFiltered(), base = rptFiltered(false);
   const qty = list.reduce((s, o) => s + (+o.qty || 0), 0), dls = new Set(list.map((o) => o.dlCode)).size;
   $('#rpTiles').innerHTML = `<div class="tile"><b>${d ? list.length : '–'}</b><span>Đơn xuất</span></div><div class="tile"><b>${d ? qty : '–'}</b><span>Serial đã quét</span></div><div class="tile"><b>${d ? dls : '–'}</b><span>Đại lý</span></div>`;
+  const nYes = base.filter((o) => o.kt).length;
+  $('#rpKt').hidden = false;
+  $('#rpKt').innerHTML = d && base.length ? [['', 'Tất cả', base.length], ['no', 'Chưa nhập KTeam', base.length - nYes], ['yes', 'Đã nhập KTeam', nYes]]
+    .map(([k, t, n]) => `<button type="button" data-k="${k}" class="${RPT.kt === k ? 'on' : ''}">${t}<b>${n}</b></button>`).join('') : '';
   const err = $('#rpErr');
   err.hidden = !S.rptErr;
-  err.innerHTML = S.rptErr ? `${esc(S.rptErr)}${d ? ' – đang hiện dữ liệu tải lúc ' + fmtDT(d.at) : ''} <button class="btn sm" type="button" data-a="retry">Thử lại</button>` : '';
-  const admin = isAdmin();
+  err.innerHTML = S.rptErr ? `${esc(S.rptErr)}${d ? ' – đang hiện dữ liệu tải lúc ' + fmtDT(d.at) : ''} <button class="btn sm" type="button" data-a="retry">Thử lại</button>${scriptLinkBtn(S.rptErrKind)}` : '';
+  const admin = isAdmin(), sel = S.sel;
+  const sb = $('#rpSelBar');
+  sb.hidden = !sel;
+  if (sel) {
+    const all = list.length && list.every((o) => sel.has(o.id));
+    sb.innerHTML = `<div class="sb-t">${icon('trash')}<span><b>Xoá dữ liệu test</b> – bấm chọn các đơn test cần xoá khỏi Google Sheet</span></div>
+      <div class="sb-a"><button class="btn sm" type="button" data-a="${all ? 'selnone' : 'selall'}" ${list.length ? '' : 'disabled'}>${all ? 'Bỏ chọn tất cả' : `Chọn tất cả (${list.length})`}</button><span class="sb-n">Đã chọn <b>${sel.size}</b> đơn</span></div>`;
+  }
   $('#rpList').innerHTML = list.map((o) => {
-    const done = o.status === 'Hoàn tất';
-    return `<li><button type="button" class="oitem" data-id="${esc(o.id)}">
+    const done = o.status === 'Hoàn tất', on = !!(sel && sel.has(o.id));
+    return `<li><button type="button" class="oitem${sel ? ' selm' : ''}${on ? ' picked' : ''}" data-id="${esc(o.id)}"${sel ? ` role="checkbox" aria-checked="${on}"` : ''}>
+      ${sel ? `<span class="ock" aria-hidden="true">${on ? icon('check') : ''}</span>` : ''}
       <span class="oq"><b>${+o.qty || 0}</b><small>serial</small></span>
       <span class="ob"><span class="on">${esc(o.dlName)}</span>
         <span class="om">${esc([toMs(o.start) ? fmtDT(toMs(o.start)) : '', o.no ? 'Phiếu ' + o.no : '', o.user].filter(Boolean).join(' · '))}</span>
         <span class="om">${esc([admin ? o.npp : '', o.sale ? 'Sale ' + o.sale : ''].filter(Boolean).concat('').join(' · '))}<span class="mono">${esc(o.id)}</span></span></span>
-      <span class="ost ${done ? 'ok' : 'wait'}">${esc(o.status || 'Đang quét')}</span></button></li>`;
+      <span class="ost-col"><span class="ost ${done ? 'ok' : 'wait'}">${esc(o.status || 'Đang quét')}</span><span class="ktb${o.kt ? ' on' : ''}">${o.kt ? '✓ KTeam' : 'Chưa KTeam'}</span></span></button></li>`;
   }).join('') + (d && d.truncated ? `<li class="more">Chỉ hiện ${d.orders.length}/${d.totalOrders} đơn mới nhất – chọn khoảng thời gian ngắn hơn</li>` : '');
   const empty = $('#rpEmpty');
   empty.hidden = !!list.length || (!d && !!S.rptLoading);
-  empty.textContent = !d ? (S.rptLoading ? '' : 'Chưa tải được báo cáo.') : RPT.q ? 'Không có đơn nào khớp ô tìm kiếm.' : 'Chưa có đơn xuất nào trong khoảng thời gian này.';
+  empty.textContent = !d ? (S.rptLoading ? '' : 'Chưa tải được báo cáo.')
+    : RPT.kt && base.length ? (RPT.kt === 'no' ? 'Tất cả đơn đã được xác nhận quét nhập KTeam.' : 'Chưa có đơn nào được xác nhận quét nhập KTeam.')
+      : RPT.q ? 'Không có đơn nào khớp ô tìm kiếm.' : 'Chưa có đơn xuất nào trong khoảng thời gian này.';
   if (!d && S.rptLoading) $('#rpList').innerHTML = '<li class="more"><i class="spin" style="display:inline-block;vertical-align:-3px"></i> Đang tải báo cáo…</li>';
-  $('#btnRptExcel').disabled = !list.length;
-  $('#btnRptShare').hidden = !canShareFiles();
+  if (!S.exportBusy) $('#btnRptExcel').disabled = !list.length;
   $('#btnRptShare').disabled = !list.length;
-  renderLocalPending();
 }
+
+function renderSalesView(from, to) {
+  $('#rpKt').hidden = true;
+  const box = $('#rpSales'), d = S.salesData, A = salesAgg(), admin = isAdmin();
+  $('#rpTiles').innerHTML = `<div class="tile"><b class="money">${A ? (A.rev ? fmtMoneyShort(A.rev) : '–') : '–'}</b><span>Doanh thu</span></div><div class="tile"><b>${A ? A.qty : '–'}</b><span>Số máy</span></div><div class="tile"><b>${A ? A.dealers.size : '–'}</b><span>Đại lý</span></div>`;
+  if (!S.exportBusy) $('#btnRptExcel').disabled = !(A && A.qty);
+  $('#btnRptShare').disabled = !(A && A.qty);
+  const head = (title, extra) => `<div class="list-head"><h2>${title}</h2>${extra || ''}</div>`;
+  const refresh = `<button class="icon-btn2" type="button" data-a="srefresh" aria-label="Tải lại doanh thu" ${S.salesLoading ? 'disabled' : ''}>${S.salesLoading ? '<i class="spin"></i>' : icon('refresh')}</button>`;
+  if (!d) {
+    box.innerHTML = `<section class="card">${head(`Doanh thu ${from === to ? 'ngày ' + ymdText(from) : ymdText(from).slice(0, 5) + ' → ' + ymdText(to)}`, refresh)}
+      ${S.salesErr ? `<div class="status-box bad">${esc(S.salesErr)} <button class="btn sm" type="button" data-a="sretry">Thử lại</button>${scriptLinkBtn(S.salesErrKind)}</div>` : '<div class="more" style="border:0"><i class="spin" style="display:inline-block;vertical-align:-3px"></i> Đang tải doanh thu…</div>'}</section>`;
+    return;
+  }
+  const metric = A.rev > 0 ? 'rev' : 'qty';
+  const bar = (x, max) => `<span class="bar"><i style="width:${Math.max(2, Math.round((x[metric] / Math.max(1, max)) * 100))}%"></i></span>`;
+  const val = (x) => `<span class="av"><b>${x.rev ? fmtNum(x.rev) : '–'}</b><small>${x.qty} máy</small></span>`;
+  let html = '';
+  if (S.salesErr) html += `<div class="status-box bad">${esc(S.salesErr)} – đang hiện dữ liệu tải lúc ${fmtDT(d.at)} <button class="btn sm" type="button" data-a="sretry">Thử lại</button>${scriptLinkBtn(S.salesErrKind)}</div>`;
+  if (RPT.sale) html += `<div class="fchip">${icon('user')}<span>Sale: ${esc(RPT.sale)}</span><button class="btn sm ghost" type="button" data-a="sclear">${icon('x')}Bỏ lọc</button></div>`;
+  if (A.noPrice) {
+    const ms = [...A.noPriceModels.entries()].sort((a, b) => b[1] - a[1]).map(([m]) => m);
+    html += `<div class="warnbox">${icon('alert')} <b>${A.noPrice} máy chưa có giá</b> (${esc(ms.slice(0, 4).join(', '))}${ms.length > 4 ? '…' : ''}) – doanh thu chưa tính các máy này. Quản lý KV2 cập nhật tab “Bảng giá” trên Google Sheet.</div>`;
+  }
+  if (!A.qty) {
+    html += `<section class="card">${head('Doanh thu', refresh)}<div class="empty">${RPT.q || RPT.sale ? 'Không có máy nào khớp bộ lọc.' : 'Chưa có máy nào được quét xuất trong khoảng thời gian này.'}</div></section>`;
+    box.innerHTML = html;
+    return;
+  }
+  const maxS = Math.max(...A.sales.map((x) => x[metric]));
+  html += `<section class="card">${head('Theo Sale', `<span class="tot">${A.rev ? fmtMoney(A.rev) : A.qty + ' máy'}</span>${refresh}`)}<ol class="agg">${A.sales.map((s) =>
+    `<li><button type="button" class="arow${RPT.sale === s.name ? ' sel' : ''}" data-sale="${esc(s.name)}"><span class="an"><b>${esc(s.name)}</b><small>${s.dealers.size} đại lý · ${s.orders.size} đơn${admin ? ' · ' + esc([...s.npps].join(', ')) : ''}</small></span>${val(s)}${bar(s, maxS)}</button></li>`).join('')}</ol></section>`;
+  const LIMIT = 100, dls = A.dealerList, maxD = Math.max(...dls.map((x) => x[metric]));
+  html += `<section class="card">${head(`Theo đại lý <span class="n">${dls.length}</span>`)}<ol class="agg">${dls.slice(0, LIMIT).map((x) =>
+    `<li><div class="arow"><span class="an"><b>${esc(x.name)}</b><small>${esc([x.code, 'Sale ' + x.sale, admin ? x.npp : '', x.orders.size + ' đơn'].filter(Boolean).join(' · '))}</small></span>${val(x)}${bar(x, maxD)}</div></li>`).join('')}</ol>
+    ${dls.length > LIMIT ? `<div class="more">… và ${dls.length - LIMIT} đại lý khác – gõ tên vào ô tìm kiếm</div>` : ''}</section>`;
+  const maxM = Math.max(...A.models.map((x) => x[metric]));
+  html += `<section class="card">${head('Theo sản phẩm')}<ol class="agg">${A.models.map((x) =>
+    `<li><div class="arow"><span class="an"><b>${esc(x.name)}</b><small>${x.priced === x.qty && x.qty ? fmtNum(x.rev / x.qty) + ' đ/máy' : x.priced ? 'một phần chưa có giá' : 'chưa có giá'}</small></span>${val(x)}${bar(x, maxM)}</div></li>`).join('')}</ol></section>`;
+  if (d.truncated) html += `<div class="warnbox">Chỉ tính ${d.rows.length}/${d.total} máy đầu tiên – chọn khoảng thời gian ngắn hơn.</div>`;
+  box.innerHTML = html;
+}
+
 /** Đơn trên máy còn serial chưa gửi lên Sheet (VD đang mất mạng) */
 function renderLocalPending() {
   const box = $('#rpLocal');
@@ -2088,32 +2476,149 @@ function renderLocalPending() {
   box.innerHTML = `<div class="list-head"><h2 style="font-size:15px">${icon('phone')} Trên máy – chưa gửi xong</h2></div>
     <ul class="opt-list" style="margin:0">${list.map((o) => `<li><button type="button" data-local="${esc(o.id)}"><span class="grow"><b>${esc(o.dlName)}</b><span class="sub">${esc(o.id)} · ${o.items.length} serial · ${o.status === 'open' ? 'đang quét' : 'đã hoàn tất'}</span></span><span class="tag" style="color:var(--warn)">chờ gửi ${unsentOf(o) || 'hoàn tất'}</span></button></li>`).join('')}</ul>`;
 }
+$('#rpView').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-v]'); if (!b || b.dataset.v === RPT.view) return;
+  RPT.view = b.dataset.v; saveRpt();
+  if (RPT.view === 'sales') S.sel = null;
+  renderReport();
+  if (RPT.view === 'sales') loadSales(false); else loadReport(false);
+});
 $('#rpPeriod').addEventListener('click', (e) => {
   const b = e.target.closest('button[data-p]'); if (!b) return;
   RPT.period = b.dataset.p;
   if (RPT.period === 'custom' && !RPT.from) { const t = ymd(Date.now()); RPT.from = ymdShift(t, -6); RPT.to = t; }
-  saveRpt(); loadReport(false);
+  saveRpt(); refreshReport(false);
 });
 ['#rpFrom', '#rpTo'].forEach((s) => $(s).addEventListener('change', () => {
-  RPT.from = $('#rpFrom').value; RPT.to = $('#rpTo').value; saveRpt(); loadReport(false);
+  RPT.from = $('#rpFrom').value; RPT.to = $('#rpTo').value; saveRpt(); refreshReport(false);
 }));
-$('#rpNpp').addEventListener('change', () => { RPT.npp = $('#rpNpp').value; saveRpt(); loadReport(false); });
+$('#rpNpp').addEventListener('change', () => { RPT.npp = $('#rpNpp').value; RPT.sale = ''; saveRpt(); refreshReport(false); });
 $('#rpSearch').addEventListener('input', () => { RPT.q = $('#rpSearch').value; renderReport(); });
+$('#rpKt').addEventListener('click', (e) => { const b = e.target.closest('button[data-k]'); if (b) { RPT.kt = b.dataset.k; saveRpt(); renderReport(); } });
 $('#rpRefresh').onclick = () => loadReport(true);
 $('#rpErr').addEventListener('click', (e) => { if (e.target.closest('[data-a=retry]')) loadReport(true); });
-$('#rpList').addEventListener('click', (e) => { const b = e.target.closest('.oitem'); if (b) openOrderDetail(b.dataset.id); });
-$('#rpLocal').addEventListener('click', (e) => { const b = e.target.closest('[data-local]'); if (b) openLocalOrder(b.dataset.local); });
-$('#btnRptExcel').onclick = () => exportReport('download');
-$('#btnRptShare').onclick = () => exportReport('share');
+$('#rpList').addEventListener('click', (e) => {
+  const b = e.target.closest('.oitem'); if (!b) return;
+  if (S.sel) { const id = b.dataset.id; if (S.sel.has(id)) S.sel.delete(id); else S.sel.add(id); renderReport(); return; }
+  openOrderDetail(b.dataset.id);
+});
 
 /* ------------------------------------------------------------------
-   Chi tiết đơn = lịch sử quét xuất
+   Quản lý KV2: xoá dữ liệu test – chọn đơn → xoá hẳn khỏi Google Sheet
+   (serial chép sang tab "Xuất kho - Đã xoá"; máy khác tự bỏ đơn đã xoá)
+------------------------------------------------------------------ */
+const selOrders = () => (S.sel && S.rptData ? S.rptData.orders.filter((o) => S.sel.has(o.id)) : []);
+function renderBars() {
+  const rep = S.tab === 'report' && loggedIn() && !$('#appView').hidden;
+  $('#barReport').hidden = !rep || !!S.sel;
+  $('#barSel').hidden = !rep || !S.sel;
+  if (!S.sel) return;
+  const list = selOrders(), q = list.reduce((s, o) => s + (+o.qty || 0), 0);
+  const btn = $('#btnSelDel');
+  btn.disabled = !list.length || !!S.purgeBusy;
+  btn.innerHTML = S.purgeBusy ? '<i class="spin"></i><span class="t">Đang xoá…</span>'
+    : `${icon('trash')}<span class="t">${list.length ? `Xoá ${list.length} đơn · ${q} serial` : 'Chọn đơn để xoá'}</span>`;
+  $('#btnSelCancel').disabled = !!S.purgeBusy;
+}
+$('#rpSel').onclick = () => {
+  if (!isAdmin() || S.purgeBusy) return;
+  S.sel = S.sel ? null : new Set();
+  renderReport();
+};
+$('#rpSelBar').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-a]'); if (!b || !S.sel) return;
+  if (b.dataset.a === 'selall') rptFiltered().forEach((o) => S.sel.add(o.id));
+  if (b.dataset.a === 'selnone') rptFiltered().forEach((o) => S.sel.delete(o.id));
+  renderReport();
+});
+$('#btnSelCancel').onclick = () => { if (!S.purgeBusy) { S.sel = null; renderReport(); } };
+$('#btnSelDel').onclick = async () => {
+  const list = selOrders();
+  if (!list.length) return;
+  // Chọn hết các đơn của khoảng ngày (không lọc ô tìm kiếm/KTeam) → dọn luôn đơn rỗng (0 serial) trong khoảng đó
+  const allOfRange = !!S.rptData && !S.rptData.truncated && S.rptData.orders.every((o) => S.sel.has(o.id));
+  if (await purgeOrders(list, { empty: allOfRange })) { S.sel = null; renderReport(); }
+};
+/** Hỏi lại kỹ trước khi xoá: liệt kê đơn + bắt gõ chữ XOA */
+function confirmPurge(list, opts) {
+  return new Promise((resolve) => {
+    let done = false;
+    const n = list.length, q = list.reduce((s, o) => s + (+o.qty || 0), 0), SHOW = 6;
+    const foot = document.createElement('div');
+    foot.style.display = 'contents';
+    foot.innerHTML = `<button class="btn" type="button" data-a="no">Huỷ</button><button class="btn danger" type="button" data-a="yes" disabled>${icon('trash')}Xoá ${n} đơn</button>`;
+    const body = `<div class="purge-sum"><b>${n}</b> đơn · <b>${q}</b> serial</div>
+      <ul class="purge-list">${list.slice(0, SHOW).map((o) => `<li><b>${esc(o.dlName)}</b><span>${esc([toMs(o.start) ? fmtDT(toMs(o.start)) : '', (+o.qty || 0) + ' serial', isAdmin() ? o.npp : ''].filter(Boolean).join(' · '))} · <span class="mono">${esc(o.id)}</span></span></li>`).join('')}
+        ${n > SHOW ? `<li class="muted">… và ${n - SHOW} đơn khác</li>` : ''}</ul>
+      <p>Các đơn này bị <b>xoá hẳn</b> khỏi tab <b>Xuất kho</b> và <b>Đơn xuất</b> trên Google Sheet: không còn trong báo cáo, doanh thu và kiểm tra trùng serial. Bản sao serial lưu ở tab <b>Xuất kho - Đã xoá</b>.</p>
+      ${opts.empty ? '<p class="muted">Dọn luôn các đơn rỗng (0 serial) trong khoảng ngày đang xem.</p>' : ''}
+      <p class="pick-hint">${icon('alert')} Chỉ dùng để xoá <b>dữ liệu test</b>. Máy nào đã test cần gửi xong dữ liệu (nút trạng thái “Đã lên Sheet”) trước khi xoá.</p>
+      <label class="purge-ok"><span>Gõ <b>XOA</b> để xác nhận</span><input class="inp" type="text" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" placeholder="XOA" aria-label="Gõ XOA để xác nhận"></label>`;
+    const m = openModal({ title: 'Xoá dữ liệu test?', body, foot, onClose: () => { if (!done) resolve(false); } });
+    m.root.classList.add('purge-modal');
+    const inp = $('input', m.body), yes = $('[data-a=yes]', foot);
+    const typed = () => fold(inp.value).replace(/\s+/g, '').toUpperCase() === 'XOA';
+    inp.addEventListener('input', () => { yes.disabled = !typed(); });
+    inp.addEventListener('keydown', (e) => { if (e.key === 'Enter' && typed()) { e.preventDefault(); yes.click(); } });
+    $('[data-a=no]', foot).onclick = () => m.close();
+    yes.onclick = () => { if (!typed()) return; done = true; m.close(); resolve(true); };
+    setTimeout(() => inp.focus(), 80);
+  });
+}
+/** Xoá các đơn trên Google Sheet (chỉ quản lý KV2). Trả về true nếu đã xoá. */
+async function purgeOrders(list, opts = {}) {
+  if (!isAdmin() || !list.length || S.purgeBusy) return false;
+  if (!(await confirmPurge(list, opts))) return false;
+  S.purgeBusy = true; renderBars();
+  toast('Đang xoá trên Google Sheet…', '', 60000);
+  let ok = false;
+  try {
+    const [from, to] = rptRange();
+    const r = await api({ action: 'purge', ids: list.map((o) => o.id), empty: !!opts.empty, from, to, npp: RPT.npp }, 330000);
+    const gone = new Set(r.ids || list.map((o) => o.id));
+    applyPurged([...gone], true);                      // bỏ luôn bản lưu trên máy này
+    gone.forEach((id) => detailCache.delete(id));
+    if (S.rptData) { S.rptData.orders = S.rptData.orders.filter((o) => !gone.has(o.id)); store(KEY.rptCache, S.rptData); }
+    S.salesData = null;
+    toast(`Đã xoá ${r.orders} đơn · ${r.rows} serial khỏi Google Sheet${r.empty ? ` (gồm ${r.empty} đơn rỗng)` : ''}`, 'ok', 5000);
+    ok = true;
+  } catch (e) {
+    toast(e.message, 'bad', 7000);
+  } finally {
+    S.purgeBusy = false;
+    renderReport();
+    if (ok) loadReport(true);
+  }
+  return ok;
+}
+$('#rpLocal').addEventListener('click', (e) => { const b = e.target.closest('[data-local]'); if (b) openLocalOrder(b.dataset.local); });
+$('#rpSales').addEventListener('click', (e) => {
+  const a = e.target.closest('[data-a]');
+  if (a && (a.dataset.a === 'srefresh' || a.dataset.a === 'sretry')) { loadSales(true); return; }
+  if (a && a.dataset.a === 'sclear') { RPT.sale = ''; renderReport(); return; }
+  const s = e.target.closest('button[data-sale]');
+  if (s) { RPT.sale = RPT.sale === s.dataset.sale ? '' : s.dataset.sale; renderReport(); }
+});
+$('#btnRptExcel').onclick = () => (RPT.view === 'sales' ? exportSales('download') : exportReport('download'));
+$('#btnRptShare').onclick = () => (RPT.view === 'sales' ? exportSales('share') : exportReport('share'));
+
+/* ------------------------------------------------------------------
+   Chi tiết đơn = lịch sử quét xuất + xác nhận đã quét nhập KTeam
 ------------------------------------------------------------------ */
 const detailCache = new Map();
-/** order: {id,npp,dlCode,dlName,dlAddr,sale,no,qty,start,upd,user,status} · items: [{serial,model,at,user,note,pending}] | null (đang tải) */
+function ktBox(order, busy) {
+  if (order.kt) {
+    return `<div class="ktbox on">${icon('check')}<div class="kt-t"><b>Đã quét nhập KTeam</b><span>${esc([toMs(order.ktAt) ? fmtDTY(toMs(order.ktAt)) : '', order.ktBy].filter(Boolean).join(' · '))}</span></div>
+      <button class="btn sm ghost" type="button" data-a="kt-undo" ${busy ? 'disabled' : ''}>${busy ? '<i class="spin"></i>' : 'Huỷ xác nhận'}</button></div>`;
+  }
+  return `<div class="ktbox"><div class="kt-t"><b>Chưa xác nhận quét nhập KTeam</b><span>Quét nhập xong toàn bộ serial của đơn trên app KTeam thì bấm xác nhận.</span></div>
+    <button class="btn sm primary" type="button" data-a="kt-do" ${busy ? 'disabled' : ''}>${busy ? '<i class="spin"></i>' : icon('check') + 'Xác nhận'}</button></div>`;
+}
+/** order: {id,npp,dlCode,dlName,dlAddr,sale,no,qty,start,upd,user,status,kt,ktAt,ktBy} · items: [{serial,model,at,user,note,pending,price}] | null (đang tải) */
 function detailView(m, order, items, opts) {
   const admin = isAdmin(), q = (opts.q || '').trim().toUpperCase();
   const done = order.status === 'Hoàn tất';
+  const rev = items ? items.reduce((s, r) => s + (+r.price || 0), 0) : 0, noPrice = items ? items.filter((r) => !(+r.price)).length : 0;
   let html = `<div class="dhead">
     <div class="dh-dl">${esc(order.dlName)}</div>
     <div class="dh-m">${esc([order.dlCode, order.dlAddr, order.sale ? 'Sale ' + order.sale : '', admin ? order.npp : ''].filter(Boolean).join(' · '))}</div>
@@ -2124,12 +2629,15 @@ function detailView(m, order, items, opts) {
       <div><span>Cập nhật</span><b>${toMs(order.upd) ? fmtDTY(toMs(order.upd)) : '—'}</b></div>
       <div><span>Người quét</span><b>${esc(order.user || '—')}</b></div>
       <div><span>Trạng thái</span><b class="${done ? 'c-ok' : 'c-wait'}">${esc(order.status || 'Đang quét')}</b></div>
+      ${!opts.local && items && items.length ? `<div class="wide"><span>Doanh thu (theo Bảng giá)</span><b>${rev ? fmtMoney(rev) : 'Chưa có giá'}${rev && noPrice ? ` <span class="muted">· ${noPrice} máy chưa có giá</span>` : ''}</b></div>` : ''}
     </div></div>`;
-  if (opts.local) html += `<p class="pick-hint">${icon('phone')} Đơn trên máy – ${unsentOf(S.orders.find((o) => o.id === order.id) || { items: [] })} serial chưa lên Google Sheet, sẽ tự gửi khi có mạng.</p>`;
+  if (opts.local) html += `<p class="pick-hint">${icon('phone')} Đơn trên máy – ${unsentOf(S.orders.find((o) => o.id === order.id) || { items: [] })} serial chưa lên Google Sheet, sẽ tự gửi khi có mạng. Gửi xong mới xác nhận được KTeam.</p>`;
+  else html += ktBox(order, opts.ktBusy);
+  const purgeBtn = !opts.local && admin && opts.canPurge ? `<div class="purge-one"><button class="btn sm ghost" type="button" data-a="purge">${icon('trash')}Xoá đơn này (dữ liệu test)</button></div>` : '';
   if (!items) {
-    html += opts.err ? `<div class="status-box bad">${esc(opts.err)} <button class="btn sm" type="button" data-a="retry">Thử lại</button></div>`
+    html += opts.err ? `<div class="status-box bad">${esc(opts.err)} <button class="btn sm" type="button" data-a="retry">Thử lại</button>${scriptLinkBtn(opts.errKind)}</div>`
       : `<div class="more" style="border:0"><i class="spin" style="display:inline-block;vertical-align:-3px"></i> Đang tải lịch sử quét…</div>`;
-    m.body.innerHTML = html;
+    m.body.innerHTML = html + purgeBtn;
     return;
   }
   const sum = modelSummary(items).map(([k, n]) => `<span class="chip">${esc(k)} <b>${n}</b></span>`).join('');
@@ -2147,7 +2655,7 @@ function detailView(m, order, items, opts) {
       <span class="qrb">${icon('qr')}</span></button></li>`).join('')}</ol>`;
   if (q && !rows.length) html += '<div class="more">Không tìm thấy serial phù hợp</div>';
   if (!items.length) html += '<div class="empty">Đơn chưa có serial nào.</div>';
-  m.body.innerHTML = html;
+  m.body.innerHTML = html + purgeBtn;
   const inp = $('input[data-a=q]', m.body);
   if (inp && opts.focusQ) { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }
 }
@@ -2160,12 +2668,15 @@ function openDetailModal(order, getItems, opts) {
     <button class="btn primary" type="button" data-a="qrall">${icon('qr')}QR</button>`;
   const m = openModal({ title: opts.local ? 'Đơn trên máy' : 'Lịch sử quét xuất', body: '', foot });
   m.root.classList.add('detail-modal');
-  const st = { q: '', items: getItems(), err: '' };
-  const draw = (focusQ) => detailView(m, order, st.items, { local: opts.local, q: st.q, err: st.err, focusQ });
+  const st = { q: '', items: getItems(), err: '', errKind: '', ktBusy: false };
+  const draw = (focusQ) => detailView(m, order, st.items, { local: opts.local, q: st.q, err: st.err, errKind: st.errKind, focusQ, ktBusy: st.ktBusy, canPurge: !!opts.purge });
   m.body.addEventListener('input', (e) => { if (e.target.dataset.a === 'q') { st.q = e.target.value; draw(true); } });
   m.body.addEventListener('click', (e) => {
     const r = e.target.closest('[data-a=retry]');
     if (r && opts.reload) { st.err = ''; draw(); opts.reload(st, draw, m); return; }
+    if (e.target.closest('[data-a=purge]') && opts.purge) { opts.purge(st, m); return; }
+    const k = e.target.closest('[data-a=kt-do],[data-a=kt-undo]');
+    if (k && opts.kteam && !st.ktBusy) { opts.kteam(k.dataset.a === 'kt-do', st, draw, m); return; }
     const b = e.target.closest('.hrow');
     if (b && st.items) openQrViewer(st.items, +b.dataset.i, order.dlName);
   });
@@ -2183,24 +2694,53 @@ function openDetailModal(order, getItems, opts) {
   if (opts.reload) opts.reload(st, draw, m);
   return m;
 }
+/** Cập nhật trạng thái KTeam của 1 đơn trong báo cáo đang hiện */
+function applyKteam(o) {
+  const pick = { kt: !!o.kt, ktAt: o.ktAt || '', ktBy: o.ktBy || '' };
+  const x = S.rptData && S.rptData.orders.find((y) => y.id === o.id);
+  if (x) { Object.assign(x, pick); store(KEY.rptCache, S.rptData); }
+  const c = detailCache.get(o.id);
+  if (c && c.order) Object.assign(c.order, pick);
+  if (S.tab === 'report') renderReport();
+}
 function openOrderDetail(id) {
   const base = (S.rptData && S.rptData.orders.find((o) => o.id === id)) || { id, dlName: id };
-  const conv = (d) => d.items.map((r) => ({ serial: r.serial, model: r.model, at: toMs(r.at), user: r.user, note: r.note }));
+  const conv = (d) => d.items.map((r) => ({ serial: r.serial, model: r.model, at: toMs(r.at), user: r.user, note: r.note, price: +r.price || 0 }));
   const cached = detailCache.get(id);
   const order = Object.assign({}, base, cached ? cached.order : {});
-  const dl0 = findDealer(order.dlCode);
-  if (dl0) order.dlAddr = [dl0[3], dl0[2]].filter(Boolean).join(', ');
+  const addr = () => { const dl = findDealer(order.dlCode); if (dl) order.dlAddr = [dl[3], dl[2]].filter(Boolean).join(', '); };
+  addr();
   openDetailModal(order, () => (cached ? conv(cached) : null), {
     reload: async (st, draw, m) => {
       try {
         const d = await api({ action: 'order', id });
         detailCache.set(id, d);
         Object.assign(order, d.order);
-        const dl = findDealer(order.dlCode);
-        if (dl) order.dlAddr = [dl[3], dl[2]].filter(Boolean).join(', ');
-        st.items = conv(d); st.err = '';
-      } catch (e) { st.err = e.message; }
+        addr();
+        st.items = conv(d); st.err = ''; st.errKind = '';
+      } catch (e) { st.err = e.message; st.errKind = e.kind || ''; }
       if (modalStack.includes(m)) draw();
+    },
+    purge: isAdmin() ? async (st, m) => {
+      const o = Object.assign({}, order, { qty: st.items ? st.items.length : order.qty });
+      if (await purgeOrders([o])) m.close();
+    } : null,
+    kteam: async (done, st, draw, m) => {
+      const n = st.items ? st.items.length : order.qty;
+      const ok = done
+        ? await confirmBox('Xác nhận đã quét nhập KTeam?', `${dealerCard([order.dlCode, order.dlName, order.dlAddr || '', '', order.sale, order.npp])}
+            <div class="fin-n">Đơn <span class="mono">${esc(order.id)}</span> · <b>${n}</b> serial</div>
+            <p class="muted">Xác nhận toàn bộ serial của đơn này đã được quét nhập xong trên app KTeam.</p>`, 'Xác nhận')
+        : await confirmBox('Huỷ xác nhận KTeam?', `Đơn <b>${esc(order.dlName)}</b> (<span class="mono">${esc(order.id)}</span>) sẽ chuyển về <b>Chưa nhập KTeam</b>.`, 'Huỷ xác nhận', true);
+      if (!ok) return;
+      st.ktBusy = true; if (modalStack.includes(m)) draw();
+      try {
+        const r = await api({ action: 'kteam', id: order.id, done });
+        Object.assign(order, { kt: r.order.kt, ktAt: r.order.ktAt, ktBy: r.order.ktBy });
+        applyKteam(r.order);
+        toast(done ? 'Đã xác nhận quét nhập KTeam' : 'Đã huỷ xác nhận KTeam', 'ok');
+      } catch (e) { toast(e.message, 'bad', 4500); }
+      finally { st.ktBusy = false; if (modalStack.includes(m)) draw(); }
     },
   });
 }
@@ -2265,10 +2805,12 @@ function openSettings() {
     if (!apiUrl()) { status('Chưa có URL.', 'bad'); return; }
     status('<i class="spin" style="display:inline-block;vertical-align:-3px"></i> Đang kiểm tra…');
     try {
+      lastDiag = null;
       const r = await api({ action: 'ping' }, 25000);
-      if (r.version !== 2) status(`Kết nối được <b>${esc(r.sheetName || 'Google Sheet')}</b> nhưng Apps Script đang là <b>bản cũ</b> – dán Code.gs bản 2, chạy setup, rồi Triển khai → Bản mới.`, 'bad');
-      else status(`✓ Kết nối OK: <b>${esc(r.sheetName || 'Google Sheet')}</b> (Apps Script bản ${r.version})`, 'ok');
-    } catch (e) { status('✗ ' + esc(e.message), 'bad'); }
+      const build = r.build || r.sv || '';
+      if (r.version !== 2 || verCmp(build, MIN_SERVER) < 0) status(`Kết nối được <b>${esc(r.sheetName || 'Google Sheet')}</b> nhưng Apps Script đang là <b>bản cũ</b>${build ? ' (' + esc(build) + ')' : ''} – dán Code.gs bản ${MIN_SERVER}, chạy setup, rồi Triển khai → Quản lý các bản triển khai → ✏️ → Bản mới.`, 'bad');
+      else status(`✓ Kết nối OK: <b>${esc(r.sheetName || 'Google Sheet')}</b> · Apps Script ${esc(build)}`, 'ok');
+    } catch (e) { status('✗ ' + esc(e.message) + scriptLinkBtn(e.kind), 'bad'); }
   };
   wrap.addEventListener('change', (e) => {
     if (e.target.id === 'setApi') { if (saveApi()) { if (!loggedIn()) { closeAllModals(); showLogin('Đã đổi địa chỉ Google Sheet – đăng nhập lại'); } else doTest(); } return; }
