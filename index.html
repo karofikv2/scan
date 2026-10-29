@@ -246,6 +246,22 @@ a{color:var(--brand)}
 .gchip b{color:var(--muted);font-weight:600;margin-left:2px}
 .gchip.on{background:var(--brand);border-color:var(--brand);color:#fff}
 .gchip.on b{color:#dbeafe}
+/* Tự nhận sản phẩm từ chữ trên thùng (2.4.0) */
+.guide.reading{outline:3px dashed #93c5fd}
+.guide.reading .laser{display:none}
+.last.reading{align-items:flex-start}
+.last.reading .badge{animation:pulse 1.1s ease-in-out infinite}
+.last.reading .msg{font-weight:600}
+.ocr-sug{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:8px}
+.ocr-sug>span{font-size:12.5px;color:var(--muted)}
+.chip-btn{border:1.5px solid var(--brand);background:#fff;color:var(--brand);border-radius:999px;padding:7px 13px;font-size:14.5px;font-weight:700;font-family:var(--mono);letter-spacing:.2px}
+.chip-btn:active{background:var(--brandSoft)}
+.ocr-act{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.last .last-fix{flex:none;align-self:center}
+.rec .fix{width:34px;height:34px;display:grid;place-items:center;border:0;background:none;color:var(--brand);border-radius:10px;flex:none}
+.rec .fix:active{background:var(--brandSoft)}
+.rec .meta .auto{color:var(--brand);font-weight:600}
+.opt-list li button.sug{color:var(--brand);font-weight:700;background:var(--brandSoft);border-radius:10px;border-bottom-color:#fff}
 .opt-list li.grp{padding:8px 10px 6px;background:#f1f5f9;font-size:12px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.3px;border-radius:8px;margin-top:8px}
 .dl-list li button.dl{flex-direction:column;align-items:flex-start;gap:2px}
 .dl-list .nm{font-weight:600}
@@ -406,6 +422,28 @@ button.arow:active{background:#f8fafc}
 .purge-ok .inp{margin-top:6px;font-family:'IBM Plex Mono',ui-monospace,monospace;font-weight:600;letter-spacing:2px;text-transform:uppercase}
 .purge-one{margin-top:14px;padding-top:10px;border-top:1px dashed var(--line2);text-align:center}
 .purge-one .btn{color:var(--bad)}
+/* Phiếu xuất kho */
+.ph-open{width:100%;margin:0 0 10px;justify-content:center;gap:8px;border-color:var(--brand);color:var(--brand);font-weight:600}
+.ph-open .ph-km{font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--brandSoft)}
+.oe-row{display:flex;gap:8px;width:100%;align-items:stretch}
+.oe-row .oe-last{flex:1;min-width:0}
+.oe-row .oe-ph{flex:none;height:auto;min-height:40px;color:var(--brand);border-color:var(--brand)}
+.ph-modal .ph-head{display:flex;flex-direction:column;gap:2px;margin-bottom:6px}
+.ph-modal .ph-head b{font-size:17px}
+.ph-modal .ph-head span{font-size:13px;color:var(--muted)}
+.km-rows{display:flex;flex-direction:column;gap:6px;margin:4px 0 8px}
+.km-row{display:grid;grid-template-columns:minmax(0,1fr) 64px 64px 36px;gap:6px;align-items:center}
+.km-row .inp{height:40px;padding:0 9px;font-size:14px}
+.km-row .km-q{text-align:center;padding:0 4px}
+.km-x{width:36px;height:40px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--bad);display:grid;place-items:center}
+.km-x svg{width:16px;height:16px}
+.km-empty{margin:2px 0;font-size:13px}
+.ph-prev{position:relative;margin-top:4px;border:1px solid var(--line2);border-radius:10px;background:#f1f5f9;padding:10px;display:flex;justify-content:center;min-height:200px}
+.ph-prev img{display:block;width:100%;max-width:420px;height:auto;box-shadow:0 2px 10px rgba(15,23,42,.18);background:#fff;opacity:0}
+.ph-prev.ok img{opacity:1}
+.ph-prev .spin{position:absolute;left:50%;top:50%;margin:-9px 0 0 -9px}
+.ph-prev.ok .spin{display:none}
+@media (max-width:380px){.km-row{grid-template-columns:minmax(0,1fr) 54px 54px 34px}}
 </style>
 </head>
 <body>
@@ -440,7 +478,10 @@ button.arow:active{background:#f8fafc}
   <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5"/><path d="M5 20h14"/></symbol>
   <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 20H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h3"/><path d="M16 17l5-5-5-5M21 12H9"/></symbol>
   <symbol id="i-money" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9.5v5M18 9.5v5"/></symbol>
+  <symbol id="i-print" viewBox="0 0 24 24"><path d="M7 9V3.5h10V9"/><rect x="3.5" y="9" width="17" height="8" rx="1.8"/><path d="M7 14h10v6.5H7z"/><path d="M17.5 12h.01"/></symbol>
   <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></symbol>
+  <symbol id="i-type" viewBox="0 0 24 24"><path d="M3 7V5a1 1 0 0 1 1-1h2M18 4h2a1 1 0 0 1 1 1v2M21 17v2a1 1 0 0 1-1 1h-2M6 20H4a1 1 0 0 1-1-1v-2"/><path d="M8 9h8M12 9v7"/></symbol>
 </svg>
 
 <header class="appbar">
@@ -494,7 +535,7 @@ button.arow:active{background:#f8fafc}
         <div class="resume" id="resume" hidden><button class="btn primary big" id="btnResume" type="button"><svg class="i"><use href="#i-scan"/></svg>Quét tiếp</button></div>
         <div class="idle" id="idle">
           <button class="btn primary big" id="btnStart" type="button"><svg class="i"><use href="#i-scan"/></svg>Bắt đầu quét</button>
-          <p id="idleMsg">Quét mã vạch serial trên thùng → chọn sản phẩm → serial tự lưu vào đơn và Google Sheet.</p>
+          <p id="idleMsg">Quét mã vạch serial trên thùng → app tự đọc tên sản phẩm in trên thùng → serial tự lưu vào đơn và Google Sheet.</p>
         </div>
       </div>
       <div class="last" id="last">
@@ -586,7 +627,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
    ⚙️  SCRIPT_URL = URL Apps Script (Ứng dụng web, đuôi /exec).
    ===================================================================== */
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwaumb04tZoVcZE6V--lb37675aqM1EGSszBm2f_tH_Ulq_bErLdtuDfzr77S0x3MimPA/exec";
-const APP_VERSION = '2.2.0';
+const APP_VERSION = '2.4.0';
 (() => {
 'use strict';
 /* ------------------------------------------------------------------
@@ -627,9 +668,10 @@ const store = (k, v) => {
    Trạng thái
    S.auth   = { token, user:{username,name,npp,role}, dealers:[[mã,tên,tỉnh,xã,sale,npp]], models:[], at, api }
    S.orders = đơn xuất trên máy: { id, owner, npp, dlCode, dlName, dlProv, dlWard, sale, no, scanner,
-              at, status:'open'|'done', doneAt, finSynced, items:[{id, serial, model, at, fmt, src, st, tries, note, err}] }
+              at, status:'open'|'done', doneAt, finSynced, items:[{id, serial, model, at, fmt, src, st, tries, note, err,
+              auto (tự nhận từ chữ trên thùng), modelDirty (đã đổi sản phẩm, chờ sửa trên Sheet)}] }
 ------------------------------------------------------------------ */
-const DEF = { api: '', sound: true, vibrate: true, continuous: true, retail: false, prefix: '', minLen: 6, engine: 'auto', cameraId: '' };
+const DEF = { api: '', sound: true, vibrate: true, continuous: true, retail: false, prefix: '', minLen: 6, engine: 'auto', cameraId: '', ocr: true };
 const S = {
   settings: Object.assign({}, DEF, load(KEY.settings, {})),
   auth: load(KEY.auth, null),
@@ -726,20 +768,21 @@ function beep(kind) {
   try {
     const t = actx.currentTime + 0.01;
     if (kind === 'ok') tone(1760, t, 0.09);
+    else if (kind === 'done') { tone(1568, t, 0.07, 0.14, 'sine'); tone(2093, t + 0.09, 0.12, 0.14, 'sine'); } // tự nhận sản phẩm & đã lưu
     else if (kind === 'warn') { tone(988, t, 0.1, 0.14); tone(988, t + 0.17, 0.1, 0.14); }
     else { tone(330, t, 0.16, 0.2, 'sawtooth'); tone(247, t + 0.2, 0.24, 0.2, 'sawtooth'); }
   } catch (e) { /* bỏ qua */ }
 }
 function buzz(kind) {
   if (!S.settings.vibrate || !navigator.vibrate) return;
-  try { navigator.vibrate(kind === 'ok' ? 70 : kind === 'warn' ? [70, 60, 70] : [150, 80, 150]); } catch (e) { /* bỏ qua */ }
+  try { navigator.vibrate(kind === 'ok' ? 70 : kind === 'done' ? [40, 50, 40] : kind === 'warn' ? [70, 60, 70] : [150, 80, 150]); } catch (e) { /* bỏ qua */ }
 }
 function feedback(kind) {
   beep(kind); buzz(kind);
   const g = $('#guide');
   g.classList.remove('f-ok', 'f-dup', 'f-warn');
   void g.offsetWidth;
-  g.classList.add(kind === 'ok' ? 'f-ok' : kind === 'warn' ? 'f-warn' : 'f-dup');
+  g.classList.add(kind === 'ok' || kind === 'done' ? 'f-ok' : kind === 'warn' ? 'f-warn' : 'f-dup');
   clearTimeout(feedback.t); feedback.t = setTimeout(() => g.classList.remove('f-ok', 'f-dup', 'f-warn'), 650);
 }
 let toastEl = null, toastT = 0;
@@ -822,18 +865,21 @@ function productList() {
   S.custom.models.forEach((v) => add(v, 'mã mới'));
   return out;
 }
-/** Bảng chọn sản phẩm cho 1 serial → tên sản phẩm, hoặc null nếu bỏ qua */
-function pickProduct(serial) {
+/** Bảng chọn sản phẩm cho 1 serial → tên sản phẩm, hoặc null nếu bỏ qua.
+ *  opts.suggest: model đọc được từ chữ trên thùng (hiện lên đầu) · opts.current: sản phẩm đang chọn (khi đổi) */
+function pickProduct(serial, opts = {}) {
+  const sug = (opts.suggest || []).filter(Boolean);
   return new Promise((resolve) => {
     let done = false;
     const wrap = document.createElement('div');
     wrap.innerHTML = `<div class="pick-sn"><span>Serial</span><b>${esc(serial)}</b></div>
+      ${opts.current ? `<p class="pick-hint">Đang lưu là <b>${esc(opts.current)}</b> – bấm sản phẩm đúng để đổi.</p>` : ''}
       <div class="pick-search"><input class="inp" type="search" placeholder="Tìm: gõ vài ký tự, VD u95, 630, quạt…" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Tìm sản phẩm"></div>
       <ul class="opt-list" data-list="product"></ul><p class="muted" data-hint></p>`;
     const foot = document.createElement('div');
     foot.style.display = 'contents';
     foot.innerHTML = `<button class="btn" type="button" data-a="skip">${icon('x')}Bỏ qua serial này</button>`;
-    const m = openModal({ title: 'Chọn sản phẩm', body: wrap, foot, onClose: () => { if (!done) { done = true; resolve(null); } } });
+    const m = openModal({ title: opts.current ? 'Đổi sản phẩm' : 'Chọn sản phẩm', body: wrap, foot, onClose: () => { if (!done) { done = true; resolve(null); } } });
     const finish = (v) => { if (done) return; done = true; m.close(); resolve(v); };
     const inp = $('input', wrap), ul = $('ul', wrap), hint = $('[data-hint]', wrap);
     const choose = (v) => {
@@ -851,7 +897,9 @@ function pickProduct(serial) {
       const all = productList();
       const hits = toks.length ? all.filter((x) => { const k = normKey(x.v); return toks.every((t) => k.includes(t)); }) : all;
       const exact = q && all.some((x) => x.v.toUpperCase() === q.toUpperCase());
-      let html = hits.slice(0, 200).map((x) => `<li><button type="button" data-v="${esc(x.v)}">${esc(x.v)}${x.tag ? `<span class="tag">${x.tag}</span>` : ''}</button></li>`).join('');
+      let html = !toks.length && sug.length ? `<li class="grp">Đọc trên thùng – có phải:</li>` +
+        sug.map((v) => `<li><button type="button" class="sug" data-v="${esc(v)}">${icon('type')}${esc(v)}</button></li>`).join('') + '<li class="grp">Tất cả sản phẩm</li>' : '';
+      html += hits.slice(0, 200).map((x) => `<li><button type="button"${x.v === opts.current ? ' class="sel"' : ''} data-v="${esc(x.v)}">${esc(x.v)}${x.tag ? `<span class="tag">${x.tag}</span>` : ''}</button></li>`).join('');
       if (q && !exact) html += `<li><button type="button" class="add" data-v="${esc(q)}">${icon('plus')}Thêm mã mới “${esc(q)}”</button></li>`;
       ul.innerHTML = html;
       hint.textContent = q && !hits.length ? 'Không có trong danh sách – bấm “Thêm mã mới” để dùng mã này.' : '';
@@ -864,9 +912,9 @@ function pickProduct(serial) {
       e.preventDefault();
       const q = inp.value.trim();
       if (!q) return;
-      const opts = $$('button[data-v]:not(.add)', ul);
-      const exact = opts.find((b) => b.dataset.v.toUpperCase() === q.toUpperCase());
-      choose(exact ? exact.dataset.v : opts.length === 1 ? opts[0].dataset.v : q);
+      const btns = $$('button[data-v]:not(.add)', ul);
+      const exact = btns.find((b) => b.dataset.v.toUpperCase() === q.toUpperCase());
+      choose(exact ? exact.dataset.v : btns.length === 1 ? btns[0].dataset.v : q);
     });
     draw();
     if (!matchMedia('(pointer:coarse)').matches) setTimeout(() => inp.focus(), 60);
@@ -1070,20 +1118,24 @@ async function changeDealer() {
 /* ------------------------------------------------------------------
    Thêm serial vào đơn đang quét
 ------------------------------------------------------------------ */
-const IDLE_MSG = 'Quét mã vạch serial trên thùng → chọn sản phẩm → serial tự lưu vào đơn và Google Sheet.';
+const idleMsg = () => (ocrEnabled() ? 'Quét mã vạch serial trên thùng → app tự đọc tên sản phẩm in trên thùng → serial tự lưu vào đơn và Google Sheet.'
+  : 'Quét mã vạch serial trên thùng → chọn sản phẩm → serial tự lưu vào đơn và Google Sheet.');
 let lastEvt = null;
-function showLast(kind, serial, msg) {
+/** fixId: serial vừa lưu → hiện nút "Đổi SP" (sửa nếu nhận/chọn nhầm sản phẩm) */
+function showLast(kind, serial, msg, fixId) {
   lastEvt = { kind, serial, msg };
   const box = $('#last');
   box.className = 'last ' + kind;
   const ic = kind === 'ok' ? 'check' : kind === 'skip' ? 'scan' : kind === 'pick' ? 'box' : 'alert';
-  box.innerHTML = `<span class="badge">${icon(ic)}</span><div class="t">${serial ? `<div class="sn">${esc(serial)}</div>` : ''}<div class="msg">${esc(msg)}</div></div>`;
+  box.innerHTML = `<span class="badge">${icon(ic)}</span><div class="t">${serial ? `<div class="sn">${esc(serial)}</div>` : ''}<div class="msg">${esc(msg)}</div></div>` +
+    (fixId ? `<button class="btn sm last-fix" type="button" data-a="fix" data-id="${esc(fixId)}" aria-label="Đổi sản phẩm của serial ${esc(serial)}">${icon('edit')}Đổi SP</button>` : '');
 }
 function cleanCode(s) { return String(s || '').replace(/[\u0000-\u001F\u007F]/g, '').trim(); }
 
-/** src: 'cam' | 'hid' | 'manual'. Đọc được mã → chọn sản phẩm → lưu vào đơn. Trả về true nếu đã lưu. */
+/** src: 'cam' | 'hid' | 'manual'. Đọc được mã → nhận/chọn sản phẩm → lưu vào đơn. Trả về true nếu đã lưu.
+ *  frame: ảnh camera lúc đọc được mã (để đọc chữ tên model trên thùng) */
 let picking = false;
-async function addSerial(raw, fmt, src) {
+async function addSerial(raw, fmt, src, frame) {
   let serial = cleanCode(raw);
   if (src === 'manual') serial = serial.replace(/\s+/g, '').toUpperCase();
   if (!serial || picking || !loggedIn()) return false;
@@ -1107,10 +1159,17 @@ async function addSerial(raw, fmt, src) {
   if (idx >= 0) { dupMsg(idx); return false; }
   const at = Date.now();
   feedback('ok');
-  showLast('pick', serial, 'Đã đọc mã – chọn sản phẩm để lưu');
   picking = true;
-  let model = null;
-  try { model = await pickProduct(serial); } finally { picking = false; }
+  let model = null, auto = false;
+  try {
+    if (src === 'cam' && ocrUsable()) {
+      const r = await readModel(serial, frame || null, o);
+      if (r) { model = r.model; auto = !!r.auto; }
+    } else {
+      showLast('pick', serial, 'Đã đọc mã – chọn sản phẩm để lưu');
+      model = await pickProduct(serial);
+    }
+  } finally { picking = false; }
   cam.lastSeen = Date.now(); cam.cooldownUntil = Date.now() + 700; // thùng vừa quét còn trong khung → không báo trùng
   if (!model) { showLast('skip', serial, 'Chưa lưu – đã bỏ qua serial này'); return false; }
   if (curOrder() !== o) { showLast('skip', serial, 'Đơn đã đổi – serial chưa được lưu'); return false; }
@@ -1124,10 +1183,12 @@ async function addSerial(raw, fmt, src) {
     if (r) { note = `Đã quét trong đơn ${x.id} (${x.dlName}) lúc ${fmtDT(r.at)}`; break; }
   }
   const rec = { id: uid(), serial, model, at, fmt: fmt || '', src, st: 'pending', tries: 0, note, err: '' };
+  if (auto) rec.auto = 1; // tự nhận từ chữ trên thùng
   o.items.push(rec);
   saveOrders();
-  if (note) { feedback('warn'); showLast('warn', serial, `Đã lưu #${o.items.length} · ${model} – ⚠ ${note}`); }
-  else showLast('ok', serial, `Đã lưu #${o.items.length} · ${model}`);
+  const how = auto ? ' · tự nhận' : '';
+  if (note) { feedback('warn'); showLast('warn', serial, `Đã lưu #${o.items.length} · ${model}${how} – ⚠ ${note}`, rec.id); }
+  else { if (auto) feedback('done'); showLast('ok', serial, `Đã lưu #${o.items.length} · ${model}${how}`, rec.id); }
   renderList(rec.id); renderOrder(); renderStatus();
   sync();
   return true;
@@ -1142,9 +1203,25 @@ async function deleteRecord(id) {
   const j = o.items.indexOf(r);
   if (j < 0) return;
   o.items.splice(j, 1);
+  if (r.auto) OCR.noAuto.add(r.serial.toUpperCase());
   if (r.st === 'ok' || r.tries > 0) { S.dels.push({ id: r.id, owner: o.owner }); saveDels(); }
   saveOrders(); renderList(); renderOrder(); renderStatus(); sync();
   toast('Đã xoá ' + r.serial);
+}
+
+/** Đổi sản phẩm của 1 serial đã lưu (nhận/chọn nhầm) – đã lên Sheet thì sửa luôn cột Sản phẩm */
+async function fixModel(id) {
+  let r = null;
+  for (const x of myOrders()) { r = x.items.find((y) => y.id === id); if (r) break; }
+  if (!r) { toast('Serial này không còn trong đơn trên máy'); return; }
+  const m = await pickProduct(r.serial, { current: r.model });
+  if (!m || m === r.model) return;
+  if (r.auto) OCR.noAuto.add(r.serial.toUpperCase());
+  r.model = m; r.auto = 0;
+  if (r.st !== 'pending' || r.tries) r.modelDirty = true; // đã/đang gửi lên Sheet → gửi bản sửa
+  saveOrders(); renderList(r.id); renderOrder(); renderStatus();
+  showLast('ok', r.serial, `Đã đổi sản phẩm → ${m}`, r.id);
+  sync();
 }
 
 /* ------------------------------------------------------------------
@@ -1168,7 +1245,8 @@ function renderOrder() {
       <span class="oe-ic">${icon('truck')}</span>
       <div class="oe-t"><b>Chưa có đơn xuất đang quét</b><span>Tạo đơn → chọn đại lý nhận hàng → quét serial từng thùng → Hoàn tất đơn.</span></div>
       <button class="btn primary big" type="button" data-a="new">${icon('plus')}Tạo đơn xuất</button>
-      ${last ? `<button class="oe-last" type="button" data-a="last" data-id="${esc(last.id)}">${icon('check')}<span>Đơn vừa xong: <b>${esc(last.dlName)}</b> · ${last.items.length} serial</span>${icon('chev', 'chev')}</button>` : ''}
+      ${last ? `<div class="oe-row"><button class="oe-last" type="button" data-a="last" data-id="${esc(last.id)}">${icon('check')}<span>Đơn vừa xong: <b>${esc(last.dlName)}</b> · ${last.items.length} serial</span>${icon('chev', 'chev')}</button>
+        <button class="btn sm oe-ph" type="button" data-a="lastph" data-id="${esc(last.id)}" aria-label="Phiếu xuất kho đơn vừa xong">${icon('print')}Phiếu XK</button></div>` : ''}
     </div>`;
     if (!lastEvt || lastEvt.kind !== 'ok') { const b = $('#last'); b.className = 'last'; b.innerHTML = `<span class="badge">${icon('scan')}</span><div class="t"><div class="msg">Tạo đơn xuất trước khi quét</div></div>`; }
     return;
@@ -1186,7 +1264,7 @@ function renderOrder() {
   </div>`;
   if (!lastEvt) {
     const r = o.items[o.items.length - 1];
-    if (r) showLast('ok', r.serial, `Đã lưu #${o.items.length} · ${r.model}`);
+    if (r) showLast('ok', r.serial, `Đã lưu #${o.items.length} · ${r.model}${r.auto ? ' · tự nhận' : ''}`, r.id);
     else { const b = $('#last'); b.className = 'last'; b.innerHTML = `<span class="badge">${icon('scan')}</span><div class="t"><div class="msg">Chưa quét serial nào trong đơn này</div></div>`; }
   }
 }
@@ -1198,6 +1276,7 @@ $('#orderCard').addEventListener('click', (e) => {
   if (a === 'change') changeDealer();
   if (a === 'cancel') { const o = curOrder(); if (o && !o.items.length) confirmBox('Huỷ đơn?', `Huỷ đơn trống cho <b>${esc(o.dlName)}</b>?`, 'Huỷ đơn', true).then((ok) => { if (ok) cancelOrder(o); }); }
   if (a === 'last') openLocalOrder(b.dataset.id);
+  if (a === 'lastph') openLocalPhieu(b.dataset.id);
 });
 function renderList(freshId) {
   const o = curOrder(), recs = o ? o.items : [];
@@ -1220,8 +1299,9 @@ function renderList(freshId) {
     const [cls, ic, tip] = stOf(r);
     const note = r.note ? `<div class="note">${icon('alert')} ${esc(r.note)}</div>` : (r.st === 'bad' || r.st === 'err') && r.err ? `<div class="note err">${esc(r.err)}</div>` : '';
     return `<li class="rec${r.id === freshId ? ' fresh' : ''}" data-id="${r.id}"><span class="no">${i + 1}</span>
-      <button class="m" type="button" data-a="qr" aria-label="Xem QR ${esc(r.serial)}"><span class="sn">${esc(r.serial)}</span><span class="meta">${esc(r.model)} · ${fmtTime(r.at)}</span>${note}</button>
+      <button class="m" type="button" data-a="qr" aria-label="Xem QR ${esc(r.serial)}"><span class="sn">${esc(r.serial)}</span><span class="meta">${esc(r.model)}${r.auto ? ' · <span class="auto">tự nhận</span>' : ''} · ${fmtTime(r.at)}</span>${note}</button>
       <span class="st ${cls}" title="${tip}" aria-label="${tip}">${icon(ic)}</span>
+      ${r.auto ? `<button class="fix" type="button" data-a="fix" aria-label="Đổi sản phẩm ${esc(r.serial)}">${icon('edit')}</button>` : ''}
       <button class="del" type="button" data-a="del" aria-label="Xoá ${esc(r.serial)}">${icon('trash')}</button></li>`;
   }).join('') + (rows.length > LIMIT ? `<li class="more">… và ${rows.length - LIMIT} serial khác (dùng ô tìm kiếm)</li>` : '') +
     (q && !rows.length ? '<li class="more">Không tìm thấy serial phù hợp</li>' : '');
@@ -1235,6 +1315,7 @@ $('#list').addEventListener('click', (e) => {
   const b = e.target.closest('button[data-a]'); if (!b) return;
   const id = b.closest('.rec').dataset.id;
   if (b.dataset.a === 'del') deleteRecord(id);
+  if (b.dataset.a === 'fix') fixModel(id);
   if (b.dataset.a === 'qr') {
     const o = curOrder(); if (!o) return;
     const list = o.items.slice().reverse();
@@ -1250,7 +1331,7 @@ function renderAll() { renderOrder(); renderList(); renderStatus(); }
 /** kind (lỗi mạng): OFFLINE = mất mạng · SERVER = Apps Script trả trang lỗi (code lỗi / chưa cấp quyền / sai link)
  *  · BLIP = chập chờn, Apps Script vẫn chạy · TIMEOUT · HTTP · HTML */
 class ApiError extends Error { constructor(msg, code, kind) { super(msg); this.code = code || ''; this.kind = kind || ''; } }
-const MIN_SERVER = '2.2.0';                 // bản Apps Script đi cùng app này
+const MIN_SERVER = '2.4.0';                 // bản Apps Script đi cùng app này
 const RETRY = new Set(['ping', 'me', 'orders', 'order', 'rows', 'login', 'kteam']);   // thao tác đọc / làm lại được
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const verCmp = (a, b) => { const x = String(a || '0').split('.').map(Number), y = String(b || '0').split('.').map(Number); for (let i = 0; i < 3; i++) { const d = (x[i] || 0) - (y[i] || 0); if (d) return d; } return 0; };
@@ -1307,7 +1388,7 @@ async function api(payload, timeoutMs = 30000) {
   }
   return data;
 }
-const OLD_SERVER_MSG = 'Apps Script trên Google Sheet đang chạy bản cũ – quản lý KV2 dán Code.gs bản 2.2.0 rồi Triển khai bản mới';
+const OLD_SERVER_MSG = 'Apps Script trên Google Sheet đang chạy bản cũ – quản lý KV2 dán Code.gs mới rồi Triển khai bản mới';
 /** Gửi lỗi (fetch không đọc được phản hồi): mất mạng thật hay Apps Script đang trả trang lỗi?
  *  - GET link /exec đọc được JSON → Apps Script vẫn chạy, chỉ chập chờn
  *  - GET chế độ no-cors có phản hồi (không đọc được) → mạng tốt, Apps Script trả trang lỗi
@@ -1348,7 +1429,7 @@ const scriptLinkBtn = (kind) => (kind === 'SERVER' && apiUrl() && (isAdmin() || 
    Đăng nhập / phiên
 ------------------------------------------------------------------ */
 function applySession(d) {
-  S.auth = { token: d.token, user: d.user, dealers: d.dealers || [], models: d.models || [], at: Date.now(), api: apiUrl() };
+  S.auth = { token: d.token, user: d.user, dealers: d.dealers || [], models: d.models || [], npps: d.npps || [], at: Date.now(), api: apiUrl() };
   saveAuth();
   store(KEY.lastUser, d.user.username);
   applyPurged(d.purged);
@@ -1392,7 +1473,8 @@ async function doLogin(username, password) {
   sync();
 }
 async function logout() {
-  const pend = myOrders().reduce((s, o) => s + unsentOf(o), 0) + S.dels.filter((x) => x.owner === (me() && me().username)).length;
+  const pend = myOrders().reduce((s, o) => s + unsentOf(o), 0) + S.dels.filter((x) => x.owner === (me() && me().username)).length +
+    myItems().filter(([, r]) => r.modelDirty && r.st === 'ok').length;
   const open = curOrder();
   const ok = await confirmBox('Đăng xuất?', (open ? `Đơn đang quét (<b>${esc(open.dlName)}</b>, ${open.items.length} serial) được giữ lại trên máy.<br><br>` : '') +
     (pend ? `<b style="color:var(--bad)">${pend} thay đổi chưa gửi lên Google Sheet</b> – sẽ gửi khi đăng nhập lại bằng tài khoản này.` : 'Lần sau mở app cần nhập lại mật khẩu.'), 'Đăng xuất', !!pend);
@@ -1409,8 +1491,12 @@ async function logout() {
 ------------------------------------------------------------------ */
 let syncBusy = false, syncAgain = false, syncTimer = 0, backoff = 0, lastErr = '';
 function scheduleSync(ms) { clearTimeout(syncTimer); syncTimer = setTimeout(sync, ms); }
-const hasWork = () => !!me() && (myItems().some(([, r]) => r.st === 'pending' || r.st === 'err') || S.dels.some((x) => x.owner === me().username) ||
-  myOrders().some((o) => o.status === 'done' && !o.finSynced && !unsentOf(o)));
+const phieuReady = (o) => o.phieuDirty && !unsentOf(o) && o.items.some((r) => r.st === 'ok');
+// Đổi sản phẩm của serial đã lên Sheet → gửi bản sửa (Apps Script cũ chưa có thao tác này → đợi lần mở app sau)
+let modelOld = false;
+const modelReady = (r) => !!r.modelDirty && r.st === 'ok' && !modelOld;
+const hasWork = () => !!me() && (myItems().some(([, r]) => r.st === 'pending' || r.st === 'err' || modelReady(r)) || S.dels.some((x) => x.owner === me().username) ||
+  myOrders().some((o) => (o.status === 'done' && !o.finSynced && !unsentOf(o)) || phieuReady(o)));
 async function sync() {
   clearTimeout(syncTimer);
   if (!apiUrl() || !loggedIn()) { renderStatus(); return; }
@@ -1460,6 +1546,20 @@ async function sync() {
       await api({ action: 'finish', id: o.id, no: o.no });
       o.finSynced = true; saveOrders();
     }
+    // Hàng khuyến mại / ghi chú phiếu xuất kho nhập khi đơn chưa lên Sheet → gửi sau
+    for (const o of myOrders().filter(phieuReady)) {
+      try { await api({ action: 'phieu', id: o.id, km: o.km || [], note: o.pnote || '' }); }
+      catch (e) { if (!['NOTFOUND', 'DENY', 'OLD', 'BAD'].includes(e.code)) throw e; }
+      o.phieuDirty = false; saveOrders();
+    }
+    for (const [, r] of myItems().filter(([, x]) => modelReady(x)).slice(0, 30)) {
+      try { await api({ action: 'model', id: r.id, model: r.model }); }
+      catch (e) {
+        if (e.code === 'OLD') { modelOld = true; break; }
+        if (!['NOTFOUND', 'DENY', 'BAD'].includes(e.code)) throw e;
+      }
+      r.modelDirty = false; saveOrders();
+    }
     pruneOrders();
     backoff = 0; lastErr = '';
     if (repeats.length) {
@@ -1483,7 +1583,7 @@ async function sync() {
 }
 /** Giữ trên máy tối đa 30 đơn đã hoàn tất & gửi xong (đơn cũ xem trong Báo cáo) */
 function pruneOrders() {
-  const done = S.orders.filter((o) => o.status === 'done' && o.finSynced && !unsentOf(o));
+  const done = S.orders.filter((o) => o.status === 'done' && o.finSynced && !unsentOf(o) && !o.items.some((r) => r.modelDirty));
   const drop = new Set(done.slice(0, Math.max(0, done.length - 30)));
   if (drop.size) { S.orders = S.orders.filter((o) => !drop.has(o)); saveOrders(); }
 }
@@ -1491,7 +1591,7 @@ function renderStatus() {
   const pill = $('#pill'), txt = $('#pillTxt');
   pill.hidden = !me();
   if (!me()) return;
-  const waiting = myItems().filter(([, r]) => r.st !== 'ok' && r.st !== 'bad').length + S.dels.filter((x) => x.owner === me().username).length;
+  const waiting = myItems().filter(([, r]) => (r.st !== 'ok' && r.st !== 'bad') || modelReady(r)).length + S.dels.filter((x) => x.owner === me().username).length;
   let cls = '', t = '';
   if (!apiUrl()) { cls = 'bad'; t = 'Chưa nối Sheet'; }
   else if (!loggedIn()) { cls = 'bad'; t = 'Cần đăng nhập'; }
@@ -1637,10 +1737,11 @@ function setView(state, msg) {
   if (state === 'idle' || state === 'starting') {
     const p = $('#idleMsg');
     if (msg) { p.className = 'err'; p.textContent = msg; }
-    else if (state === 'idle') { p.className = ''; p.textContent = IDLE_MSG; }
+    else if (state === 'idle') { p.className = ''; p.textContent = idleMsg(); }
   }
 }
 function setHint(t) { $('#hint').textContent = t; }
+const scanHint = () => (ocrEnabled() ? 'Mã vạch vào khung, chữ tên model trong hình' : 'Đưa mã vạch serial vào khung');
 
 function camError(e) {
   const n = e && e.name;
@@ -1676,10 +1777,11 @@ async function startScan() {
     setView('running');
     setupTrack();
     await initDecoders();
+    if (ocrEnabled()) ocrInit().catch(() => {}); // tải sẵn bộ đọc chữ tên sản phẩm
     requestWakeLock();
     loopNative(cam.gen); loopWorker();
     if (!cam.native && !cam.workerReady) setHint('Đang tải bộ giải mã…');
-    else setHint('Đưa mã vạch serial vào khung');
+    else setHint(scanHint());
   } catch (e) {
     cam.starting = false; stopTracks();
     setView('idle', camError(e));
@@ -1693,6 +1795,7 @@ function stopTracks() {
 function stopScan() {
   cam.running = false; cam.paused = false;
   stopTracks(); releaseWakeLock(); setView('idle');
+  ocrIdle();
 }
 function setupTrack() {
   const t = cam.track; let caps = {};
@@ -1737,7 +1840,7 @@ $('#btnSwitch').onclick = async () => {
 $('#btnStart').onclick = startScan;
 $('#btnStop').onclick = stopScan;
 // Quét tiếp: mã vừa quét nếu còn trong khung vẫn được bỏ qua (không báo trùng)
-$('#btnResume').onclick = () => { cam.paused = false; cam.lastSeen = Date.now(); setView('running'); setHint('Đưa mã vạch serial vào khung'); };
+$('#btnResume').onclick = () => { cam.paused = false; cam.lastSeen = Date.now(); setView('running'); setHint(scanHint()); };
 
 let wakeLock = null;
 async function requestWakeLock() { try { if ('wakeLock' in navigator && !wakeLock) { wakeLock = await navigator.wakeLock.request('screen'); wakeLock.addEventListener('release', () => { wakeLock = null; }); } } catch (e) { wakeLock = null; } }
@@ -1798,7 +1901,8 @@ function grabROI(canvas, maxW) {
   ctx.drawImage(video, sx, sy, sw, sh, 0, 0, cw, ch);
   return ctx;
 }
-const scanBlocked = () => !cam.running || cam.paused || modalOpen() || Date.now() < cam.cooldownUntil;
+// picking: đang nhận/chọn sản phẩm cho serial vừa quét → chưa nhận mã mới
+const scanBlocked = () => !cam.running || cam.paused || picking || modalOpen() || Date.now() < cam.cooldownUntil;
 
 async function loopNative(gen) {
   if (!cam.running || !cam.native || gen !== cam.gen) return;
@@ -1830,7 +1934,7 @@ function onWorkerMsg(e) {
   const m = e.data || {};
   if (m.type === 'ready') {
     cam.workerReady = true;
-    if (cam.running) { setHint('Đưa mã vạch serial vào khung'); loopWorker(); }
+    if (cam.running) { if (!OCR.job) setHint(scanHint()); loopWorker(); }
     return;
   }
   if (m.type === 'fatal') { killWorker('Không tải được bộ giải mã ZXing'); return; }
@@ -1856,7 +1960,8 @@ function onCode(text, fmt) {
   cam.confirm = { text: '', t: 0 };
   cam.lastText = text; cam.lastSeen = now;
   cam.cooldownUntil = now + 1200;
-  addSerial(text, fmt, 'cam').then((added) => {
+  const frame = ocrUsable() ? grabView() : null; // ảnh lúc đọc được mã → đọc chữ tên model cạnh mã vạch
+  addSerial(text, fmt, 'cam', frame).then((added) => {
     cam.lastSeen = Date.now();
     if (added && !S.settings.continuous && cam.running) { cam.paused = true; setView('paused'); setHint('Đã tạm dừng – bấm “Quét tiếp” cho thùng tiếp theo'); }
   });
@@ -1885,6 +1990,303 @@ $('#manualForm').addEventListener('submit', (e) => {
   if (!v.trim()) { inp.focus(); return; }
   if (!curOrder()) { openCreateOrder(false); return; }
   addSerial(v, 'Nhập tay', 'manual').then((ok) => { if (ok) inp.value = ''; else inp.select(); });
+});
+
+/* ------------------------------------------------------------------
+   TỰ NHẬN SẢN PHẨM: camera đọc được mã vạch serial → đọc luôn chữ in tên model
+   trên nhãn thùng (VD "KAQ-U03 PRO") rồi so với danh mục sản phẩm.
+   - Chữ tên model có trong hình, khớp đúng 1 model → tự lưu, khỏi chọn tay
+   - Chưa thấy chữ → nhắc đưa camera vào chữ tên model, đọc tiếp tối đa ~10 giây
+   - Chưa chắc (VD U03 hay U05) → đọc thêm 1 lần nữa / gợi ý để bấm; hết giờ → mở danh sách chọn tay
+   Tesseract.js (Apache-2.0) chạy trong Web Worker, file ở lib/ocr/ (~6 MB, tải 1 lần rồi lưu trên máy).
+------------------------------------------------------------------ */
+const OCR = { st: 'off', init: null, failedAt: 0, noAuto: new Set(), job: null, WAIT: 10000, IDLE: 120000, hint: '', warned: false };
+const ocrEnabled = () => S.settings.ocr !== false && typeof WebAssembly === 'object' && typeof Worker !== 'undefined';
+/** Dùng được ngay? (bỏ qua 1 phút sau khi tải lỗi, để không bắt người quét chờ) */
+const ocrUsable = () => ocrEnabled() && !(OCR.st === 'failed' && Date.now() - OCR.failedAt < 60000);
+const ocrBase = () => new URL('lib/ocr/', location.href).href;
+function loadScript(src) {
+  return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('Không tải được ' + src)); document.head.appendChild(s); });
+}
+const wasmSimd = () => { try { return WebAssembly.validate(new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0, 1, 5, 1, 96, 0, 1, 123, 3, 2, 1, 0, 10, 10, 1, 8, 0, 65, 0, 253, 15, 253, 98, 11])); } catch (e) { return false; } };
+/** Khởi động bộ đọc chữ (gọi sẵn khi mở camera để lần quét đầu không phải chờ) */
+function ocrInit() {
+  if (OCR.init) return OCR.init;
+  if (OCR.st === 'failed' && Date.now() - OCR.failedAt < 60000) return Promise.reject(new Error('OCR chưa sẵn sàng'));
+  OCR.st = 'loading';
+  OCR.init = (async () => {
+    const base = ocrBase();
+    if (!window.Tesseract) await loadScript(base + 'tesseract.min.js');
+    const w = await window.Tesseract.createWorker('eng', 1, {
+      workerPath: base + 'worker.min.js', workerBlobURL: false,
+      corePath: base + (wasmSimd() ? 'tesseract-core-simd-lstm.js' : 'tesseract-core-lstm.js'),
+      langPath: base.replace(/\/$/, ''), gzip: true,
+    });
+    await w.setParameters({ tessedit_pageseg_mode: '11', tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-/. ' });
+    OCR.st = 'ready';
+    return w;
+  })().catch((e) => {
+    OCR.st = 'failed'; OCR.failedAt = Date.now(); OCR.init = null;
+    if (!OCR.warned) { OCR.warned = true; toast('Chưa tải được bộ tự nhận sản phẩm (lần đầu cần mạng) – tạm chọn sản phẩm tay', 'warn', 4500); }
+    throw e;
+  });
+  return OCR.init;
+}
+
+/** Tắt camera lâu (2 phút) → giải phóng bộ đọc chữ (~50–100 MB RAM); mở camera lại thì nạp lại từ bộ nhớ máy (~1 giây) */
+function ocrIdle() {
+  clearTimeout(OCR.idleT);
+  OCR.idleT = setTimeout(async () => {
+    if (cam.running || OCR.job || !OCR.init || OCR.st !== 'ready') return;
+    const p = OCR.init;
+    OCR.init = null; OCR.st = 'off';
+    try { (await p).terminate(); } catch (e) { /* bỏ qua */ }
+  }, OCR.IDLE);
+}
+
+/** Ảnh vùng camera đang thấy trên màn hình (bỏ phần bị cắt do khung 4:3), ≤ 1280 px, xám + kéo giãn tương phản.
+ *  ang: xoay ảnh (độ) – cầm máy hơi nghiêng thì xoay bù lại cho dễ đọc chữ */
+function grabView(ang) {
+  const vw = video.videoWidth, vh = video.videoHeight;
+  if (!vw || !vh || video.readyState < 2) return null;
+  let sx = 0, sy = 0, sw = vw, sh = vh;
+  const vp = $('#viewport').getBoundingClientRect();
+  if (vp.width && vp.height) {
+    const sc = Math.max(vp.width / vw, vp.height / vh);
+    sw = Math.min(vw, vp.width / sc); sh = Math.min(vh, vp.height / sc);
+    sx = (vw - sw) / 2; sy = (vh - sh) / 2;
+  }
+  const k = Math.min(1, 1280 / Math.max(sw, sh));
+  const c = document.createElement('canvas');
+  c.width = Math.max(1, Math.round(sw * k)); c.height = Math.max(1, Math.round(sh * k));
+  const g = c.getContext('2d', { willReadFrequently: true });
+  if (ang) {
+    g.fillStyle = '#888'; g.fillRect(0, 0, c.width, c.height);
+    g.translate(c.width / 2, c.height / 2); g.rotate(ang * Math.PI / 180); g.translate(-c.width / 2, -c.height / 2);
+  }
+  g.drawImage(video, sx, sy, sw, sh, 0, 0, c.width, c.height);
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  const im = g.getImageData(0, 0, c.width, c.height), d = im.data, n = d.length >> 2;
+  const hist = new Uint32Array(256), lum = new Uint8Array(n);
+  for (let i = 0, j = 0; i < n; i++, j += 4) { const y = (d[j] * 77 + d[j + 1] * 150 + d[j + 2] * 29) >> 8; lum[i] = y; hist[y]++; }
+  const cut = n * 0.01;
+  let lo = 0, hi = 255, acc = 0;
+  while (lo < 254 && (acc += hist[lo]) < cut) lo++;
+  acc = 0;
+  while (hi > lo + 1 && (acc += hist[hi]) < cut) hi--;
+  const sc = 255 / Math.max(1, hi - lo);
+  for (let i = 0, j = 0; i < n; i++, j += 4) { const v = Math.max(0, Math.min(255, (lum[i] - lo) * sc)); d[j] = d[j + 1] = d[j + 2] = v; d[j + 3] = 255; }
+  g.putImageData(im, 0, 0);
+  return c;
+}
+
+/** Đọc chữ → [{text, x0, x1}] (dòng chữ + vị trí ngang trong ảnh) */
+async function ocrLines(canvas) {
+  const w = await ocrInit();
+  const r = await w.recognize(canvas, {}, { blocks: true });
+  const out = [];
+  (r.data.blocks || []).forEach((b) => (b.paragraphs || []).forEach((p) => (p.lines || []).forEach((l) => {
+    out.push({ text: String(l.text || '').trim(), x0: l.bbox ? l.bbox.x0 : 0, x1: l.bbox ? l.bbox.x1 : 0 });
+  })));
+  return out;
+}
+
+/* ---------- So khớp chữ đọc được với danh mục sản phẩm ---------- */
+// Ký tự hay đọc nhầm nhau → quy về 1 dạng (áp dụng cho cả chữ đọc được lẫn tên model)
+const OCR_FOLD = { O: '0', Q: '0', I: '1', L: '1', Z: '2', S: '5', B: '8', G: '6' };
+const ocrKey = (s) => fold(s).toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/[OQILZSBG]/g, (c) => OCR_FOLD[c]);
+/** Tìm tên model (key) trong 1 dòng chữ (t), cho phép đọc sai: thêm/bớt/sai 1 ký tự = 1 lỗi.
+ *  cutL/cutR: phần đầu/cuối của tên nằm ngoài dòng chữ (bị mép ảnh che) thì không tính lỗi.
+ *  Chọn cách khớp điểm cao nhất (đúng +1, mỗi lỗi −2) → { cost: số lỗi, m: số ký tự của tên đọc đúng } */
+function fuzzyFind(key, t, cutL, cutR) {
+  const k = key.length, n = t.length, N = n + 1;
+  let ps = new Int16Array(N), pc = new Int16Array(N), pm = new Int16Array(N);
+  let cs = new Int16Array(N), cc = new Int16Array(N), cm = new Int16Array(N);
+  let best = { s: 0, cost: 0, m: 0 };
+  const take = (s, c, m) => { if (s > best.s || (s === best.s && (c < best.cost || (c === best.cost && m > best.m)))) best = { s, cost: c, m }; };
+  for (let i = 1; i <= k; i++) {
+    cs[0] = cutL ? 0 : -2 * i; cc[0] = cutL ? 0 : i; cm[0] = 0;
+    const ch = key.charCodeAt(i - 1);
+    for (let j = 1; j <= n; j++) {
+      const eq = ch === t.charCodeAt(j - 1);
+      let s = ps[j - 1] + (eq ? 1 : -2), c = pc[j - 1] + (eq ? 0 : 1), m = pm[j - 1] + (eq ? 1 : 0);
+      if (ps[j] - 2 > s || (ps[j] - 2 === s && pc[j] + 1 < c)) { s = ps[j] - 2; c = pc[j] + 1; m = pm[j]; }             // đọc thiếu 1 ký tự của tên
+      if (cs[j - 1] - 2 > s || (cs[j - 1] - 2 === s && cc[j - 1] + 1 < c)) { s = cs[j - 1] - 2; c = cc[j - 1] + 1; m = cm[j - 1]; } // đọc thừa 1 ký tự
+      cs[j] = s; cc[j] = c; cm[j] = m;
+    }
+    if (cutR && i < k) take(cs[n], cc[n], cm[n]);
+    let x = ps; ps = cs; cs = x; x = pc; pc = cc; cc = x; x = pm; pm = cm; cm = x;
+  }
+  for (let j = 0; j <= n; j++) take(ps[j], pc[j], pm[j]);
+  return best;
+}
+/** lines: [{text, x0, x1}] (dòng chữ OCR + vị trí ngang) · frameW: rộng ảnh · serial: mã vừa quét (bỏ khỏi chữ)
+ *  → { auto: model, solid } (chắc chắn; solid = không cần đọc lại lần 2) | { suggest: [model…] } (gợi ý) | null */
+function matchModel(lines, frameW, serial, models) {
+  const sk = ocrKey(serial || '');
+  const L = [];
+  lines.forEach((l) => {
+    const raw = ocrKey(l.text);
+    if (raw.length < 3) return;
+    // Dòng chữ chạm mép ảnh (cách mép < 2,5 ký tự) → chữ có thể bị cắt ở mép đó
+    const cw = (l.x1 - l.x0) / Math.max(1, String(l.text).replace(/\s/g, '').length);
+    const mg = Math.max(frameW * 0.015, cw * 2.5);
+    const atL = !!frameW && l.x0 <= mg, atR = !!frameW && l.x1 >= frameW - mg;
+    const parts = sk.length >= 6 ? raw.split(sk) : [raw];
+    parts.forEach((k, i) => { if (k.length >= 3) L.push({ k, cutL: atL && i === 0, cutR: atR && i === parts.length - 1 }); });
+  });
+  if (!L.length) return null;
+  const better = (r, b) => !b || r.s > b.s || (r.s === b.s && r.cost < b.cost);
+  const all = [], loose = [];
+  (models || productList().map((x) => x.v)).forEach((name) => {
+    const key = ocrKey(String(name).replace(/\(.*?\)/g, ''));
+    if (key.length < 4) return;
+    let s = null, o = null;
+    L.forEach((l) => {
+      const r = fuzzyFind(key, l.k, l.cutL, l.cutR);
+      if (better(r, s)) s = r;
+      const q = l.cutL && l.cutR ? r : fuzzyFind(key, l.k, true, true); // bỏ qua phần tên không có trong dòng chữ
+      if (better(q, o)) o = q;
+    });
+    const ok = (r) => r.m >= 4 && r.cost <= Math.max(1, Math.floor(r.m / 4));
+    all.push({ name, key, s: s.s, cost: s.cost, m: s.m, ok: ok(s) });
+    if (ok(o)) loose.push({ name, key, s: o.s, cost: o.cost, m: o.m });
+  });
+  // Xếp hạng: điểm khớp (đúng +1, lỗi −2) → đọc đúng nhiều ký tự hơn (VD "KAE-S86 PRC" là KAE-S86 Pro, không phải KAE-S86)
+  const order = (a, b) => b.s - a.s || b.m - a.m || a.cost - b.cost || a.key.length - b.key.length;
+  const strict = all.filter((c) => c.ok).sort(order);
+  loose.sort(order);
+  const top = strict[0];
+  if (top) {
+    // Chắc chắn: đọc đúng cả tên (hoặc ≥ 5 ký tự khi phần còn lại bị mép ảnh che), hay sai 1 ký tự trên tên dài;
+    // không có model nào khác khớp ngang ngửa (điểm gần bằng mà đọc đúng nhiều ký tự bằng/hơn)
+    const sure = top.cost === 0 ? top.m === top.key.length || top.m >= 5 : top.cost === 1 && top.m >= 6;
+    const rival = strict.slice(1).some((c) => c.s >= top.s - 1 && c.m >= top.m);
+    // Có model chỉ khác 1 ký tự (VD U03 ↔ U05) → cần 2 lần đọc giống nhau mới tự lưu
+    const near = all.some((c) => c !== top && c.cost <= top.cost + 1 && c.m >= top.m - 1);
+    if (sure && !rival) return { auto: top.name, solid: top.cost === 0 && !near };
+  }
+  if (!loose.length) return null;
+  return { suggest: loose.filter((c) => c.s >= loose[0].s - 3).slice(0, 3).map((c) => c.name) };
+}
+
+/** Đọc chữ trên 1 khung hình → kết quả so khớp (lỗi / quá 8 giây thì trả null) */
+async function ocrGuess(canvas, serial) {
+  try {
+    const t0 = Date.now();
+    const lines = await Promise.race([ocrLines(canvas), sleep(8000).then(() => null)]);
+    if (!lines) return null;
+    const g = matchModel(lines, canvas.width, serial);
+    if (window.__qx) window.__qx.lastOcr = { ms: Date.now() - t0, lines: lines.map((l) => l.text), g };
+    return g;
+  } catch (e) { return null; }
+}
+
+/* ---------- Đọc tên sản phẩm cho serial vừa quét bằng camera ---------- */
+/** frame0: ảnh lúc đọc được mã vạch · o: đơn đang quét
+ *  → { model, auto: true } (tự nhận) | { model } (người quét chọn) | null (bỏ qua) */
+function readModel(serial, frame0, o) {
+  return new Promise((resolve) => {
+    // ai: góc xoay ảnh đang thử (0 → +6° → −6°): đọc không ra chữ nào thì đổi góc ở khung hình sau
+    const job = { serial, done: false, picking: false, votes: new Map(), sug: [], t0: Date.now(), n: 0, ai: 0 };
+    const ANG = [0, 6, -6];
+    const noAuto = OCR.noAuto.has(serial.toUpperCase());
+    OCR.job = job;
+    const finish = (r) => {
+      if (job.done) return;
+      job.done = true;
+      if (OCR.job === job) OCR.job = null;
+      readingView(false);
+      resolve(r);
+    };
+    const pickNow = async () => {
+      if (job.done || job.picking) return;
+      job.picking = true; // dừng đọc chữ, mở danh sách
+      const m = await pickProduct(serial, { suggest: job.sug });
+      finish(m ? { model: m } : null);
+    };
+    job.pick = pickNow;
+    job.choose = (m) => finish({ model: m });
+    job.skip = () => finish(null);
+    // Còn đọc tiếp được? (rời tab Quét / đăng xuất / đổi đơn → thôi, không lưu serial này)
+    const gone = () => !loggedIn() || curOrder() !== o || S.tab !== 'scan';
+    const live = () => !job.done && !job.picking && !gone();
+    // Gợi ý: model đã đọc ra (theo thứ tự lần đọc mới nhất) trước, rồi tới các gợi ý cũ – tối đa 3
+    const addSug = (list) => { job.sug = [...new Set(list.concat(job.sug))].slice(0, 3); };
+    // 1 kết quả đọc → true nếu đã chốt được model
+    const consider = (g) => {
+      if (!g) return false;
+      if (g.suggest) { addSug([...job.votes.keys()].concat(g.suggest)); return false; }
+      addSug([g.auto]);
+      if (noAuto) return false; // serial này vừa bị sửa/xoá vì nhận sai → chỉ gợi ý
+      if (g.solid) { finish({ model: g.auto, auto: true }); return true; }
+      const v = (job.votes.get(g.auto) || 0) + 1;
+      job.votes.set(g.auto, v);
+      const others = [...job.votes].reduce((a, [m, x]) => a + (m === g.auto ? 0 : x), 0);
+      if ((v >= 2 && !others) || (v >= 3 && v >= 2 * others)) { finish({ model: g.auto, auto: true }); return true; }
+      return false;
+    };
+    readingView(true);
+    showReading(job, OCR.st === 'ready' ? 'Đang đọc tên sản phẩm trên thùng…' : 'Đang tải bộ đọc chữ (lần đầu ~6 MB)…');
+    (async () => {
+      let frame = frame0;
+      while (live()) {
+        const left = OCR.WAIT - (Date.now() - job.t0);
+        if (left <= 0) break;
+        if (OCR.st !== 'ready') {
+          const ok = await Promise.race([ocrInit().then(() => true, () => false), sleep(left).then(() => false)]);
+          if (!ok) break; // không chạy được bộ đọc chữ / quá giờ → chọn tay
+          if (live()) showReading(job, 'Đang đọc tên sản phẩm trên thùng…');
+          continue;
+        }
+        if (!frame) {
+          if (!cam.running) break;
+          await sleep(120);
+          frame = live() ? grabView(ANG[job.ai]) : null;
+          continue;
+        }
+        const g = await ocrGuess(frame, serial);
+        frame = null; job.n++;
+        if (!g) job.ai = (job.ai + 1) % ANG.length;
+        if (!live()) break;
+        if (consider(g)) return;
+        showReading(job, noAuto && job.sug.length ? 'Serial này vừa được sửa sản phẩm – bấm chọn sản phẩm đúng bên dưới'
+          : job.votes.size ? 'Đọc được tên – đang đọc lại để chắc chắn…'
+          : job.sug.length ? 'Chưa chắc chắn – đưa camera gần chữ tên model hơn, hoặc bấm chọn bên dưới'
+            : 'Chưa thấy tên sản phẩm – đưa camera vào chữ tên model trên thùng (VD KAQ-U03 PRO)');
+      }
+      // Hết giờ / camera tắt / bộ đọc chữ lỗi → mở danh sách chọn tay (kèm gợi ý nếu có)
+      if (job.done || job.picking) return;
+      if (gone()) { finish(null); return; }
+      pickNow();
+    })();
+  });
+}
+/** Khung camera + câu nhắc khi đang đọc chữ tên sản phẩm */
+function readingView(on) {
+  $('#guide').classList.toggle('reading', on);
+  if (on) { OCR.hint = $('#hint').textContent; setHint('Đưa chữ tên model (VD KAQ-U03 PRO) vào hình'); }
+  else if (OCR.hint) { setHint(OCR.hint); OCR.hint = ''; }
+}
+/** Dòng trạng thái dưới camera khi đang đọc tên sản phẩm: gợi ý + Chọn tay + Bỏ qua */
+function showReading(job, msg) {
+  if (job.done || job.picking) return;
+  job.msg = msg;
+  lastEvt = { kind: 'pick', serial: job.serial, msg };
+  const box = $('#last');
+  box.className = 'last pick reading';
+  box.innerHTML = `<span class="badge">${icon('type')}</span><div class="t"><div class="sn">${esc(job.serial)}</div><div class="msg" role="status">${esc(msg)}</div>
+    ${job.sug.length ? `<div class="ocr-sug"><span>Có phải:</span>${job.sug.map((m) => `<button type="button" class="chip-btn" data-a="ocr-pick" data-v="${esc(m)}">${esc(m)}</button>`).join('')}</div>` : ''}
+    <div class="ocr-act"><button class="btn sm" type="button" data-a="ocr-manual">${icon('search')}Chọn tay</button><button class="btn sm ghost" type="button" data-a="ocr-skip">${icon('x')}Bỏ qua</button></div></div>`;
+}
+$('#last').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-a]'); if (!b) return;
+  const a = b.dataset.a, job = OCR.job;
+  if (a === 'fix') { fixModel(b.dataset.id); return; }
+  if (!job) return;
+  if (a === 'ocr-pick') job.choose(b.dataset.v);
+  if (a === 'ocr-manual') job.pick();
+  if (a === 'ocr-skip') job.skip();
 });
 
 /* ------------------------------------------------------------------
@@ -2002,6 +2404,7 @@ function canShareFiles() {
 ------------------------------------------------------------------ */
 const money = (n, bold) => ({ v: Math.round(+n || 0), s: bold ? 9 : 8 });
 const ktText = (o) => (o.kt ? 'Đã nhập' : 'Chưa xác nhận');
+const kmText = (km) => (km || []).map((x) => `${x.name} × ${x.qty}${x.unit ? ' ' + x.unit : ''}`).join('; ');
 /** order: {id,npp,dlCode,dlName,dlAddr,sale,no,start,upd,user,status,kt,ktAt,ktBy} · items: [{serial,model,at,user,note,pending,price}] */
 function orderWorkbook(order, items) {
   const recs = items.slice().sort((a, b) => a.at - b.at);
@@ -2016,7 +2419,7 @@ function orderWorkbook(order, items) {
     ['Người quét', order.user || ''], ['Trạng thái', order.status || ''],
     ['Quét nhập KTeam', order.kt ? `Đã nhập · ${toMs(order.ktAt) ? fmtDTY(toMs(order.ktAt)) : ''} · ${order.ktBy || ''}` : 'Chưa xác nhận'],
     ['Tổng số serial', { v: recs.length, s: 6 }],
-  ].concat(hasPrice ? [['Doanh thu (VNĐ, theo Bảng giá)', money(rev, true)]] : [], [['', ''], [{ v: 'Sản phẩm', s: 1 }, { v: 'Số lượng', s: 1 }]],
+  ].concat(order.km && order.km.length ? [['Hàng khuyến mại', kmText(order.km)]] : []).concat(hasPrice ? [['Doanh thu (VNĐ, theo Bảng giá)', money(rev, true)]] : [], [['', ''], [{ v: 'Sản phẩm', s: 1 }, { v: 'Số lượng', s: 1 }]],
     modelSummary(recs).map(([m, n]) => [m, n]));
   const blob = buildXlsx([
     { name: 'Serial', header: ['STT', 'Serial', 'Sản phẩm', 'Thời gian quét', 'Người quét'].concat(hasPrice ? ['Đơn giá (VNĐ)'] : [], ['Ghi chú']), rows, cols: [6, 22, 26, 20, 20].concat(hasPrice ? [16] : [], [60]), filter: true },
@@ -2066,7 +2469,7 @@ function exportReport(mode) {
     const oRows = orders.slice().sort((a, b) => toMs(a.start) - toMs(b.start)).map((o) => [toMs(o.start) ? new Date(toMs(o.start)) : '', { v: o.id, s: 2 }]
       .concat(admin ? [o.npp] : [], [{ v: o.dlCode, s: 2 }, { v: o.dlName, s: 5 }, o.sale, o.no, o.qty, money(revOf.get(o.id)), o.user,
         o.status === 'Hoàn tất' ? o.status : { v: o.status || 'Đang quét', s: 7 }, toMs(o.upd) ? new Date(toMs(o.upd)) : '',
-        o.kt ? ktText(o) : { v: ktText(o), s: 7 }, toMs(o.ktAt) ? new Date(toMs(o.ktAt)) : '', o.ktBy || '']));
+        o.kt ? ktText(o) : { v: ktText(o), s: 7 }, toMs(o.ktAt) ? new Date(toMs(o.ktAt)) : '', o.ktBy || '', kmText(o.km)]));
     const sRows = rows.map((r) => [toMs(r[0]) ? new Date(toMs(r[0])) : '', { v: r[1], s: 5 }, r[2], r[10] ? money(r[10]) : '', { v: r[3], s: 2 }]
       .concat(admin ? [r[4]] : [], [{ v: r[5], s: 2 }, r[6], r[9], r[7], r[8] ? { v: '⚠ ' + r[8], s: 7 } : '']));
     const grp = new Map();
@@ -2074,8 +2477,8 @@ function exportReport(mode) {
     const sum = [...grp.entries()].sort((a, b) => a[0].localeCompare(b[0], 'vi')).map(([k, g]) => { const [dl, m] = k.split('\u0001'); return [dl, m, g.n, money(g.rev)]; });
     sum.push([{ v: 'Tổng cộng', s: 5 }, { v: '', s: 5 }, { v: rows.length, s: 6 }, money(rows.reduce((s, r) => s + (+r[10] || 0), 0), true)]);
     const blob = buildXlsx([
-      { name: 'Đơn xuất', header: ['Bắt đầu quét', 'Mã đơn'].concat(admin ? ['NPP'] : [], ['Mã ĐL', 'Đại lý', 'Sale phụ trách', 'Số phiếu', 'Số lượng', 'Doanh thu (VNĐ)', 'Người quét', 'Trạng thái', 'Cập nhật', 'Quét nhập KTeam', 'Thời gian nhập KTeam', 'Xác nhận KTeam bởi']),
-        rows: oRows, cols: [20, 18].concat(admin ? [20] : [], [14, 30, 22, 14, 10, 16, 20, 12, 20, 16, 20, 22]), filter: true },
+      { name: 'Đơn xuất', header: ['Bắt đầu quét', 'Mã đơn'].concat(admin ? ['NPP'] : [], ['Mã ĐL', 'Đại lý', 'Sale phụ trách', 'Số phiếu', 'Số lượng', 'Doanh thu (VNĐ)', 'Người quét', 'Trạng thái', 'Cập nhật', 'Quét nhập KTeam', 'Thời gian nhập KTeam', 'Xác nhận KTeam bởi', 'Hàng khuyến mại']),
+        rows: oRows, cols: [20, 18].concat(admin ? [20] : [], [14, 30, 22, 14, 10, 16, 20, 12, 20, 16, 20, 22, 40]), filter: true },
       { name: 'Serial', header: ['Thời gian quét', 'Serial', 'Sản phẩm', 'Đơn giá (VNĐ)', 'Mã đơn'].concat(admin ? ['NPP'] : [], ['Mã ĐL', 'Đại lý', 'Sale phụ trách', 'Người quét', 'Ghi chú']),
         rows: sRows, cols: [20, 22, 24, 16, 18].concat(admin ? [20] : [], [14, 30, 22, 20, 60]), filter: true },
       { name: 'Tổng hợp', header: ['Đại lý', 'Sản phẩm', 'Số lượng', 'Doanh thu (VNĐ)'], rows: sum, cols: [34, 26, 12, 18], filter: false },
@@ -2111,6 +2514,355 @@ function exportSales(mode) {
     await saveFile(blob, name, mode, `Đã xuất doanh thu ${A.qty} máy → ${name}`);
     if (A.noPrice) toast(`${A.noPrice} máy chưa có giá – ghi “Chưa có giá” trong file`, 'warn', 5000);
   });
+}
+
+/* ------------------------------------------------------------------
+   PHIẾU XUẤT KHO khổ A5 (148 × 210 mm)
+   - Đầu phiếu: tên công ty, địa chỉ, SĐT, MST của NPP (tab "Thông tin NPP")
+   - Bảng hàng: model + số lượng; Đơn giá / Thành tiền để trống (mỗi NPP giá khác nhau)
+   - Hàng khuyến mại: NPP nhập khi in, lưu theo đơn (tab Đơn xuất, cột O–P)
+   - Vẽ trên canvas (≈203 dpi) → PDF (ảnh JPEG mỗi trang) để tải / gửi Zalo, hoặc In thẳng
+------------------------------------------------------------------ */
+const PH = { W: 148, H: 210, PX: 8, L: 10, R: 10, T: 9, B: 13 };          // mm · 8 px/mm
+const PH_FONT = '"Be Vietnam Pro", "Segoe UI", Roboto, Arial, sans-serif';
+const PDF_MIME = 'application/pdf';
+const unitOf = (name) => (/^bộ(\s|$)/i.test(String(name || '').trim()) ? 'Bộ' : 'Chiếc');
+const nppInfoOf = (npp) => {
+  const k = fold(npp).trim();
+  return ((S.auth && S.auth.npps) || []).find((x) => fold(x.npp).trim() === k) || null;
+};
+/** order: {id,npp,dlCode,dlName,dlAddr,sale,no,start} · items: [{model}] · km: [{name,unit,qty}] */
+function phieuData(order, items, km, note) {
+  const by = new Map();
+  items.forEach((r) => { const m = r.model || '(chưa chọn sản phẩm)'; by.set(m, (by.get(m) || 0) + 1); });
+  const info = nppInfoOf(order.npp) || {}, dl = findDealer(order.dlCode);
+  return {
+    company: info.company || order.npp || (me() && me().npp !== '*' ? me().npp : '') || '',
+    address: info.address || '', phone: info.phone || '', mst: info.mst || '',
+    no: order.no || '', id: order.id || '', date: toMs(order.start) || Date.now(),
+    dlName: order.dlName || '', dlCode: order.dlCode || '',
+    dlAddr: order.dlAddr || (dl ? [dl[3], dl[2]].filter(Boolean).join(', ') : ''), sale: order.sale || (dl ? dl[4] : ''),
+    lines: [...by.entries()].map(([name, qty]) => ({ name, unit: unitOf(name), qty })),
+    km: (km || []).filter((x) => x && String(x.name || '').trim()).map((x) => ({ name: String(x.name).trim(), unit: String(x.unit || '').trim(), qty: +x.qty || 1 })),
+    note: String(note || '').trim(), printedAt: Date.now(),
+  };
+}
+
+/* ---------------- Bố cục: danh sách lệnh vẽ cho từng trang ---------------- */
+function phieuLayout(d) {
+  const P = PH.PX, L = PH.L * P, R = (PH.W - PH.R) * P, CW = R - L, TOP = PH.T * P, BOTTOM = (PH.H - PH.B) * P;
+  const mc = document.createElement('canvas').getContext('2d');
+  const F = (pt, w = 400, it) => `${it ? 'italic ' : ''}${w} ${(pt * 0.3528 * P).toFixed(1)}px ${PH_FONT}`;
+  const sz = (pt) => pt * 0.3528 * P;                         // cỡ chữ (px)
+  const tw = (s, f) => { mc.font = f; return mc.measureText(s).width; };
+  const wrap = (s, f, maxW) => {                               // xuống dòng theo từ; từ quá dài thì cắt theo ký tự
+    const out = [];
+    String(s == null ? '' : s).split('\n').forEach((para) => {
+      let cur = '';
+      para.split(/\s+/).filter(Boolean).forEach((w) => {
+        while (tw(w, f) > maxW && w.length > 1) {
+          let k = w.length - 1;
+          while (k > 1 && tw(w.slice(0, k), f) > maxW) k--;
+          if (cur) { out.push(cur); cur = ''; }
+          out.push(w.slice(0, k)); w = w.slice(k);
+        }
+        const t = cur ? cur + ' ' + w : w;
+        if (!cur || tw(t, f) <= maxW) cur = t; else { out.push(cur); cur = w; }
+      });
+      out.push(cur);
+    });
+    return out.length ? out : [''];
+  };
+  const pages = [];
+  let ops, y;
+  const newPage = () => { ops = []; pages.push(ops); y = TOP; };
+  const text = (s, x, yb, f, align = 'left', color = '#111') => ops.push((g) => { g.font = f; g.fillStyle = color; g.textAlign = align; g.textBaseline = 'alphabetic'; g.fillText(s, x, yb); });
+  const hline = (x1, x2, yy, w = 1.6, dash) => ops.push((g) => { g.save(); g.strokeStyle = '#222'; g.lineWidth = w; if (dash) g.setLineDash(dash); g.beginPath(); g.moveTo(x1, yy); g.lineTo(x2, yy); g.stroke(); g.restore(); });
+  const box = (x, yy, w, h, fill) => ops.push((g) => { g.save(); if (fill) { g.fillStyle = fill; g.fillRect(x, yy, w, h); } g.strokeStyle = '#222'; g.lineWidth = 1.6; g.strokeRect(x, yy, w, h); g.restore(); });
+  /** 1 dòng chữ: y là mép trên, tự cộng chiều cao dòng */
+  const lineOf = (s, pt, w, align = 'left', color = '#111', it = false, lh = 1.38) => {
+    const f = F(pt, w, it), x = align === 'center' ? (L + R) / 2 : align === 'right' ? R : L;
+    text(s, x, y + sz(pt) * 1.02, f, align, color);
+    y += sz(pt) * lh;
+  };
+  const gap = (mm) => { y += mm * P; };
+
+  newPage();
+  // ---------- Đầu phiếu: thông tin NPP
+  const fCo = F(10.5, 700);
+  wrap(String(d.company || '').toLocaleUpperCase('vi'), fCo, CW).forEach((ln) => lineOf(ln, 10.5, 700, 'left', '#0b2e59'));
+  if (d.address) wrap('Địa chỉ: ' + d.address, F(8), CW).forEach((ln) => lineOf(ln, 8, 400, 'left', '#333'));
+  const contact = [d.phone ? 'Điện thoại: ' + d.phone : '', d.mst ? 'MST: ' + d.mst : ''].filter(Boolean).join('     ');
+  if (contact) lineOf(contact, 8, 400, 'left', '#333');
+  gap(1.2); hline(L, R, y, 2); gap(4.2);
+  // ---------- Tiêu đề
+  lineOf('PHIẾU XUẤT KHO', 15.5, 700, 'center', '#111', false, 1.3);
+  const dd = vd(d.date);
+  lineOf(`Ngày ${pad(dd.getUTCDate())} tháng ${pad(dd.getUTCMonth() + 1)} năm ${dd.getUTCFullYear()}`, 9, 400, 'center', '#222', true);
+  lineOf('Số: ' + (d.no || '……………………'), 9.5, 600, 'center');
+  if (d.id) lineOf('Mã đơn trên app: ' + d.id, 7.5, 400, 'center', '#555');
+  gap(2.8);
+  // ---------- Thông tin nhận hàng
+  const infoRow = (label, value, bold) => {
+    const fl = F(9, 400), fv = F(9, bold ? 700 : 400), lw = tw(label, fl) + 1.6 * P;
+    const vl = wrap(value || '', fv, CW - lw);
+    vl.forEach((ln, i) => {
+      if (i === 0) text(label, L, y + sz(9) * 1.02, fl, 'left', '#333');
+      text(ln, L + lw, y + sz(9) * 1.02, fv);
+      y += sz(9) * 1.42;
+    });
+  };
+  infoRow('Đại lý nhận hàng:', d.dlName + (d.dlCode ? ` (Mã ĐL: ${d.dlCode})` : ''), true);
+  infoRow('Địa chỉ:', d.dlAddr || '……………………………………………………………');
+  infoRow('Sale phụ trách:', d.sale || '……………………');
+  infoRow('Lý do xuất kho:', 'Xuất bán cho đại lý');
+  gap(2.4);
+
+  // ---------- Bảng (tự sang trang, lặp lại dòng tiêu đề)
+  const table = (cols, rows, opt = {}) => {
+    const xs = []; let x = L;
+    const total = cols.reduce((s, c) => s + c.w, 0);
+    cols.forEach((c) => { xs.push(x); x += (c.w / total) * CW; });
+    const ws = cols.map((c) => (c.w / total) * CW);
+    const fh = F(8, 700), fb = F(9, 400), fbb = F(9, 700), pad = 1.4 * P;
+    const head = () => {
+      const hh = 7.6 * P;
+      cols.forEach((c, i) => {
+        box(xs[i], y, ws[i], hh, '#e9eef5');
+        const hl = wrap(c.t, fh, ws[i] - 2 * pad);
+        const y0 = y + (hh - hl.length * sz(8) * 1.2) / 2 + sz(8) * 0.98;
+        hl.forEach((ln, k) => text(ln, xs[i] + ws[i] / 2, y0 + k * sz(8) * 1.2, fh, 'center'));
+      });
+      y += hh;
+    };
+    head();
+    rows.forEach((r) => {
+      const cells = cols.map((c, i) => wrap(r.cells[i] == null ? '' : String(r.cells[i]), r.bold ? fbb : fb, ws[i] - 2 * pad));
+      const h = Math.max(6.6 * P, Math.max(...cells.map((cl) => cl.length)) * sz(9) * 1.3 + 2.2 * P);
+      if (y + h > BOTTOM - (opt.keep || 0)) { newPage(); head(); }
+      cols.forEach((c, i) => {
+        box(xs[i], y, ws[i], h, r.fill);
+        const tx = c.a === 'center' ? xs[i] + ws[i] / 2 : c.a === 'right' ? xs[i] + ws[i] - pad : xs[i] + pad;
+        cells[i].forEach((ln, k) => text(ln, tx, y + 1.1 * P + sz(9) * 1.0 + k * sz(9) * 1.3, r.bold ? fbb : fb, c.a || 'left'));
+      });
+      y += h;
+    });
+  };
+  const qtyTotal = d.lines.reduce((s, l) => s + l.qty, 0);
+  table([{ t: 'STT', w: 9, a: 'center' }, { t: 'Tên hàng hoá', w: 43 }, { t: 'ĐVT', w: 12, a: 'center' }, { t: 'Số lượng', w: 17, a: 'center' },
+    { t: 'Đơn giá', w: 22, a: 'right' }, { t: 'Thành tiền', w: 25, a: 'right' }],
+  d.lines.map((l, i) => ({ cells: [i + 1, l.name, l.unit, l.qty, '', ''] }))
+    .concat([{ cells: ['', 'Cộng', '', qtyTotal, '', ''], bold: true, fill: '#f6f8fb' }]));
+  gap(3.2);
+  // ---------- Hàng khuyến mại
+  if (y + 24 * P > BOTTOM) newPage();
+  lineOf('HÀNG KHUYẾN MẠI (không thu tiền)', 9, 700, 'left', '#111', false, 1.5);
+  const kmRows = d.km.length ? d.km.map((k, i) => ({ cells: [i + 1, k.name, k.unit || unitOf(k.name), k.qty, ''] }))
+    : [{ cells: ['', '', '', '', ''] }, { cells: ['', '', '', '', ''] }];
+  table([{ t: 'STT', w: 9, a: 'center' }, { t: 'Tên hàng khuyến mại', w: 66, a: 'left' }, { t: 'ĐVT', w: 12, a: 'center' }, { t: 'Số lượng', w: 17, a: 'center' },
+    { t: 'Ghi chú', w: 24, a: 'left' }], kmRows);
+  gap(3);
+  // ---------- Ghi chú + tổng tiền bằng chữ
+  if (d.note) {
+    const f = F(8.5, 400);
+    wrap('Ghi chú: ' + d.note, f, CW).forEach((ln) => { if (y + sz(8.5) * 1.4 > BOTTOM) newPage(); lineOf(ln, 8.5, 400, 'left', '#222'); });
+    gap(1);
+  }
+  if (y + 8 * P > BOTTOM) newPage();
+  const lbl = 'Tổng số tiền (viết bằng chữ):', fl = F(8.5, 400);
+  text(lbl, L, y + sz(8.5) * 1.02, fl, 'left', '#222');
+  hline(L + tw(lbl, fl) + 1.5 * P, R, y + sz(8.5) * 1.05, 1.4, [2, 5]);
+  y += sz(8.5) * 1.4;
+  hline(L, R, y + sz(8.5) * 1.05, 1.4, [2, 5]);
+  y += sz(8.5) * 1.4;
+  gap(3.5);
+  // ---------- Ký nhận (không tách trang)
+  const sig = ['Người lập phiếu', 'Thủ kho', 'Người giao hàng', 'Người nhận hàng'];
+  if (y + 27 * P > BOTTOM) newPage();
+  const cw = CW / sig.length;
+  sig.forEach((s, i) => {
+    text(s, L + cw * i + cw / 2, y + sz(8.5) * 1.02, F(8.5, 700), 'center');
+    text('(Ký, ghi rõ họ tên)', L + cw * i + cw / 2, y + sz(8.5) * 1.4 + sz(7.2) * 1.02, F(7.2, 400, true), 'center', '#444');
+  });
+  y += 27 * P;
+  return pages;
+}
+
+/** Vẽ ra canvas: mỗi trang 1184 × 1680 px */
+async function phieuCanvases(d) {
+  if (document.fonts && document.fonts.load) {
+    await Promise.race([Promise.all(['400', '600', '700'].map((w) => document.fonts.load(`${w} 24px "Be Vietnam Pro"`).catch(() => null))), sleep(2500)]);
+  }
+  const pages = phieuLayout(d), P = PH.PX, n = pages.length;
+  const foot = `Lập từ app Quét xuất kho KV2 · ${fmtDTY(d.printedAt)}`;
+  return pages.map((ops, i) => {
+    const c = document.createElement('canvas');
+    c.width = PH.W * P; c.height = PH.H * P;
+    const g = c.getContext('2d');
+    g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);
+    ops.forEach((fn) => fn(g));
+    g.font = `400 ${(6.5 * 0.3528 * P).toFixed(1)}px ${PH_FONT}`; g.fillStyle = '#777'; g.textBaseline = 'alphabetic';
+    const yb = (PH.H - 6) * P;
+    g.textAlign = 'left'; g.fillText(foot, PH.L * P, yb);
+    g.textAlign = 'right'; g.fillText(`Trang ${i + 1}/${n}`, (PH.W - PH.R) * P, yb);
+    return c;
+  });
+}
+const canvasJpeg = (c, q = 0.9) => new Promise((res) => c.toBlob((b) => res(b), 'image/jpeg', q));
+
+/* ---------------- PDF: mỗi trang 1 ảnh JPEG, khổ A5 ---------------- */
+async function pdfFromCanvases(canvases, title) {
+  const enc = new TextEncoder(), chunks = [], offs = [];
+  let len = 0;
+  const put = (x) => { const b = typeof x === 'string' ? enc.encode(x) : x; chunks.push(b); len += b.length; };
+  const hexU16 = (s) => { let h = 'FEFF'; for (const ch of s) { const cp = ch.codePointAt(0); const units = cp > 0xffff ? [0xd800 + ((cp - 0x10000) >> 10), 0xdc00 + ((cp - 0x10000) & 0x3ff)] : [cp]; units.forEach((u) => { h += u.toString(16).toUpperCase().padStart(4, '0'); }); } return `<${h}>`; };
+  const W = (PH.W / 25.4 * 72).toFixed(2), H = (PH.H / 25.4 * 72).toFixed(2);
+  const n = canvases.length, objCount = 3 + n * 3;
+  const begin = (i) => { offs[i] = len; put(`${i} 0 obj\n`); };
+  put('%PDF-1.4\n'); put(new Uint8Array([0x25, 0xe2, 0xe3, 0xcf, 0xd3, 0x0a]));
+  begin(1); put('<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
+  begin(2); put(`<< /Type /Pages /Count ${n} /Kids [${canvases.map((_, i) => `${4 + i * 3} 0 R`).join(' ')}] >>\nendobj\n`);
+  const t = vd(Date.now());
+  const pdfDate = `D:${t.getUTCFullYear()}${pad(t.getUTCMonth() + 1)}${pad(t.getUTCDate())}${pad(t.getUTCHours())}${pad(t.getUTCMinutes())}${pad(t.getUTCSeconds())}+07'00'`;
+  begin(3); put(`<< /Title ${hexU16(title)} /Producer (Quet xuat kho KV2) /CreationDate (${pdfDate}) >>\nendobj\n`);
+  for (let i = 0; i < n; i++) {
+    const c = canvases[i], jpg = new Uint8Array(await (await canvasJpeg(c)).arrayBuffer());
+    const pg = 4 + i * 3, im = pg + 1, ct = pg + 2, content = `q ${W} 0 0 ${H} 0 0 cm /Im0 Do Q`;
+    begin(pg); put(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}] /Resources << /XObject << /Im0 ${im} 0 R >> >> /Contents ${ct} 0 R >>\nendobj\n`);
+    begin(im); put(`<< /Type /XObject /Subtype /Image /Width ${c.width} /Height ${c.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpg.length} >>\nstream\n`);
+    put(jpg); put('\nendstream\nendobj\n');
+    begin(ct); put(`<< /Length ${content.length} >>\nstream\n${content}\nendstream\nendobj\n`);
+  }
+  const xref = len;
+  let x = `xref\n0 ${objCount + 1}\n0000000000 65535 f \n`;
+  for (let i = 1; i <= objCount; i++) x += `${String(offs[i]).padStart(10, '0')} 00000 n \n`;
+  put(x + `trailer\n<< /Size ${objCount + 1} /Root 1 0 R /Info 3 0 R >>\nstartxref\n${xref}\n%%EOF\n`);
+  return new Blob(chunks, { type: PDF_MIME });
+}
+
+/** In: trang ảnh khổ A5 trong khung ẩn → hộp thoại in của trình duyệt */
+let printFrame = null;
+async function printCanvases(canvases) {
+  const urls = canvases.map((c) => c.toDataURL('image/jpeg', 0.92));
+  if (printFrame) printFrame.remove();
+  const f = printFrame = document.createElement('iframe');
+  f.setAttribute('aria-hidden', 'true');
+  f.style.cssText = 'position:fixed;right:0;bottom:0;width:1px;height:1px;border:0;opacity:0;pointer-events:none';
+  document.body.appendChild(f);
+  const doc = f.contentDocument;
+  doc.open();
+  doc.write(`<!doctype html><html><head><meta charset="utf-8"><title>Phiếu xuất kho</title><style>@page{size:A5 portrait;margin:0}html,body{margin:0;padding:0;background:#fff}img{display:block;width:148mm;height:210mm;page-break-after:always;break-after:page}img:last-child{page-break-after:auto;break-after:auto}</style></head><body>${urls.map((u) => `<img src="${u}" alt="">`).join('')}</body></html>`);
+  doc.close();
+  await Promise.all([...doc.images].map((im) => (im.decode ? im.decode().catch(() => null) : null)));
+  window.__qx && (window.__qx.lastPrint = { pages: canvases.length, at: Date.now() });
+  f.contentWindow.focus();
+  f.contentWindow.print();
+  window.focus();   // trả bàn phím về app sau hộp thoại in (phím Esc, ô nhập…)
+  setTimeout(() => { if (printFrame === f) { f.remove(); printFrame = null; } }, 120000);
+}
+const canSharePdf = () => { try { return !!(navigator.canShare && navigator.canShare({ files: [new File(['x'], 'a.pdf', { type: PDF_MIME })] })); } catch (e) { return false; } };
+const isIOS = () => /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+/* ---------------- Màn hình phiếu: nhập hàng khuyến mại, xem trước, In / Gửi / Tải PDF ---------------- */
+/** opts: { km, note, save: async (km, note) => void } */
+function openPhieu(order, items, opts = {}) {
+  if (!items || !items.length) { toast('Đơn chưa có serial nào'); return; }
+  const st = { km: (opts.km || []).map((x) => ({ name: x.name || '', unit: x.unit || '', qty: x.qty || 1 })), note: opts.note || '', busy: false, seq: 0 };
+  const initial = JSON.stringify([st.km, st.note]);
+  const nModels = new Set(items.map((r) => r.model)).size;
+  const names = [...new Set(productList().concat(st.km.map((x) => x.name)))];
+  const foot = document.createElement('div');
+  foot.style.display = 'contents';
+  foot.innerHTML = `<button class="btn" type="button" data-a="print">${icon('print')}<span class="t">In</span></button>
+    ${canSharePdf() ? `<button class="btn" type="button" data-a="share" aria-label="Gửi PDF">${icon('share')}<span class="t">Gửi</span></button>` : ''}
+    <button class="btn primary" type="button" data-a="pdf">${icon('download')}Tải PDF</button>`;
+  const body = document.createElement('div');
+  body.innerHTML = `<div class="ph-head"><b>${esc(order.dlName)}</b><span>${esc([order.no ? 'Số phiếu ' + order.no : 'Chưa có số phiếu', `${items.length} máy · ${nModels} model`].join(' · '))}</span></div>
+    <h4 class="dsec">Hàng khuyến mại <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500">– không thu tiền, in thành bảng riêng</span></h4>
+    <div class="km-rows"></div>
+    <button class="btn sm" type="button" data-a="km-add">${icon('plus')}Thêm hàng khuyến mại</button>
+    <label class="lbl" for="phNote" style="margin-top:12px">Ghi chú trên phiếu (không bắt buộc)</label>
+    <input class="inp" id="phNote" maxlength="300" placeholder="VD: Tặng kèm theo CTKM tháng 10" autocomplete="off">
+    <datalist id="kmNames">${names.map((n) => `<option value="${esc(n)}">`).join('')}</datalist>
+    <h4 class="dsec" style="margin-top:14px">Xem trước · khổ A5 <span class="muted ph-pages" style="text-transform:none;letter-spacing:0;font-weight:500"></span></h4>
+    <div class="ph-prev"><img alt="Xem trước phiếu xuất kho"><i class="spin"></i></div>
+    <p class="muted" style="font-size:12.5px;margin:8px 0 0">Đơn giá, thành tiền để trống cho NPP tự ghi. Thông tin công ty ở đầu phiếu lấy từ tab “Thông tin NPP” trên Google Sheet.</p>`;
+  const ni = nppInfoOf(order.npp);
+  if (!ni || !ni.company || !ni.address) {
+    body.insertAdjacentHTML('afterbegin', `<div class="warnbox" style="margin-bottom:10px">${icon('alert')} Đầu phiếu chưa có ${ni && ni.company ? 'địa chỉ' : 'tên công ty, địa chỉ'} của ${esc(order.npp || 'NPP')} – báo quản lý KV2 điền tab “Thông tin NPP” trên Google Sheet (điền xong: ⚙️ Cài đặt → Danh sách đại lý → Tải lại).</div>`);
+  }
+  const m = openModal({ title: 'Phiếu xuất kho (A5)', body, foot });
+  m.root.classList.add('ph-modal');
+  const rowsBox = $('.km-rows', body), noteEl = $('#phNote', body), img = $('.ph-prev img', body);
+  noteEl.value = st.note;
+  const drawRows = (focusLast) => {
+    rowsBox.innerHTML = st.km.length ? st.km.map((k, i) => `<div class="km-row" data-i="${i}">
+        <input class="inp km-n" list="kmNames" placeholder="Tên hàng khuyến mại" value="${esc(k.name)}" maxlength="100" autocomplete="off" aria-label="Tên hàng khuyến mại ${i + 1}">
+        <input class="inp km-u" placeholder="ĐVT" value="${esc(k.unit)}" maxlength="20" aria-label="Đơn vị tính" data-auto="${k.unit ? '' : '1'}">
+        <input class="inp km-q" type="number" inputmode="numeric" min="1" max="99999" value="${esc(k.qty)}" aria-label="Số lượng">
+        <button class="km-x" type="button" data-a="km-del" aria-label="Bỏ dòng ${i + 1}">${icon('x')}</button></div>`).join('')
+      : '<p class="muted km-empty">Chưa có – phiếu in 2 dòng trống để ghi tay.</p>';
+    if (focusLast) { const ins = $$('.km-n', rowsBox); if (ins.length) ins[ins.length - 1].focus(); }
+  };
+  const collect = () => {
+    st.km = $$('.km-row', rowsBox).map((r) => ({ name: $('.km-n', r).value.trim(), unit: $('.km-u', r).value.trim(), qty: Math.max(1, Math.round(+$('.km-q', r).value || 1)) }));
+    st.note = noteEl.value.trim();
+  };
+  const data = () => { collect(); return phieuData(order, items, st.km, st.note); };
+  let tPrev = 0;
+  const preview = () => {
+    clearTimeout(tPrev);
+    tPrev = setTimeout(async () => {
+      const seq = ++st.seq, cs = await phieuCanvases(data());
+      if (seq !== st.seq || !modalStack.includes(m)) return;
+      img.src = cs[0].toDataURL('image/jpeg', 0.8);
+      $('.ph-prev', body).classList.add('ok');
+      $('.ph-pages', body).textContent = cs.length > 1 ? `– ${cs.length} trang` : '– 1 trang';
+    }, 250);
+  };
+  body.addEventListener('input', (e) => {
+    const t = e.target;
+    if (t.classList.contains('km-n')) {   // gõ tên hàng → tự điền ĐVT (nếu chưa tự sửa)
+      const u = $('.km-u', t.closest('.km-row'));
+      if (u && (!u.value.trim() || u.dataset.auto === '1')) { u.value = t.value.trim() ? unitOf(t.value) : ''; u.dataset.auto = '1'; }
+    }
+    if (t.classList.contains('km-u')) t.dataset.auto = '';
+    preview();
+  });
+  body.addEventListener('focusin', (e) => { if (e.target.matches('.km-u, .km-q')) setTimeout(() => { try { e.target.select(); } catch (err) { /* */ } }, 0); });
+  body.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-a]'); if (!b) return;
+    if (b.dataset.a === 'km-add') { collect(); st.km.push({ name: '', unit: '', qty: 1 }); drawRows(true); }
+    if (b.dataset.a === 'km-del') { collect(); st.km.splice(+b.closest('.km-row').dataset.i, 1); drawRows(); preview(); }
+  });
+  foot.addEventListener('click', async (e) => {
+    const b = e.target.closest('button[data-a]'); if (!b || st.busy) return;
+    const mode = b.dataset.a, d = data();
+    st.busy = true; $$('button', foot).forEach((x) => { x.disabled = true; });
+    const old = b.innerHTML; b.innerHTML = '<i class="spin"></i>';
+    try {
+      const km = d.km, note = d.note;
+      if (JSON.stringify([km, note]) !== initial && opts.save) {
+        Promise.resolve(opts.save(km, note)).catch((err) => toast('Chưa lưu được hàng khuyến mại lên Google Sheet: ' + err.message, 'warn', 4500));
+      }
+      const cs = await phieuCanvases(d);
+      const name = `PhieuXK_${slug(d.dlName)}_${slug(d.no || d.id)}.pdf`;
+      if (mode === 'print') {
+        if (isIOS()) {   // iPhone: mở PDF bằng chia sẻ → chọn In
+          const blob = await pdfFromCanvases(cs, 'Phiếu xuất kho ' + d.dlName);
+          await saveFile(blob, name, canSharePdf() ? 'share' : 'download', 'Đã tải ' + name + ' – mở file để in');
+        } else await printCanvases(cs);
+      } else {
+        const blob = await pdfFromCanvases(cs, 'Phiếu xuất kho ' + d.dlName);
+        window.__qx && (window.__qx.lastPdf = { size: blob.size, pages: cs.length, name });
+        await saveFile(blob, name, mode === 'share' ? 'share' : 'download', `Đã tải phiếu xuất kho → ${name}`);
+      }
+    } catch (err) { toast('Không tạo được phiếu: ' + (err.message || err), 'bad', 4500); }
+    finally { st.busy = false; b.innerHTML = old; $$('button', foot).forEach((x) => { x.disabled = false; }); }
+  });
+  drawRows();
+  preview();
+  return m;
 }
 
 /* ------------------------------------------------------------------
@@ -2633,6 +3385,7 @@ function detailView(m, order, items, opts) {
     </div></div>`;
   if (opts.local) html += `<p class="pick-hint">${icon('phone')} Đơn trên máy – ${unsentOf(S.orders.find((o) => o.id === order.id) || { items: [] })} serial chưa lên Google Sheet, sẽ tự gửi khi có mạng. Gửi xong mới xác nhận được KTeam.</p>`;
   else html += ktBox(order, opts.ktBusy);
+  if (opts.canPhieu) html += `<button class="btn wide ph-open" type="button" data-a="phieu">${icon('print')}Phiếu xuất kho (A5)${order.km && order.km.length ? `<span class="ph-km">${order.km.length} hàng KM</span>` : ''}</button>`;
   const purgeBtn = !opts.local && admin && opts.canPurge ? `<div class="purge-one"><button class="btn sm ghost" type="button" data-a="purge">${icon('trash')}Xoá đơn này (dữ liệu test)</button></div>` : '';
   if (!items) {
     html += opts.err ? `<div class="status-box bad">${esc(opts.err)} <button class="btn sm" type="button" data-a="retry">Thử lại</button>${scriptLinkBtn(opts.errKind)}</div>`
@@ -2669,12 +3422,13 @@ function openDetailModal(order, getItems, opts) {
   const m = openModal({ title: opts.local ? 'Đơn trên máy' : 'Lịch sử quét xuất', body: '', foot });
   m.root.classList.add('detail-modal');
   const st = { q: '', items: getItems(), err: '', errKind: '', ktBusy: false };
-  const draw = (focusQ) => detailView(m, order, st.items, { local: opts.local, q: st.q, err: st.err, errKind: st.errKind, focusQ, ktBusy: st.ktBusy, canPurge: !!opts.purge });
+  const draw = (focusQ) => detailView(m, order, st.items, { local: opts.local, q: st.q, err: st.err, errKind: st.errKind, focusQ, ktBusy: st.ktBusy, canPurge: !!opts.purge, canPhieu: !!opts.phieu });
   m.body.addEventListener('input', (e) => { if (e.target.dataset.a === 'q') { st.q = e.target.value; draw(true); } });
   m.body.addEventListener('click', (e) => {
     const r = e.target.closest('[data-a=retry]');
     if (r && opts.reload) { st.err = ''; draw(); opts.reload(st, draw, m); return; }
     if (e.target.closest('[data-a=purge]') && opts.purge) { opts.purge(st, m); return; }
+    if (e.target.closest('[data-a=phieu]') && opts.phieu) { if (!st.items) { toast('Đang tải lịch sử quét…'); return; } opts.phieu(st, draw, m); return; }
     const k = e.target.closest('[data-a=kt-do],[data-a=kt-undo]');
     if (k && opts.kteam && !st.ktBusy) { opts.kteam(k.dataset.a === 'kt-do', st, draw, m); return; }
     const b = e.target.closest('.hrow');
@@ -2721,6 +3475,21 @@ function openOrderDetail(id) {
       } catch (e) { st.err = e.message; st.errKind = e.kind || ''; }
       if (modalStack.includes(m)) draw();
     },
+    phieu: (st, draw, m) => openPhieu(order, st.items, {
+      km: order.km, note: order.pnote,
+      save: async (km, note) => {
+        const local = S.orders.find((o) => o.id === order.id);
+        if (local) { local.km = km; local.pnote = note; saveOrders(); }
+        const r = await api({ action: 'phieu', id: order.id, km, note });
+        const pick = { km: r.order.km || [], pnote: r.order.pnote || '' };
+        Object.assign(order, pick);
+        const x = S.rptData && S.rptData.orders.find((y) => y.id === order.id);
+        if (x) { Object.assign(x, pick); store(KEY.rptCache, S.rptData); }
+        const c = detailCache.get(order.id);
+        if (c && c.order) Object.assign(c.order, pick);
+        if (modalStack.includes(m)) draw();
+      },
+    }),
     purge: isAdmin() ? async (st, m) => {
       const o = Object.assign({}, order, { qty: st.items ? st.items.length : order.qty });
       if (await purgeOrders([o])) m.close();
@@ -2747,7 +3516,17 @@ function openOrderDetail(id) {
 function openLocalOrder(id) {
   const o = S.orders.find((x) => x.id === id);
   if (!o) { toast('Đơn không còn trên máy – xem trong Báo cáo'); return; }
-  openDetailModal(localOrderInfo(o), () => localOrderItems(o).sort((a, b) => a.at - b.at), { local: true });
+  const info = Object.assign(localOrderInfo(o), { km: o.km || [] });
+  openDetailModal(info, () => localOrderItems(o).sort((a, b) => a.at - b.at), { local: true, phieu: () => openLocalPhieu(o) });
+}
+/** Phiếu xuất kho của đơn trên máy (vừa quét xong) – hàng KM lưu trên máy, có mạng tự gửi lên Sheet */
+function openLocalPhieu(o) {
+  if (typeof o === 'string') o = S.orders.find((x) => x.id === o);
+  if (!o) { toast('Đơn không còn trên máy – mở trong Báo cáo'); return; }
+  openPhieu(localOrderInfo(o), localOrderItems(o).sort((a, b) => a.at - b.at), {
+    km: o.km, note: o.pnote,
+    save: (km, note) => { o.km = km; o.pnote = note; o.phieuDirty = true; saveOrders(); sync(); },
+  });
 }
 
 /* ------------------------------------------------------------------
@@ -2769,6 +3548,7 @@ function openSettings() {
     <div class="row"><div class="grow">Danh sách đại lý<span class="sub" id="setDl">${dealerList().length} đại lý · cập nhật ${fmtDT(S.auth.at)}</span></div><button class="btn sm" data-a="reload" type="button">${icon('refresh')}Tải lại</button></div>
   </div>` : ''}
   <div class="sec"><h4>Quét</h4>
+    ${sw('ocr', 'Tự nhận sản phẩm từ chữ trên thùng', 'Đọc tên model in trên nhãn (VD KAQ-U03 PRO) – khỏi chọn tay. Lần đầu tải ~6 MB.')}
     ${sw('continuous', 'Quét liên tục', 'Tắt: mỗi lần quét xong tạm dừng, bấm “Quét tiếp”')}
     ${sw('sound', 'Âm thanh “bíp”')}
     ${sw('vibrate', 'Rung khi quét', 'Không có trên iPhone')}
@@ -2819,6 +3599,7 @@ function openSettings() {
     else if (k === 'minLen') s[k] = clamp(parseInt(e.target.value, 10) || 1, 1, 40);
     else s[k] = e.target.value.trim();
     saveSettings();
+    if (k === 'ocr') { if (s.ocr && cam.running) ocrInit().catch(() => {}); if (cam.running && !OCR.job) setHint(scanHint()); }
     if (k === 'retail' || k === 'engine') { cam.nativeFormatsKey = ''; cam.workerDead = false; if (cam.running) initDecoders().then(() => { cam.gen++; loopNative(cam.gen); loopWorker(); }); }
   });
   wrap.addEventListener('click', async (e) => {
@@ -2865,7 +3646,8 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
   window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
 }
 // Cho kiểm thử tự động
-window.__qx = { S, RPT, cam, addSerial, sync, buildXlsx, orderWorkbook, productList, qrSvg, qrMake, qrPngBlob, openQrViewer, curOrder, loadReport, newOrderId, nppCode };
+window.__qx = { S, RPT, cam, addSerial, sync, buildXlsx, orderWorkbook, productList, qrSvg, qrMake, qrPngBlob, openQrViewer, curOrder, loadReport, newOrderId, nppCode, phieuData, phieuCanvases, pdfFromCanvases, openLocalPhieu,
+  OCR, ocrInit, ocrKey, matchModel, grabView, fixModel };
 
 })();
 </script>
