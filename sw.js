@@ -1,10 +1,18 @@
 /* Service worker: cho app mở được khi mạng yếu / mất mạng.
    Khi sửa app, tăng số phiên bản CACHE để máy NPP tải bản mới. */
-const CACHE = 'quet-xuat-kho-v2.4.0';
-// Bộ đọc chữ tên sản phẩm (~6 MB) lưu riêng – không phải tải lại mỗi lần cập nhật app (đổi tên khi đổi bản Tesseract)
-const OCR_CACHE = 'qx-ocr-tesseract-6.0.1';
-const ASSETS = ['./', 'index.html', 'manifest.webmanifest', 'zxing-worker.js', 'lib/zxing-reader.js', 'lib/zxing_reader.wasm',
-  'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
+const CACHE = 'quet-xuat-kho-v2.3.0';
+const ASSETS = [
+  './',
+  'index.html',
+  'manifest.webmanifest',
+  'zxing-worker.js',
+  'tesseract.min.js',
+  'lib/zxing-reader.js',
+  'lib/zxing_reader.wasm',
+  'icon-192.png',
+  'icon-512.png',
+  'apple-touch-icon.png',
+];
 
 self.addEventListener('install', (e) => {
   e.waitUntil((async () => {
@@ -16,7 +24,7 @@ self.addEventListener('install', (e) => {
 
 self.addEventListener('activate', (e) => {
   e.waitUntil((async () => {
-    for (const k of await caches.keys()) if (k !== CACHE && k !== OCR_CACHE) await caches.delete(k);
+    for (const k of await caches.keys()) if (k !== CACHE) await caches.delete(k);
     await self.clients.claim();
   })());
 });
@@ -40,14 +48,13 @@ self.addEventListener('fetch', (e) => {
     })());
     return;
   }
-  const cacheable = url.origin === self.location.origin || /^fonts\.(googleapis|gstatic)\.com$/.test(url.hostname) || url.hostname === 'cdn.jsdelivr.net';
+  const cacheable = url.origin === self.location.origin || /^fonts\.(googleapis|gstatic)\.com$/.test(url.hostname) || url.hostname === 'cdn.jsdelivr.net' || url.hostname === 'unpkg.com';
   if (!cacheable) return;
-  const store = url.origin === self.location.origin && url.pathname.includes('/lib/ocr/') ? OCR_CACHE : CACHE;
   e.respondWith((async () => {
     const hit = await caches.match(req);
     if (hit) return hit;
     const res = await fetch(req);
-    if (res.ok || res.type === 'opaque') { const c = await caches.open(store); c.put(req, res.clone()); }
+    if (res.ok || res.type === 'opaque') { const c = await caches.open(CACHE); c.put(req, res.clone()); }
     return res;
   })());
 });
