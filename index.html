@@ -572,7 +572,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
    ⚙️  SCRIPT_URL = URL Apps Script (Ứng dụng web, đuôi /exec).
    ===================================================================== */
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwaumb04tZoVcZE6V--lb37675aqM1EGSszBm2f_tH_Ulq_bErLdtuDfzr77S0x3MimPA/exec";
-const APP_VERSION = '2.3.0';
+const APP_VERSION = '2.4.0';
 (() => {
 'use strict';
 /* ------------------------------------------------------------------
@@ -815,8 +815,9 @@ function buildModelIndex(models) {
     const full = clean.replace(/[^A-Z0-9]/g, '');
     const coreStr = clean.replace(PREFIX, '').trim();
     const core = coreStr.replace(/[^A-Z0-9]/g, '');
+    const noZero = core.replace(/0+/g, '');
     return {
-      raw, full, core,
+      raw, full, core, noZero,
       fullCanon: ocrCanon(full),
       coreCanon: ocrCanon(core),
       hasPro: /PROMAX/.test(clean) ? 'PROMAX' : /PRO/.test(clean) ? 'PRO' : '',
@@ -828,9 +829,9 @@ function matchModelFromOcr(ocrText, models) {
   if (!ocrText) return null;
   const list = models || productList().map((x) => x.v);
   let txt = fold(ocrText).toUpperCase()
-    .replace(/\bSX\s*\d{1,2}[\/.-1I]\d{2,4}\b/g, ' ')
-    .replace(/\b\d{1,2}[\/.-]\d{4}\b/g, ' ')
-    .replace(/\b202[0-9]\b/g, ' ')
+    .replace(/\b[S8§$][X×]\s*\d{1,2}[\/.-1I]?\d{2,5}\b/g, ' ')
+    .replace(/\b\d{1,2}[\/.-]\d{4,5}\b/g, ' ')
+    .replace(/\b20[02][0-9]{1,2}\b/g, ' ')
     .replace(/\bKAROFI\b/g, ' ')
     .replace(/\bSN[A-Z0-9]{6,}\b/g, ' ');
   const compact = txt.replace(/[^A-Z0-9]/g, '');
@@ -856,9 +857,18 @@ function matchModelFromOcr(ocrText, models) {
     }
   }
   for (const m of idx) {
+    if (m.noZero.length >= 4 && m.noZero !== m.core) {
+      if (compact.includes(m.noZero) || compactCanon.includes(ocrCanon(m.noZero))) {
+        if (!m.hasPro && compact.includes(m.noZero + 'PRO')) continue;
+        return m.raw;
+      }
+    }
+  }
+  for (const m of idx) {
     if (m.hasPro && m.core.length >= 6) {
-      const tail = m.core.slice(1);
-      if (tail.length >= 5 && (compact.includes(tail) || compactCanon.includes(ocrCanon(tail)))) return m.raw;
+      const tail1 = m.core.slice(1), tail2 = m.noZero.slice(1);
+      if (tail1.length >= 5 && (compact.includes(tail1) || compactCanon.includes(ocrCanon(tail1)))) return m.raw;
+      if (tail2.length >= 4 && compact.includes(tail2)) return m.raw;
     }
   }
   return null;
@@ -918,6 +928,17 @@ function pickProduct(serial) {
       choose(exact ? exact.dataset.v : opts.length === 1 ? opts[0].dataset.v : q);
     });
     draw();
+    let liveT = 0;
+    const pollLiveOcr = async () => {
+      if (done || !cam.running || S.settings.ocrModel === false || serial === 'GHIM CỐ ĐỊNH SẢN PHẨM') return;
+      const mOcr = (cam.ocrModel && Date.now() - cam.ocrAt < 3000) ? cam.ocrModel : await recognizeFrameModel(600);
+      if (done) return;
+      if (mOcr && S.settings.autoSaveOcr !== false) { choose(mOcr); return; }
+      liveT = setTimeout(pollLiveOcr, 320);
+    };
+    if (cam.running && S.settings.ocrModel !== false && serial !== 'GHIM CỐ ĐỊNH SẢN PHẨM') liveT = setTimeout(pollLiveOcr, 100);
+    const origClose = m.onClose;
+    m.onClose = () => { clearTimeout(liveT); if (origClose) origClose(); };
     if (!matchMedia('(pointer:coarse)').matches) setTimeout(() => inp.focus(), 60);
   });
 }
@@ -1185,13 +1206,13 @@ async function addSerial(raw, fmt, src) {
     model = S.pinnedModel;
     modelHow = 'đang ghim SP';
   } else if (src === 'cam' && S.settings.ocrModel !== false && S.settings.autoSaveOcr !== false) {
-    if (cam.ocrModel && Date.now() - cam.ocrAt < 4000) {
+    if (cam.ocrModel && Date.now() - cam.ocrAt < 4500) {
       model = cam.ocrModel;
       modelHow = 'tự nhận trên tem';
     } else if (cam.running) {
       showLast('pick', serial, 'Đang nhận diện mã SP trên tem…');
       picking = true;
-      try { model = await recognizeFrameModel(420); } finally { picking = false; }
+      try { model = await recognizeLiveModel(1600); } finally { picking = false; }
       if (model) modelHow = 'tự nhận trên tem';
     }
   }
@@ -1886,8 +1907,144 @@ function onWorkerMsg(e) {
 }
 
 /* ------------------------------------------------------------------
-   NHẬN DIỆN MÃ SẢN PHẨM TRÊN TEM (OCR bằng tesseract.min.js) & GHIM SP
+   NHẬN DIỆN MÃ SẢN PHẨM TRÊN TEM (3 lớp: FastCanvasOCR <30ms + TextDetector + Tesseract CDN)
 ------------------------------------------------------------------ */
+const OCR_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+const GW = 12, GH = 16;
+let glyphTemplates = null;
+function getGlyphTemplates() {
+  if (glyphTemplates) return glyphTemplates;
+  glyphTemplates = [];
+  const c = document.createElement('canvas');
+  c.width = 96; c.height = 96;
+  const ctx = c.getContext('2d', { willReadFrequently: true });
+  for (const font of ['bold 72px "Times New Roman", Times, serif', 'bold 72px Arial, Helvetica, sans-serif']) {
+    for (const ch of OCR_CHARS) {
+      ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, 96, 96);
+      ctx.fillStyle = '#000'; ctx.font = font; ctx.textBaseline = 'top';
+      ctx.fillText(ch, 8, 8);
+      const d = ctx.getImageData(0, 0, 96, 96).data;
+      let x0 = 96, y0 = 96, x1 = 0, y1 = 0;
+      for (let y = 0; y < 96; y++) for (let x = 0; x < 96; x++) if (d[(y * 96 + x) * 4] < 128) {
+        if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+      }
+      if (x1 <= x0 || y1 <= y0) continue;
+      const bw = x1 - x0 + 1, bh = y1 - y0 + 1, vec = new Float32Array(GW * GH);
+      for (let gy = 0; gy < GH; gy++) {
+        const sy0 = y0 + Math.floor(gy * bh / GH), sy1 = y0 + Math.max(Math.floor(gy * bh / GH) + 1, Math.floor((gy + 1) * bh / GH));
+        for (let gx = 0; gx < GW; gx++) {
+          const sx0 = x0 + Math.floor(gx * bw / GW), sx1 = x0 + Math.max(Math.floor(gx * bw / GW) + 1, Math.floor((gx + 1) * bw / GW));
+          let s = 0, cnt = 0;
+          for (let y = sy0; y < sy1; y++) for (let x = sx0; x < sx1; x++) { s += d[(y * 96 + x) * 4] < 128 ? 1 : 0; cnt++; }
+          vec[gy * GW + gx] = s / Math.max(1, cnt);
+        }
+      }
+      glyphTemplates.push({ ch, vec, aspect: bw / bh });
+    }
+  }
+  return glyphTemplates;
+}
+
+/** Lớp 1: Nhận diện chữ Model trực tiếp bằng thuật toán tách ký tự trên Canvas (< 25ms, không cần mạng) */
+function fastCanvasOcr(cnv, models) {
+  const ctx = cnv.getContext('2d', { willReadFrequently: true });
+  const W = cnv.width, H = cnv.height;
+  if (W < 80 || H < 24) return null;
+  const tmpls = getGlyphTemplates();
+  // Thử cả vùng 68% bên trái (chữ Model bên trái barcode) và toàn chiều ngang
+  for (const ratio of [0.68, 1.0]) {
+    const cw = Math.round(W * ratio), ch = H;
+    const id = ctx.getImageData(0, 0, cw, ch).data;
+    const g = new Float32Array(cw * ch);
+    for (let i = 0, j = 0; i < cw * ch; i++, j += 4) g[i] = 0.299 * id[j] + 0.587 * id[j + 1] + 0.114 * id[j + 2];
+    const rowP80 = new Float32Array(ch), tmp = new Float32Array(cw);
+    let maxP80 = 0;
+    for (let y = 0; y < ch; y++) {
+      const o = y * cw;
+      for (let x = 0; x < cw; x++) tmp[x] = g[o + x];
+      tmp.sort();
+      rowP80[y] = tmp[Math.floor(cw * 0.8)];
+      if (rowP80[y] > maxP80) maxP80 = rowP80[y];
+    }
+    let y0 = 0, y1 = ch - 1;
+    while (y0 < ch && rowP80[y0] < maxP80 * 0.52) y0++;
+    while (y1 > y0 && rowP80[y1] < maxP80 * 0.52) y1--;
+    const bh = y1 - y0 + 1;
+    if (bh < 20) continue;
+
+    const nt = 6, bArr = new Float32Array(nt), wArr = new Float32Array(nt);
+    for (let t = 0; t < nt; t++) {
+      const x0 = Math.floor(t * cw / nt), x1 = Math.floor((t + 1) * cw / nt), vals = [];
+      for (let y = y0; y <= y1; y += 2) for (let x = x0; x < x1; x += 2) vals.push(g[y * cw + x]);
+      vals.sort((a, b) => a - b);
+      bArr[t] = vals[Math.floor(vals.length * 0.05)] || 0;
+      wArr[t] = Math.max(bArr[t] + 10, vals[Math.floor(vals.length * 0.85)] || 255);
+    }
+    const ink = new Uint8Array(cw * bh);
+    for (let y = 0; y < bh; y++) {
+      const sy = y0 + y, dRow = y * cw;
+      for (let x = 0; x < cw; x++) {
+        const ft = Math.min(nt - 1, Math.max(0, (x / cw) * nt - 0.5));
+        const t0i = Math.floor(ft), t1i = Math.min(nt - 1, t0i + 1), wt = ft - t0i;
+        const bk = bArr[t0i] * (1 - wt) + bArr[t1i] * wt;
+        const wh = wArr[t0i] * (1 - wt) + wArr[t1i] * wt;
+        ink[dRow + x] = ((g[sy * cw + x] - bk) / Math.max(10, wh - bk)) * 255 < 115 ? 1 : 0;
+      }
+    }
+    const vis = new Uint8Array(cw * bh), q = new Int32Array(cw * bh), blobs = [];
+    for (let y = 0; y < bh; y++) {
+      for (let x = 0; x < cw; x++) {
+        const idx = y * cw + x;
+        if (!ink[idx] || vis[idx]) continue;
+        vis[idx] = 1;
+        let head = 0, tail = 0;
+        q[tail++] = idx;
+        let bx0 = x, by0 = y, bx1 = x, by1 = y;
+        while (head < tail) {
+          const cur = q[head++], cy = (cur / cw) | 0, cx = cur - cy * cw;
+          if (cx < bx0) bx0 = cx; if (cx > bx1) bx1 = cx; if (cy < by0) by0 = cy; if (cy > by1) by1 = cy;
+          if (cx > 0 && ink[cur - 1] && !vis[cur - 1]) { vis[cur - 1] = 1; q[tail++] = cur - 1; }
+          if (cx < cw - 1 && ink[cur + 1] && !vis[cur + 1]) { vis[cur + 1] = 1; q[tail++] = cur + 1; }
+          if (cy > 0 && ink[cur - cw] && !vis[cur - cw]) { vis[cur - cw] = 1; q[tail++] = cur - cw; }
+          if (cy < bh - 1 && ink[cur + cw] && !vis[cur + cw]) { vis[cur + cw] = 1; q[tail++] = cur + cw; }
+        }
+        const w0 = bx1 - bx0 + 1, h0 = by1 - by0 + 1;
+        if (h0 >= bh * 0.22 && h0 <= bh * 0.90 && w0 >= bh * 0.05 && w0 <= bh * 0.78 && tail >= 18) {
+          blobs.push({ x0: bx0, y0: by0, w: w0, h: h0 });
+        }
+      }
+    }
+    if (blobs.length < 3) continue;
+    const maxH = Math.max(...blobs.map((b) => b.h), 1);
+    const lineBlobs = blobs.filter((b) => b.h >= maxH * 0.60).sort((a, b) => a.x0 - b.x0);
+    if (lineBlobs.length < 3) continue;
+    let outStr = '';
+    for (const b of lineBlobs) {
+      const vec = new Float32Array(GW * GH);
+      for (let gy = 0; gy < GH; gy++) {
+        const sy0 = b.y0 + Math.floor(gy * b.h / GH), sy1 = b.y0 + Math.max(Math.floor(gy * b.h / GH) + 1, Math.floor((gy + 1) * b.h / GH));
+        for (let gx = 0; gx < GW; gx++) {
+          const sx0 = b.x0 + Math.floor(gx * b.w / GW), sx1 = b.x0 + Math.max(Math.floor(gx * b.w / GW) + 1, Math.floor((gx + 1) * b.w / GW));
+          let s = 0, cnt = 0;
+          for (let y = sy0; y < sy1; y++) for (let x = sx0; x < sx1; x++) { s += ink[y * cw + x]; cnt++; }
+          vec[gy * GW + gx] = s / Math.max(1, cnt);
+        }
+      }
+      let bestCh = '', bestDist = 1e9;
+      const asp = b.w / b.h;
+      for (const t of tmpls) {
+        let d = Math.abs(asp - t.aspect) * 8;
+        for (let k = 0; k < GW * GH; k++) { const df = vec[k] - t.vec[k]; d += df * df; }
+        if (d < bestDist) { bestDist = d; bestCh = t.ch; }
+      }
+      outStr += bestCh;
+    }
+    const matched = matchModelFromOcr(outStr, models);
+    if (matched) return matched;
+  }
+  return null;
+}
+
 let ocrInitP = null;
 function loadScript(src) {
   return new Promise((res, rej) => {
@@ -1898,6 +2055,8 @@ function loadScript(src) {
     document.head.appendChild(s);
   });
 }
+
+/** Lớp 2 & 3: TextDetector của trình duyệt + Tesseract.js (chỉ định rõ CDN workerPath/corePath để không bị lỗi 404 worker.min.js) */
 async function ensureOcr() {
   if (cam.ocrWorker) return cam.ocrWorker;
   if (ocrInitP) return ocrInitP;
@@ -1907,12 +2066,24 @@ async function ensureOcr() {
       try { await loadScript('tesseract.min.js'); }
       catch (e) { await loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'); }
     }
-    const w = await window.Tesseract.createWorker('eng');
-    if (w.loadLanguage) {
+    const T = window.Tesseract;
+    let w = null;
+    try {
+      // Truyền rõ workerPath & corePath từ CDN để khi tesseract.min.js đặt lẻ trên GitHub Pages không bị lỗi 404 worker.min.js
+      w = await T.createWorker('eng', 1, {
+        workerPath: 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/worker.min.js',
+        corePath: 'https://cdn.jsdelivr.net/npm/tesseract.js-core@5/tesseract-core-simd-lstm.wasm.js',
+        langPath: 'https://tessdata.projectnaptha.com/4.0.0',
+      });
+    } catch (e1) {
+      w = await T.createWorker('eng');
+    }
+    if (w && w.loadLanguage) {
       try { await w.loadLanguage('eng'); await w.initialize('eng'); } catch (e) { /* v5 đã nạp sẵn */ }
     }
-    if (w.setParameters) {
-      try { await w.setParameters({ tessedit_pageseg_mode: '6', tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-+ ' }); } catch (e) { /* */ }
+    if (w && w.setParameters) {
+      // Dùng PSM 3 (tự phân tích dòng chữ nhiều cỡ chữ) và KHÔNG đặt whitelist gây kẹt LSTM
+      try { await w.setParameters({ tessedit_pageseg_mode: '3' }); } catch (e) { /* */ }
     }
     cam.ocrWorker = w; cam.ocrLoading = false; renderScanSubbar();
     return w;
@@ -1921,76 +2092,126 @@ async function ensureOcr() {
   return ocrInitP;
 }
 
-/** Chuẩn bị ảnh vùng chữ Model trên tem: cân bằng sáng theo 6 dải ngang + viền trắng 10px */
-function grabOcrCanvas() {
-  const ctx = grabROI(cam.cnvOcr, 680);
-  if (!ctx) return null;
-  const sw = cam.cnvOcr.width, sh = cam.cnvOcr.height;
-  // Lấy 72% bên trái của khung ngắm (nơi in chữ Model lớn như KAQ-U03 PRO), hoặc toàn khung nếu hẹp
-  const cw = Math.max(160, Math.round(sw * 0.75)), ch = sh;
-  const img = ctx.getImageData(0, 0, cw, ch), d = img.data;
-  const n = cw * ch, g = new Float32Array(n);
-  for (let i = 0, j = 0; i < n; i++, j += 4) g[i] = 0.299 * d[j] + 0.587 * d[j + 1] + 0.114 * d[j + 2];
-  const nt = 6, bArr = new Float32Array(nt), wArr = new Float32Array(nt), hist = new Uint32Array(256);
-  for (let t = 0; t < nt; t++) {
-    const x0 = Math.floor(t * cw / nt), x1 = Math.floor((t + 1) * cw / nt);
-    hist.fill(0);
-    let cnt = 0;
-    for (let y = 0; y < ch; y++) {
-      const o = y * cw;
-      for (let x = x0; x < x1; x++) { hist[g[o + x] | 0]++; cnt++; }
-    }
-    let p5 = 0, p88 = 255, acc = 0;
-    for (let i = 0; i < 256; i++) { acc += hist[i]; if (acc >= cnt * 0.05) { p5 = i; break; } }
-    acc = 0;
-    for (let i = 255; i >= 0; i--) { acc += hist[i]; if (acc >= cnt * 0.12) { p88 = i; break; } }
-    bArr[t] = p5; wArr[t] = Math.max(p5 + 10, p88);
-  }
-  for (let y = 0; y < ch; y++) {
-    const o = y * cw;
-    for (let x = 0; x < cw; x++) {
-      const ft = Math.min(nt - 1, Math.max(0, (x / cw) * nt - 0.5));
-      const t0 = Math.floor(ft), t1 = Math.min(nt - 1, t0 + 1), wt = ft - t0;
-      const bk = bArr[t0] * (1 - wt) + bArr[t1] * wt;
-      const wh = wArr[t0] * (1 - wt) + wArr[t1] * wt;
-      let v = ((g[o + x] - bk) / Math.max(10, wh - bk)) * 255;
-      v = v < 0 ? 0 : v > 255 ? 255 : v | 0;
-      const k = (o + x) << 2;
-      d[k] = d[k + 1] = d[k + 2] = v; d[k + 3] = 255;
-    }
-  }
-  cam.cnvOcr.width = cw + 20; cam.cnvOcr.height = ch + 20;
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, cam.cnvOcr.width, cam.cnvOcr.height);
-  ctx.putImageData(img, 10, 10);
-  return cam.cnvOcr;
+/** Chụp vùng ảnh cho OCR: lấy rộng cả chiều ngang viewport quanh khung ngắm và chuẩn hoá tương phản tự nhiên */
+function grabOcrCanvas(wide) {
+  const vw = video.videoWidth, vh = video.videoHeight;
+  if (!vw || !vh || video.readyState < 2) return null;
+  const vp = $('#viewport').getBoundingClientRect(), g = $('#guide').getBoundingClientRect();
+  if (!vp.width || !g.width) return null;
+  const sc = Math.max(vp.width / vw, vp.height / vh);
+  const ox = (vp.width - vw * sc) / 2, oy = (vp.height - vh * sc) / 2;
+  let sx = wide ? (0 - ox) / sc : (g.left - vp.left - ox) / sc;
+  let sy = (g.top - vp.top - g.height * 0.12 - oy) / sc;
+  let sw = wide ? (vp.width * 0.72) / sc : (g.width * 0.68) / sc;
+  let sh = (g.height * 1.24) / sc;
+  sx = clamp(sx, 0, vw - 1); sy = clamp(sy, 0, vh - 1); sw = Math.min(sw, vw - sx); sh = Math.min(sh, vh - sy);
+  const k = Math.min(1, 560 / Math.max(1, sw));
+  const cw = Math.max(120, Math.round(sw * k)), ch = Math.max(40, Math.round(sh * k));
+  const cnv = cam.cnvOcr;
+  cnv.width = cw; cnv.height = ch;
+  const ctx = cnv.getContext('2d', { willReadFrequently: true });
+  ctx.drawImage(video, sx, sy, sw, sh, 0, 0, cw, ch);
+  return cnv;
 }
 
-async function recognizeFrameModel(timeoutMs = 450) {
-  if (S.settings.ocrModel === false) return null;
-  try {
-    const w = await Promise.race([
-      ensureOcr(),
-      new Promise((_, r) => setTimeout(() => r(new Error('timeout')), timeoutMs)),
-    ]);
-    if (!w || cam.ocrBusy) return cam.ocrModel && Date.now() - cam.ocrAt < 4000 ? cam.ocrModel : null;
-    const cnv = grabOcrCanvas();
-    if (!cnv) return null;
-    cam.ocrBusy = true;
+function normalizeNaturalGrayscale(cnv) {
+  const ctx = cnv.getContext('2d', { willReadFrequently: true });
+  const cw = cnv.width, ch = cnv.height, n = cw * ch;
+  const img = ctx.getImageData(0, 0, cw, ch), d = img.data;
+  const g = new Float32Array(n), hist = new Uint32Array(256);
+  let sum = 0;
+  for (let i = 0, j = 0; i < n; i++, j += 4) {
+    const y = (77 * d[j] + 150 * d[j + 1] + 29 * d[j + 2]) >> 8;
+    g[i] = y; hist[y]++; sum += y;
+  }
+  let p5 = 0, p95 = 255, acc = 0;
+  for (let i = 0; i < 256; i++) { acc += hist[i]; if (acc >= n * 0.05) { p5 = i; break; } }
+  acc = 0;
+  for (let i = 255; i >= 0; i--) { acc += hist[i]; if (acc >= n * 0.05) { p95 = i; break; } }
+  const span = Math.max(15, p95 - p5);
+  const gamma = (sum / n) < 105 ? 0.65 : 1.0;
+  for (let i = 0, j = 0; i < n; i++, j += 4) {
+    let v = (g[i] - p5) / span;
+    v = v < 0 ? 0 : v > 1 ? 1 : v;
+    const out = (gamma !== 1 ? Math.pow(v, gamma) : v) * 255;
+    d[j] = d[j + 1] = d[j + 2] = out | 0; d[j + 3] = 255;
+  }
+  ctx.putImageData(img, 0, 0);
+  return cnv;
+}
+
+function setDetectedModel(m) {
+  if (!m) return null;
+  cam.ocrModel = m; cam.ocrAt = Date.now();
+  renderOcrFloat(); renderScanSubbar();
+  return m;
+}
+
+async function recognizeFrameModel(timeoutMs = 1500) {
+  if (S.settings.ocrModel === false || !cam.running) return null;
+  const models = productList().map((x) => x.v);
+  // 1. Thử ngay FastCanvasOCR (< 25ms) trên khung ngắm và toàn màn hình
+  for (const wide of [false, true]) {
+    const cnv = grabOcrCanvas(wide);
+    if (cnv) {
+      const mFast = fastCanvasOcr(cnv, models);
+      if (mFast) return setDetectedModel(mFast);
+    }
+  }
+  // 2. Thử TextDetector phần cứng của trình duyệt (nếu có trên Android Chrome)
+  if ('TextDetector' in window) {
     try {
+      cam.textDet = cam.textDet || new window.TextDetector();
+      const cnv = grabOcrCanvas(false);
+      if (cnv) {
+        const blocks = await cam.textDet.detect(cnv);
+        const joined = (blocks || []).map((b) => b.rawValue).join(' ');
+        const mDet = matchModelFromOcr(joined, models);
+        if (mDet) return setDetectedModel(mDet);
+      }
+    } catch (e) { /* */ }
+  }
+  // 3. Nếu đang có lượt Tesseract chạy dở, chờ lượt đó xong trước thay vì bỏ qua!
+  if (cam.ocrRunP) {
+    try {
+      const mPrev = await Promise.race([cam.ocrRunP, new Promise((r) => setTimeout(() => r(null), timeoutMs))]);
+      if (mPrev) return mPrev;
+    } catch (e) { /* */ }
+  }
+  // 4. Chạy Tesseract.js trên ảnh grayscale tự nhiên đã cân bằng sáng
+  cam.ocrRunP = (async () => {
+    try {
+      const w = await Promise.race([
+        ensureOcr(),
+        new Promise((_, r) => setTimeout(() => r(new Error('timeout')), timeoutMs)),
+      ]);
+      if (!w) return null;
+      const cnv = grabOcrCanvas(false);
+      if (!cnv) return null;
+      normalizeNaturalGrayscale(cnv);
       const res = await Promise.race([
         w.recognize(cnv),
         new Promise((_, r) => setTimeout(() => r(new Error('timeout')), timeoutMs)),
       ]);
       const txt = res && res.data && res.data.text;
-      const m = matchModelFromOcr(txt, productList().map((x) => x.v));
-      if (m) {
-        cam.ocrModel = m; cam.ocrAt = Date.now();
-        renderOcrFloat(); renderScanSubbar();
-      }
-      return m;
-    } finally { cam.ocrBusy = false; }
-  } catch (e) { return null; }
+      return setDetectedModel(matchModelFromOcr(txt, models));
+    } catch (e) { return null; }
+    finally { cam.ocrRunP = null; }
+  })();
+  return cam.ocrRunP;
+}
+
+/** Khi vừa bắt được mã vạch Serial mà chưa có sẵn mã SP, quét liên tiếp các khung hình trực tiếp trong tối đa maxMs */
+async function recognizeLiveModel(maxMs = 1600) {
+  const deadline = Date.now() + maxMs;
+  while (Date.now() < deadline && cam.running) {
+    if (cam.ocrModel && Date.now() - cam.ocrAt < 4500) return cam.ocrModel;
+    const rem = Math.max(250, deadline - Date.now());
+    const m = await recognizeFrameModel(rem);
+    if (m) return m;
+    await new Promise((r) => setTimeout(r, 90));
+  }
+  return cam.ocrModel && Date.now() - cam.ocrAt < 4500 ? cam.ocrModel : null;
 }
 
 async function loopOcr(gen) {
@@ -3344,8 +3565,17 @@ if (loggedIn()) {
   showLogin(S.auth && S.auth.expired ? 'Phiên đăng nhập đã hết – vui lòng đăng nhập lại' : '');
 }
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
-  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+  window.addEventListener('load', () => {
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!refreshing) { refreshing = true; location.reload(); }
+    });
+    navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then((reg) => {
+      reg.update().catch(() => {});
+    }).catch(() => {});
+  });
 }
+setTimeout(() => { try { getGlyphTemplates(); if (S.settings.ocrModel !== false) ensureOcr(); } catch (e) {} }, 500);
 // Cho kiểm thử tự động
 window.__qx = { S, RPT, cam, addSerial, sync, buildXlsx, orderWorkbook, productList, qrSvg, qrMake, qrPngBlob, openQrViewer, curOrder, loadReport, newOrderId, nppCode, matchModelFromOcr, openSlipModal, printSlipHtml, readMoneyVN };
 

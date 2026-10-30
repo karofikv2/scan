@@ -1,6 +1,6 @@
 /* Service worker: cho app mở được khi mạng yếu / mất mạng.
-   Khi sửa app, tăng số phiên bản CACHE để máy NPP tải bản mới. */
-const CACHE = 'quet-xuat-kho-v2.3.0';
+   Khi sửa app, tăng số phiên bản CACHE để máy NPP tải bản mới ngay lập tức. */
+const CACHE = 'quet-xuat-kho-v2.4.0';
 const ASSETS = [
   './',
   'index.html',
@@ -35,20 +35,23 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(req.url);
   // Google Apps Script (gửi/nhận dữ liệu) → luôn đi mạng, không cache
   if (/(^|\.)script\.google(usercontent)?\.com$/.test(url.hostname) || url.hostname.endsWith('googleusercontent.com')) return;
-  // Trang chính: ưu tiên mạng (để nhận bản mới), mất mạng thì dùng bản đã lưu
-  if (req.mode === 'navigate') {
+  // Trang chính & zxing-worker.js: luôn ưu tiên lấy bản mới nhất từ mạng (no-store) để không bị kẹt bản cũ
+  if (req.mode === 'navigate' || url.pathname.endsWith('/index.html') || url.pathname.endsWith('/zxing-worker.js')) {
     e.respondWith((async () => {
       try {
-        const res = await fetch(req);
-        if (res.ok) { const c = await caches.open(CACHE); c.put('index.html', res.clone()); }
+        const res = await fetch(req, { cache: 'no-store' });
+        if (res.ok) {
+          const c = await caches.open(CACHE);
+          c.put(req.mode === 'navigate' ? 'index.html' : req, res.clone());
+        }
         return res;
       } catch (err) {
-        return (await caches.match('index.html')) || (await caches.match('./')) || Response.error();
+        return (await caches.match(req)) || (await caches.match('index.html')) || (await caches.match('./')) || Response.error();
       }
     })());
     return;
   }
-  const cacheable = url.origin === self.location.origin || /^fonts\.(googleapis|gstatic)\.com$/.test(url.hostname) || url.hostname === 'cdn.jsdelivr.net' || url.hostname === 'unpkg.com';
+  const cacheable = url.origin === self.location.origin || /^fonts\.(googleapis|gstatic)\.com$/.test(url.hostname) || url.hostname === 'cdn.jsdelivr.net' || url.hostname === 'unpkg.com' || url.hostname === 'tessdata.projectnaptha.com';
   if (!cacheable) return;
   e.respondWith((async () => {
     const hit = await caches.match(req);
